@@ -1,0 +1,23 @@
+<Project>
+
+    <!-- Nuget package metadata -->
+    <PropertyGroup>
+        <Authors>Eric D. Hiller</Authors>
+        <Company>mkmrk</Company>
+        <Copyright>Copyright 2023 © Eric D. Hiller</Copyright>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PackageTags>Channels;Interthread;Queues</PackageTags>
+        <!--<PackageIcon>channels-icon.png</PackageIcon>-->
+        <PackageProjectUrl>https://github.com/erichiller/mkmrk.Channels</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/erichiller/mkmrk.Channels</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
+        <!--.snupkg-->
+        <IncludeSymbols>true</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    </PropertyGroup>
+    
+    <PropertyGroup>
+        <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    </PropertyGroup>
+</Project>

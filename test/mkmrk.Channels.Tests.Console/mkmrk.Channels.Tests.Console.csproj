@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net7.0</TargetFramework>
+        <OutputType>Exe</OutputType>
+        <ImplicitUsings>disable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <LangVersion>latestmajor</LangVersion>
+        <AssemblyName>mkmrk.Channels.Tests.Cli</AssemblyName>
+        <RootNamespace>mkmrk.Channels.Tests.Cli</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions"/>
+        <PackageReference Include="Microsoft.Extensions.Logging"/>
+        <PackageReference Include="xunit.abstractions"/>
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\..\src\mkmrk.Channels\mkmrk.Channels.csproj"/>
+        <ProjectReference Include="..\mkmrk.Channels.Benchmarks\mkmrk.Channels.Benchmarks.csproj"/>
+        <ProjectReference Include="..\mkmrk.Channels.Tests\mkmrk.Channels.Tests.csproj"/>
+    </ItemGroup>
+
+</Project>

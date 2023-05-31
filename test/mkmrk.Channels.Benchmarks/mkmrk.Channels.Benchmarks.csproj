@@ -1,0 +1,54 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>net7.0</TargetFramework>
+        <OutputType>Exe</OutputType>
+        <Nullable>enable</Nullable>
+        <LangVersion>latestmajor</LangVersion>
+    </PropertyGroup>
+    <PropertyGroup>
+        <PlatformTarget>AnyCPU</PlatformTarget>
+<!--        <DebugType>pdbonly</DebugType>-->
+        <DebugType>full</DebugType>
+        <DebugSymbols>true</DebugSymbols>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <Optimize>true</Optimize>
+        <Configuration>Release</Configuration>
+        <IsPackable>false</IsPackable>
+    </PropertyGroup>
+    
+    <ItemGroup>
+        <PackageReference Include="BenchmarkDotNet" />
+        <PackageReference Include="Microsoft.Extensions.Hosting" />
+    </ItemGroup>
+
+<!-- Give permission to set priority to built exe
+NOTE: may need to add permission to set capability.
+eg.
+
+IN:
+    /etc/security/capability.conf
+ADD:
+    cap_sys_nice     USERNAME_HERE 
+
+-->
+<!--    <Target Name="PostBuild" AfterTargets="PostBuildEvent">-->
+<!--        <Exec Command="echo '' >> postbuild.txt " />-->
+<!--        <Exec Command="echo `date` >> postbuild.txt " />-->
+<!--        <Exec Command="echo 'TargetDir: $(TargetDir)' >> postbuild.txt " />-->
+<!--        <Exec Command="echo 'Output Path: $(OutputPath)' >> postbuild.txt " />-->
+<!--        <Exec Command="echo 'AssemblyName: $(AssemblyName)' >> postbuild.txt " />-->
+<!--        <Exec Command="echo 'TargetFrameworkVersion: $(TargetFrameworkVersion)' >> postbuild.txt " />-->
+<!--        <Exec Command="${SUDOPASS} | sudo &#45;&#45;stdin setcap 'cap_sys_nice=eip' $(OutputPath)$(AssemblyName)" />-->
+<!--        <Exec Command="echo $(SUDOPASS) | sudo &#45;&#45;stdin setcap 'cap_sys_nice=eip' $(TargetDir)$(AssemblyName)" />-->
+<!--    </Target>-->
+
+
+    <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(Configuration)' == 'Release'">
+<!--                <Exec Command="echo $(SUDOPASS) | sudo &#45;&#45;stdin setcap 'cap_sys_nice=eip' $(TargetDir)$(AssemblyName)"/>-->
+        <Exec Command="sudo setcap 'cap_sys_nice=eip' $(TargetDir)$(AssemblyName)" />
+    </Target>
+    
+    <ItemGroup>
+        <ProjectReference Include="..\..\src\mkmrk.Channels\mkmrk.Channels.csproj" />
+    </ItemGroup>
+</Project>
