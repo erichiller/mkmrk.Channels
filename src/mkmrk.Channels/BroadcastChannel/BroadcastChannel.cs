@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Channels;
 
 using Microsoft.Extensions.Logging;
 
@@ -16,7 +17,7 @@ namespace mkmrk.Channels;
 /// <seealso href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.channels.channelwriter-1">ChannelWriter&lt;T&gt;</seealso>
 /// <seealso href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.channels.channelreader-1">ChannelReader&lt;T&gt;</seealso>
 /// <seealso href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.channels.channel-1">Channel&lt;T&gt;</seealso>
-public class BroadcastChannel<TData, TResponse> : IDisposable where TResponse : IBroadcastChannelResponse {
+public class BroadcastChannel<TData, TResponse> : IBroadcastChannelAddReaderProvider<TData>, IDisposable where TResponse : IBroadcastChannelResponse {
     private          BroadcastChannelWriter<TData, TResponse>? _writer;
     private readonly ILoggerFactory?                           _loggerFactory;
 
@@ -34,6 +35,9 @@ public class BroadcastChannel<TData, TResponse> : IDisposable where TResponse : 
     /// </summary>
     public BroadcastChannelReader<TData, TResponse> GetReader( )
         => Writer.GetReader();
+    
+    /// <inheritdoc />
+    RemoveWriterByHashCode IBroadcastChannelAddReaderProvider<TData>.AddReader( ChannelWriter<TData> reader ) => this.Writer.AddReader( reader );
 
     private bool _isDisposed;
 

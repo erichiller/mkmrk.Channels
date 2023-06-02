@@ -30,7 +30,14 @@ public record ChannelResponse(
 public class BroadcastChannelTests : TestBase<BroadcastChannelTests> {
     public BroadcastChannelTests( ITestOutputHelper testOutputHelper ) : base( testOutputHelper ) { }
 
-    static async Task<int> writerTask( BroadcastChannelWriter<ChannelMessage, ChannelResponse> bqWriter, int messageCount, CancellationToken ct, ( int min, int max )? delayMs = null, ILogger? logger = null ) {
+    static async Task<int> writerTask(
+        BroadcastChannelWriter<ChannelMessage, ChannelResponse> bqWriter,
+        int                                                     messageCount,
+        CancellationToken                                       ct,
+        ( int min, int max )?                                   delayMs                        = null,
+        bool                                                    completeChannelWhenDoneWriting = false,
+        ILogger?                                                logger                         = null
+    ) {
         int i      = 0;
         var random = new Random();
         while ( await bqWriter.WaitToWriteAsync( ct ) ) {
@@ -48,6 +55,9 @@ public class BroadcastChannelTests : TestBase<BroadcastChannelTests> {
             }
         }
 
+        if ( completeChannelWhenDoneWriting ) {
+            bqWriter.Complete();
+        }
         return -1;
     }
 
@@ -55,7 +65,10 @@ public class BroadcastChannelTests : TestBase<BroadcastChannelTests> {
         int i      = 0;
         var random = new Random();
         while ( await bqWriter.WaitToWriteAsync( ct ) ) {
-            var messages = new[] { new ChannelMessage( i++ ), new ChannelMessage( i++ ) };
+            var messages = new[] {
+                new ChannelMessage( i++ ),
+                new ChannelMessage( i++ )
+            };
             while ( bqWriter.TryWrite( messages ) ) {
                 logger?.LogDebug( "[BroadcastChannelWriter] wrote messages: {Messages}", new List<ChannelMessage>( messages ) );
                 if ( i > messageCount ) {
@@ -68,7 +81,10 @@ public class BroadcastChannelTests : TestBase<BroadcastChannelTests> {
                 }
 
                 // i++;
-                messages = new[] { new ChannelMessage( i++ ), new ChannelMessage( i++ ) };
+                messages = new[] {
+                    new ChannelMessage( i++ ),
+                    new ChannelMessage( i++ )
+                };
             }
         }
 
@@ -107,11 +123,15 @@ public class BroadcastChannelTests : TestBase<BroadcastChannelTests> {
             intervals.Add( now - lastTime );
             lastTime = now;
             logger!.LogDebug( "[{MethodName}][{ReaderCount}] looping", nameof(addReaderTask), readerCount );
-            using var reader = broadcastChannel.GetReader();
-            logger?.LogDebug( "[{MethodName}][{ReaderCount}] Waiting to read", nameof(addReaderTask), readerCount );
-            await reader.WaitToReadAsync( ct ); // read at least one message
-            logger?.LogDebug( "[{MethodName}] Waiting to read...found {ReaderCount}", nameof(addReaderTask), readerCount );
-            while ( reader.TryRead( out ChannelMessage? message ) ) {
+            using ( var reader = broadcastChannel.GetReader() ) {
+                logger?.LogDebug( "[{MethodName}][{ReaderCount}] Waiting to read", nameof(addReaderTask), readerCount );
+                await reader.WaitToReadAsync( ct ); // read at least one message
+                logger?.LogDebug( "[{MethodName}] Waiting to read...found {ReaderCount}", nameof(addReaderTask), readerCount );
+                // while ( reader.TryRead( out ChannelMessage? message ) ) {
+                if ( !reader.TryRead( out ChannelMessage? message ) ) {
+                    // Read a single message
+                    break;
+                }
                 if ( !threadIds.Contains( Thread.CurrentThread.ManagedThreadId ) ) {
                     threadIds.Add( Thread.CurrentThread.ManagedThreadId );
                 }
@@ -121,54 +141,47 @@ public class BroadcastChannelTests : TestBase<BroadcastChannelTests> {
                     return ( readerCount, threadIds, intervals );
                 }
             }
-
             readerCount++;
         }
 
         return ( readerCount, threadIds, intervals );
     }
 
-    [ Fact ]
-    public void AddingAndRemovingReadersShouldNeverError( ) {
-        int subscriberCount = 3;
-        // int messageCount    = 10_000;
-        int       messageCount     = 1_000;
-        using var broadcastChannel = new BroadcastChannel<ChannelMessage, ChannelResponse>();
-        using var cts              = new CancellationTokenSource();
-        // ( int, int ) writeIntervalRange = ( 1, 200 ); 
-        ( int, int ) writeIntervalRange = ( 1, 100 );
-        cts.CancelAfter( 300_000 );
+
+    /*
+     * IMPORTANT:
+     * THIS TEST CAN TAKE SOME TIME !!! MODIFY THE BELOW IF NECESSARY
+     */
+    [ InlineData( /* maxTestMs: */ 1_000, /* messageCount: */ 100, /* subscriberCount: */ 3 ) ]
+    [ InlineData( /* maxTestMs: */ 10_000, /* messageCount: */ 1_000, /* subscriberCount: */ 3 ) ]
+    [ InlineData( /* maxTestMs: */ 300_000, /* messageCount: */ 10_000, /* subscriberCount: */ 3 ) ]
+    [ Theory ]
+    public void AddingAndRemovingReadersShouldNeverError( int maxTestMs, int messageCount, int subscriberCount ) {
+        int          maxWriteInterval   = maxTestMs / messageCount; // was: 100
+        ( int, int ) writeIntervalRange = ( 1, maxWriteInterval );
+        using var    broadcastChannel   = new BroadcastChannel<ChannelMessage, ChannelResponse>();
+        using var    cts                = new CancellationTokenSource();
+        cts.CancelAfter( maxTestMs ); // just in case the test runs askew.
 
         List<Task<int>> readerTasks = new List<Task<int>>();
+        // start {subscriberCount} readers that live the life of the test
         for ( int i = 0 ; i < subscriberCount ; i++ ) {
             readerTasks.Add( readerTask( broadcastChannel.GetReader(), messageCount, $"readerTask{i}", cts.Token ) );
         }
 
+        // keep starting and stop readers ( within using { } blocks )
         var addReaderTaskRunner = addReaderTask( broadcastChannel, messageCount, cts.Token, _logger );
 
         List<Task> tasks = new List<Task>(
             readerTasks
         ) {
-            addReaderTaskRunner, writerTask( broadcastChannel.Writer, messageCount, cts.Token, writeIntervalRange, _logger ),
+            addReaderTaskRunner,
+            writerTask( broadcastChannel.Writer, messageCount, cts.Token, delayMs: writeIntervalRange, completeChannelWhenDoneWriting: true, logger: _logger ),
         };
 
-        try {
-            Task.WaitAll(
-                tasks.ToArray()
-            );
-        } catch ( System.AggregateException ex ) {
-            bool taskCanceledException = false;
-            foreach ( var inner in ex.InnerExceptions ) {
-                if ( inner.GetType() == typeof(System.Threading.Tasks.TaskCanceledException) ) {
-                    _logger.LogDebug( "Task was cancelled" );
-                    taskCanceledException = true;
-                }
-            }
-
-            if ( !taskCanceledException ) {
-                throw;
-            }
-        }
+        Task.WaitAll(
+            tasks.ToArray()
+        );
 
         foreach ( var task in readerTasks ) {
             task.Result.Should().Be( messageCount );
@@ -177,13 +190,13 @@ public class BroadcastChannelTests : TestBase<BroadcastChannelTests> {
 
         _logger.LogDebug( "BroadcastChannel ended with {ReaderCount} readers", broadcastChannel.Writer.ReaderCount );
         _logger.LogDebug(
-            "AddReaderTask created {ReaderCount} on {UniqueTaskIdCount} threads with an average interval between messages of {AverageInterval} ms",
+            "AddReaderTask created {ReaderCount} readers on {UniqueTaskIdCount} threads with an average interval between messages of {AverageInterval} ms",
             addReaderTaskRunner.Result.readerCount,
             addReaderTaskRunner.Result.uniqueThreadIds.Count,
             Math.Round( addReaderTaskRunner.Result.intervals.Average() / System.TimeSpan.TicksPerMillisecond, 2 ) );
         addReaderTaskRunner.Result.readerCount.Should().BeGreaterThan( 2 );
         addReaderTaskRunner.Result.uniqueThreadIds.Should().HaveCountGreaterThan( 2 );
-        broadcastChannel.Writer.ReaderCount.Should().Be( 3 );
+        broadcastChannel.Writer.ReaderCount.Should().Be( subscriberCount ); // only the life-of-the-test readers from `readerTask` should still be around.
     }
 
 
@@ -258,8 +271,8 @@ public class BroadcastChannelTests : TestBase<BroadcastChannelTests> {
 
     /* Cancellation Tests */
 
-    [SuppressMessage("ReSharper", "IteratorNeverReturns")]
-    private static async IAsyncEnumerable<int> GetIndefinitelyRunningRangeAsync( [EnumeratorCancellation] CancellationToken ct = default) {
+    [ SuppressMessage( "ReSharper", "IteratorNeverReturns" ) ]
+    private static async IAsyncEnumerable<int> GetIndefinitelyRunningRangeAsync( [ EnumeratorCancellation ] CancellationToken ct = default ) {
         int index = 0;
         while ( true ) {
             await Task.Delay( 1000, ct );
@@ -269,7 +282,6 @@ public class BroadcastChannelTests : TestBase<BroadcastChannelTests> {
 
     [ Fact ]
     public async Task CancellationWhileEnumeratingSimpleShouldThrow( ) {
-
         static async Task iterate( ) {
             using var cts = new CancellationTokenSource();
             cts.CancelAfter( 250 );
@@ -286,7 +298,6 @@ public class BroadcastChannelTests : TestBase<BroadcastChannelTests> {
 
     [ Fact ]
     public async Task CancellationWhileWaitingForChannelReadShouldThrowOperationCancelled( ) {
-        
         static async Task iterate( ) {
             System.Threading.Channels.Channel<int> channel = System.Threading.Channels.Channel.CreateBounded<int>( 10 );
             using var                              cts     = new CancellationTokenSource();
@@ -303,6 +314,7 @@ public class BroadcastChannelTests : TestBase<BroadcastChannelTests> {
             // Do something with the index 
             // }
         }
+
         Func<Task> action = iterate;
         await action.Should().ThrowAsync<OperationCanceledException>();
 
@@ -311,7 +323,6 @@ public class BroadcastChannelTests : TestBase<BroadcastChannelTests> {
 
     [ Fact ]
     public async Task CancellationWhileWaitingForChannelReadShouldThrowOperationCancelledxxxx( ) {
-        
         static async Task iterate( ) {
             System.Threading.Channels.Channel<int> channel = System.Threading.Channels.Channel.CreateBounded<int>( 10 );
             using var                              cts     = new CancellationTokenSource();
@@ -329,6 +340,7 @@ public class BroadcastChannelTests : TestBase<BroadcastChannelTests> {
             // Do something with the index 
             // }
         }
+
         Func<Task> action = iterate;
         await action.Should().ThrowAsync<OperationCanceledException>();
 
@@ -337,13 +349,11 @@ public class BroadcastChannelTests : TestBase<BroadcastChannelTests> {
 
     [ Fact ]
     public async Task CancellationWhileEnumeratingShouldNotThrow( ) {
-
         static async Task iterate( ) {
             using var cts = new CancellationTokenSource();
             cts.CancelAfter( 250 );
             var indefinitelyRunningRange = GetIndefinitelyRunningRangeAsync();
-            await foreach (int index in indefinitelyRunningRange.WithCancellation( cts.Token ))
-            {
+            await foreach ( int index in indefinitelyRunningRange.WithCancellation( cts.Token ) ) {
                 // Do something with the index 
             }
         }

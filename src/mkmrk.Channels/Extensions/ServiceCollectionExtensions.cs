@@ -36,12 +36,24 @@ public static class BroadcastChannelServiceCollectionExtensions {
     /// </summary>
     /// <inheritdoc cref="AddBroadcastChannel{TData,TResponse}" path="/remarks" />
     public static IServiceCollection AddBroadcastChannels( this IServiceCollection services ) {
+        // Data and response generic type parameters
         services.AddSingleton( typeof(BroadcastChannel<,>) );
         services.AddSingleton( typeof(BroadcastChannelWriter<,>) );
         services.AddTransient( typeof(BroadcastChannelReader<,>) );
+        services.AddTransient( typeof(IBroadcastChannelReaderSource<,>), typeof(BroadcastChannelReaderSource<,>) ); // URGENT: must test!!!
+        // Data-only generic type parameter
         services.AddSingleton( typeof(BroadcastChannel<>) );
         services.AddSingleton( typeof(BroadcastChannelWriter<>) );
         services.AddTransient( typeof(BroadcastChannelReader<>) );
+        services.AddTransient( typeof(IBroadcastChannelReaderSource<>), typeof(BroadcastChannelReaderSource<>) ); // URGENT: must test!!!
+        // ChannelMux
+        services.AddTransient( typeof(ChannelMux<,>) ); // URGENT: must test!!!
+        services.AddTransient( typeof(ChannelMux<,,>) );
+        services.AddTransient( typeof(ChannelMux<,,,>) );
+        services.AddTransient( typeof(ChannelMux<,,,,>) );
+        services.AddTransient( typeof(ChannelMux<,,,,,>) );
+        services.AddTransient( typeof(ChannelMux<,,,,,,>) );
+        services.AddTransient( typeof(ChannelMux<,,,,,,,>) );
         return services;
     }
 
@@ -56,4 +68,6 @@ public static class BroadcastChannelServiceCollectionExtensions {
         services.AddTransient( typeof(ChannelReader<>), typeof(BroadcastChannelReader<>) );
         return services;
     }
+    
+    
 }

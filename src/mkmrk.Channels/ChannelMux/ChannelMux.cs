@@ -50,7 +50,7 @@ public abstract class ChannelMux {
     private TaskCompletionSource createCompletionTask( ) => new TaskCompletionSource( _runContinuationsAsynchronously ? TaskCreationOptions.RunContinuationsAsynchronously : TaskCreationOptions.None );
 
     /// <summary>
-    /// Common functionality for <see cref="ChannelMux{T1,T2}.ReplaceChannel(mkmrk.Channels.BroadcastChannelWriter{T1,mkmrk.Channels.IBroadcastChannelResponse},bool)"/>
+    /// Common functionality for <see cref="ChannelMux{T1,T2}.ReplaceChannel(mkmrk.Channels.IBroadcastChannelAddReaderProvider{T1},bool)"/>
     /// </summary>
     /// <param name="muxInput"></param>
     /// <typeparam name="TData"></typeparam>
@@ -165,7 +165,7 @@ public abstract class ChannelMux {
         private volatile bool                                     _emptyAndComplete = false;
         private volatile bool                                     _isClosed         = false; // set once the parent's _closedChannels has been incremented by this input
 
-        internal ChannelMuxInput( BroadcastChannelWriter<TData, IBroadcastChannelResponse> channel, ChannelMux parent ) {
+        internal ChannelMuxInput( IBroadcastChannelAddReaderProvider<TData> channel, ChannelMux parent ) {
             _removeWriterCallback = channel.AddReader( this );
             _parent               = parent;
         }

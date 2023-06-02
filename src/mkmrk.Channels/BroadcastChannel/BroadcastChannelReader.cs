@@ -45,7 +45,7 @@ public class BroadcastChannelReader<TData, TResponse> : ChannelReader<TData>, ID
     [ EditorBrowsable( EditorBrowsableState.Never ) ]
     public BroadcastChannelReader( BroadcastChannelWriter<TData, TResponse> broadcastChannelWriter ) {
         ArgumentNullException.ThrowIfNull( broadcastChannelWriter );
-        ( this._dataReader, this._writerHash, this._removeReader, this._responseWriter, this._logger ) = broadcastChannelWriter.RegisterReader( this );
+        ( this._dataReader, this._writerHash, this._removeReader, this._responseWriter, this._logger ) = broadcastChannelWriter.GetNewReaderConfiguration( );
         this._logger.LogTrace( "Registered with Writer: {Writer}", broadcastChannelWriter );
     }
 

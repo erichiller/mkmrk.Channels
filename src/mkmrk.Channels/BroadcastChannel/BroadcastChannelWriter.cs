@@ -20,7 +20,7 @@ internal delegate void RemoveWriterByHashCode( in int hashCode );
 /// </summary>
 /// <typeparam name="TData">Type of data the <see cref="BroadcastChannelWriter{TData,TResponse}"/> will send.</typeparam>
 /// <typeparam name="TResponse">Type of data the <see cref="BroadcastChannelWriter{TData,TResponse}"/> will receive.</typeparam>
-public class BroadcastChannelWriter<TData, TResponse> : ChannelWriter<TData>, IDisposable where TResponse : IBroadcastChannelResponse {
+public class BroadcastChannelWriter<TData, TResponse> : ChannelWriter<TData>, IBroadcastChannelAddReaderProvider<TData>, IDisposable where TResponse : IBroadcastChannelResponse {
     private readonly ChannelReader<TResponse>                          _responseReader;
     private readonly Channel<TResponse>                                _responseChannel;
     private          ImmutableArray<ChannelWriter<TData>>              _outputWriters = ImmutableArray<ChannelWriter<TData>>.Empty;
@@ -54,7 +54,10 @@ public class BroadcastChannelWriter<TData, TResponse> : ChannelWriter<TData>, ID
     [ EditorBrowsable( EditorBrowsableState.Never ) ]
     public BroadcastChannelWriter( ILoggerFactory? loggerFactory = null ) {
         this._responseChannel = Channel.CreateUnbounded<TResponse>(
-            new UnboundedChannelOptions() { SingleReader = true, SingleWriter = false }
+            new UnboundedChannelOptions() {
+                SingleReader = true,
+                SingleWriter = false
+            }
         );
         this._loggerFactory  = loggerFactory;
         this._logger         = loggerFactory?.CreateLogger<BroadcastChannelWriter<TData, TResponse>>() ?? NullLogger<BroadcastChannelWriter<TData, TResponse>>.Instance;
@@ -64,23 +67,32 @@ public class BroadcastChannelWriter<TData, TResponse> : ChannelWriter<TData>, ID
 
     /* ************************************************** */
 
-    internal ReaderConfiguration RegisterReader( BroadcastChannelReader<TData, TResponse> reader ) {
-        Channel<TData> dataChannel = Channel.CreateUnbounded<TData>( new UnboundedChannelOptions() { SingleReader = true, SingleWriter = true } );
-        this._logger.LogTrace( "RegisterReader: {Reader}", reader );
+    /// <summary>
+    /// Returns <see cref="ReaderConfiguration"/> containing necessary resources to be written to by this <see cref="BroadcastChannelWriter{TData,TResponse}"/>
+    /// </summary>
+    internal ReaderConfiguration GetNewReaderConfiguration( ) {
+        Channel<TData> dataChannel = Channel.CreateUnbounded<TData>( new UnboundedChannelOptions() {
+                                                                         SingleReader = true,
+                                                                         SingleWriter = true
+                                                                     } );
         lock ( this._readersLock ) {
             this._outputWriters = this._outputWriters.Add( dataChannel.Writer );
         }
 
+        this._logger.LogTrace( $"{nameof(GetNewReaderConfiguration)} {nameof(ReaderConfiguration.WriterHash)} is {{WriterHash}}", dataChannel.Writer.GetHashCode() );
         return new ReaderConfiguration( DataChannelReader: dataChannel.Reader,
                                         WriterHash: dataChannel.Writer.GetHashCode(),
                                         RemoveOutputWriterCallback: this.removeReader,
                                         ResponseChannelWriter: this._responseChannel.Writer,
                                         Logger: this._loggerFactory?.CreateLogger<BroadcastChannelReader<TData, TResponse>>()
-                                             ?? NullLogger<BroadcastChannelReader<TData, TResponse>>.Instance );
+                                                ?? NullLogger<BroadcastChannelReader<TData, TResponse>>.Instance );
     }
 
     internal BroadcastChannelReader<TData, TResponse> GetReader( ) {
-        Channel<TData> dataChannel = Channel.CreateUnbounded<TData>( new UnboundedChannelOptions() { SingleReader = true, SingleWriter = true } );
+        Channel<TData> dataChannel = Channel.CreateUnbounded<TData>( new UnboundedChannelOptions() {
+                                                                         SingleReader = true,
+                                                                         SingleWriter = true
+                                                                     } );
         BroadcastChannelReader<TData, TResponse> reader = new BroadcastChannelReader<TData, TResponse>(
             dataChannel.Reader,
             dataChannel.Writer.GetHashCode(),
@@ -97,6 +109,9 @@ public class BroadcastChannelWriter<TData, TResponse> : ChannelWriter<TData>, ID
         return reader;
     }
 
+    /// <inheritdoc />
+    RemoveWriterByHashCode IBroadcastChannelAddReaderProvider<TData>.AddReader( ChannelWriter<TData> reader ) => this.AddReader( reader );
+    
     internal RemoveWriterByHashCode AddReader( ChannelWriter<TData> reader ) {
         this._logger.LogTrace( "Created Reader: {Reader}", reader.ToString() );
         lock ( this._readersLock ) {
