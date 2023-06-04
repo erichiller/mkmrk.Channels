@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 using System.Threading.Channels;
 
 using Microsoft.Extensions.Logging;
@@ -7,17 +8,25 @@ namespace mkmrk.Channels;
 
 /// <inheritdoc cref="IBroadcastChannel{TData,TResponse}" />
 public class BroadcastChannel<TData, TResponse> : IBroadcastChannel<TData, TResponse>, IBroadcastChannel<TData> where TResponse : IBroadcastChannelResponse {
-    private          BroadcastChannelWriter<TData, TResponse>? _writer;
-    private readonly ILoggerFactory?                           _loggerFactory;
+    private          IBroadcastChannelWriter<TData, TResponse>? _writer;
+    private readonly ILoggerFactory?                            _loggerFactory;
 
     /// <inheritdoc cref="BroadcastChannel{TData,TResponse}"/>
     public BroadcastChannel( ILoggerFactory? loggerFactory = null ) => this._loggerFactory = loggerFactory;
+
+    /// <inheritdoc cref="BroadcastChannel{TData,TResponse}"/>
+    /// <remarks>For Dependency Injection and should not be used directly.</remarks>
+    [ EditorBrowsable( EditorBrowsableState.Never ) ]
+    public BroadcastChannel( IBroadcastChannelWriter<TData, TResponse> broadcastChannelWriter, ILoggerFactory? loggerFactory = null ) {
+        this._loggerFactory = loggerFactory;
+        this._writer        = broadcastChannelWriter;
+    }
 
     /// <summary>
     /// Get the single <see cref="BroadcastChannelWriter{TData,TResponse}"/>
     /// </summary>
     public IBroadcastChannelWriter<TData, TResponse> Writer
-        => _writer ??= new BroadcastChannelWriter<TData, TResponse>( this, _loggerFactory );
+        => _writer ??= new BroadcastChannelWriter<TData, TResponse>( _loggerFactory );
 
     /// <summary>
     /// Create a new <see cref="BroadcastChannelReader{TData,TResponse}"/> and return it.
@@ -66,4 +75,11 @@ public class BroadcastChannel<TData, TResponse> : IBroadcastChannel<TData, TResp
 public class BroadcastChannel<TData> : BroadcastChannel<TData, IBroadcastChannelResponse> {
     /// <inheritdoc cref="M:mkmrk.Common.BroadcastChannel`2.#ctor(Microsoft.Extensions.Logging.ILoggerFactory)"/>
     public BroadcastChannel( ILoggerFactory? loggerFactory = null ) : base( loggerFactory ) { }
+
+    /// <inheritdoc cref="BroadcastChannel{TData}"/>
+    /// <remarks>For Dependency Injection and should not be used directly.</remarks>
+    [ EditorBrowsable( EditorBrowsableState.Never ) ]
+    public BroadcastChannel( IBroadcastChannelWriter<TData> broadcastChannelWriter, ILoggerFactory? loggerFactory = null ) :
+        base( broadcastChannelWriter as IBroadcastChannelWriter<TData, IBroadcastChannelResponse>
+              ?? ThrowHelper.ThrowInvalidCastException<IBroadcastChannelWriter<TData>, IBroadcastChannelWriter<TData, IBroadcastChannelResponse>>( broadcastChannelWriter ), loggerFactory ) { }
 }

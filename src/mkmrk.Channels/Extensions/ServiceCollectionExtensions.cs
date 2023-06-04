@@ -56,7 +56,7 @@ public static class BroadcastChannelServiceCollectionExtensions {
     }
 
     /// <summary>
-    /// Add the required services for <b><i>any</i></b> requested <see cref="BroadcastChannel{TData,TResponse}"/>
+    /// Add the required services for <b><i>any</i></b> requested BroadcastChannel resource.
     /// </summary>
     /// <remarks>
     /// It is important to note that requesting <c>BroadcastChannel&lt;TData&gt;</c> will

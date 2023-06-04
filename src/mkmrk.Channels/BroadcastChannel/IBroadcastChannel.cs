@@ -38,5 +38,3 @@ public interface IBroadcastChannel<TData> : IBroadcastChannelAddReaderProvider<T
     /// </summary>
     IBroadcastChannelReader<TData> GetReader( );
 }
-
-public interface IBroadcastChannelCC<TData, TResponse> : IBroadcastChannel<TData>, IBroadcastChannel<TData, TResponse> where TResponse : IBroadcastChannelResponse { }

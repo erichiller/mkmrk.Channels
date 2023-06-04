@@ -51,13 +51,9 @@ public class BroadcastChannelWriter<TData, TResponse> : ChannelWriter<TData>, IB
     /// This is only for Dependency Injection and internal creation by <see cref="BroadcastChannel{TData,TResponse}.Writer"/>
     /// and should not be used directly, instead use <see cref="BroadcastChannel{TData,TResponse}.Writer"/>.
     /// </summary>
-    /// <remarks>
-    /// The <see cref="IBroadcastChannel{TData,TResponse}"/> constructor parameter is to pin to a single instance
-    /// when requesting <see cref="IBroadcastChannelWriter{TData,TResponse}"/> before <see cref="IBroadcastChannel{TData,TResponse}"/>
-    /// </remarks>
     [ EditorBrowsable( EditorBrowsableState.Never ) ]
     // ReSharper disable once UnusedParameter.Local
-    public BroadcastChannelWriter( IBroadcastChannel<TData, TResponse> _, ILoggerFactory? loggerFactory = null ) {
+    public BroadcastChannelWriter( ILoggerFactory? loggerFactory = null ) {
         this._responseChannel = Channel.CreateUnbounded<TResponse>(
             new UnboundedChannelOptions() {
                 SingleReader = true,
@@ -293,8 +289,6 @@ public class BroadcastChannelWriter<TData, TResponse> : ChannelWriter<TData>, IB
 public class BroadcastChannelWriter<TData> : BroadcastChannelWriter<TData, IBroadcastChannelResponse> {
     /// <inheritdoc />
     [ EditorBrowsable( EditorBrowsableState.Never ) ]
-    public BroadcastChannelWriter( IBroadcastChannel<TData> _, ILoggerFactory loggerFactory ) :
-        base( _ as IBroadcastChannel<TData, IBroadcastChannelResponse>
-              ?? ThrowHelper.ThrowInvalidCastException<IBroadcastChannel<TData>, IBroadcastChannel<TData, IBroadcastChannelResponse>>(),
-              loggerFactory ) { }
+    public BroadcastChannelWriter( ILoggerFactory loggerFactory ) :
+        base( loggerFactory ) { }
 }
