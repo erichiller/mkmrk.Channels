@@ -47,4 +47,18 @@ internal static class ThrowHelper {
     [ DoesNotReturn ]
     internal static void ThrowKeyNotFoundException( string message ) =>
         throw new System.Collections.Generic.KeyNotFoundException( message );
+    
+    /// <summary>
+    /// Throw <see cref="InvalidCastException"/>, supplying the destination type for the message
+    /// </summary>
+    [ DoesNotReturn ]
+    public static TCast ThrowInvalidCastException<TInput, TCast>( )
+        => throw new InvalidCastException( $"Unable to cast type {typeof(TInput).Name} to type {typeof(TCast).Name}" );
+    
+    /// <summary>
+    /// Throw <see cref="InvalidCastException"/>, supplying the destination type for the message
+    /// </summary>
+    [ DoesNotReturn ]
+    public static TCast ThrowInvalidCastException<TInput, TCast>( TInput? variable )
+        => throw new InvalidCastException( $"Unable to cast type {typeof(TInput).Name} with value {variable} to type {typeof(TCast).Name}" );
 }

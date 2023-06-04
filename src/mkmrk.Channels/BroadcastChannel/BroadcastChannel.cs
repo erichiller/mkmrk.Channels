@@ -5,37 +5,30 @@ using Microsoft.Extensions.Logging;
 
 namespace mkmrk.Channels;
 
-/// <summary>
-/// A FIFO Queue that can have 1 publisher / writer, and 0 to many subscribers / readers.
-/// With a return message channel with message type of <typeparamref name="TResponse"/>.
-/// </summary>
-/// <remarks>
-/// If there are no readers currently, all write activity will simply return as if it was successful.
-/// </remarks>
-/// <typeparam name="TData">Type of the messages which <see cref="BroadcastChannelWriter{TData,TResponse}"/> writes and <see cref="BroadcastChannelReader{TData,TResponse}"/> reads.</typeparam>
-/// <typeparam name="TResponse">Type of the responses which <see cref="BroadcastChannelReader{TData,TResponse}"/> writes and <see cref="BroadcastChannelWriter{TData,TResponse}"/> reads.</typeparam>
-/// <seealso href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.channels.channelwriter-1">ChannelWriter&lt;T&gt;</seealso>
-/// <seealso href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.channels.channelreader-1">ChannelReader&lt;T&gt;</seealso>
-/// <seealso href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.channels.channel-1">Channel&lt;T&gt;</seealso>
-public class BroadcastChannel<TData, TResponse> : IBroadcastChannelAddReaderProvider<TData>, IDisposable where TResponse : IBroadcastChannelResponse {
+/// <inheritdoc cref="IBroadcastChannel{TData,TResponse}" />
+public class BroadcastChannel<TData, TResponse> : IBroadcastChannel<TData, TResponse>, IBroadcastChannel<TData> where TResponse : IBroadcastChannelResponse {
     private          BroadcastChannelWriter<TData, TResponse>? _writer;
     private readonly ILoggerFactory?                           _loggerFactory;
 
     /// <inheritdoc cref="BroadcastChannel{TData,TResponse}"/>
-    public BroadcastChannel( ILoggerFactory? loggerFactory = null) => this._loggerFactory = loggerFactory;
+    public BroadcastChannel( ILoggerFactory? loggerFactory = null ) => this._loggerFactory = loggerFactory;
 
     /// <summary>
     /// Get the single <see cref="BroadcastChannelWriter{TData,TResponse}"/>
     /// </summary>
-    public BroadcastChannelWriter<TData, TResponse> Writer
-        => _writer ??= new BroadcastChannelWriter<TData, TResponse>( _loggerFactory );
+    public IBroadcastChannelWriter<TData, TResponse> Writer
+        => _writer ??= new BroadcastChannelWriter<TData, TResponse>( this, _loggerFactory );
 
     /// <summary>
     /// Create a new <see cref="BroadcastChannelReader{TData,TResponse}"/> and return it.
     /// </summary>
-    public BroadcastChannelReader<TData, TResponse> GetReader( )
+    public IBroadcastChannelReader<TData, TResponse> GetReader( )
         => Writer.GetReader();
-    
+
+    IBroadcastChannelWriter<TData> IBroadcastChannel<TData>.Writer       => this.Writer;
+    IBroadcastChannelReader<TData> IBroadcastChannel<TData>.GetReader( ) => this.GetReader();
+
+
     /// <inheritdoc />
     RemoveWriterByHashCode IBroadcastChannelAddReaderProvider<TData>.AddReader( ChannelWriter<TData> reader ) => this.Writer.AddReader( reader );
 
@@ -62,7 +55,7 @@ public class BroadcastChannel<TData, TResponse> : IBroadcastChannelAddReaderProv
     }
 
     /// <inheritdoc />
-    public override string ToString( ) => $"{this.GetType().GenericTypeShortDescriptor(useShortGenericName: false)} [Hash: {this.GetHashCode()}] [Writer: {this._writer}]";
+    public override string ToString( ) => $"{this.GetType().GenericTypeShortDescriptor( useShortGenericName: false )} [Hash: {this.GetHashCode()}] [Writer: {this._writer}]";
 }
 
 /// <summary>

@@ -72,7 +72,7 @@ public static partial class Program {
             }
         }
 
-        static void producerTask<T>( in BroadcastChannelWriter<T, IBroadcastChannelResponse> writer, in int totalMessages, System.Func<int, T> objectFactory ) {
+        static void producerTask<T>( in IBroadcastChannelWriter<T, IBroadcastChannelResponse> writer, in int totalMessages, System.Func<int, T> objectFactory ) {
             Console.WriteLine( $"{nameof(producerTask)} for type {typeof(T).Name} is beginning, totalMessages: {totalMessages}" );
             try {
                 for ( int i = 0 ; i < totalMessages ; i++ ) {
@@ -148,7 +148,7 @@ public static partial class Program {
             // break;
         }
 
-        static void producerTask<T>( in BroadcastChannelWriter<T, IBroadcastChannelResponse> writer, in int totalMessages, System.Func<int, T> objectFactory ) {
+        static void producerTask<T>( in IBroadcastChannelWriter<T, IBroadcastChannelResponse> writer, in int totalMessages, System.Func<int, T> objectFactory ) {
             int i = 0;
             // Thread.Sleep( Random.Shared.Next( 10, 70 ) ); // startup
             while ( i++ < totalMessages ) {
@@ -255,7 +255,7 @@ public static partial class Program {
             throw new System.Exception( $"Not all messages were read. {nameof(receivedCount1)}: {receivedCount1} ; {nameof(receivedCount2)}: {receivedCount2}" );
         }
 
-        static void producerTask<T>( in BroadcastChannelWriter<T, IBroadcastChannelResponse> writer, in int totalMessages, System.Func<int, T> objectFactory ) {
+        static void producerTask<T>( in IBroadcastChannelWriter<T, IBroadcastChannelResponse> writer, in int totalMessages, System.Func<int, T> objectFactory ) {
             Console.WriteLine( $"{nameof(producerTask)} for type {typeof(T).Name} is beginning, totalMessages: {totalMessages}" );
             try {
                 for ( int i = 0 ; i < totalMessages ; i++ ) {
@@ -342,7 +342,7 @@ public static partial class Program {
             throw new System.Exception( $"Not all messages were read. {nameof(receivedCount1)}: {receivedCount1} ; {nameof(receivedCount2)}: {receivedCount2}" );
         }
 
-        static void producerTask<T>( in BroadcastChannelWriter<T, IBroadcastChannelResponse> writer, in int totalMessages, System.Func<int, T> objectFactory ) {
+        static void producerTask<T>( in IBroadcastChannelWriter<T, IBroadcastChannelResponse> writer, in int totalMessages, System.Func<int, T> objectFactory ) {
             Console.WriteLine( $"{nameof(producerTask)} for type {typeof(T).Name} is beginning, totalMessages: {totalMessages}" );
             try {
                 for ( int i = 0 ; i < totalMessages ; i++ ) {
@@ -429,7 +429,7 @@ public static partial class Program {
     private static int _msgsPerSecond      = 500 / 10       * 20;
     private static int _msgsPerMsgGroup    = _msgsPerSecond / ( 1000 / _msBetweenMsgGroups ); // 500 per 10 seconds
 
-    static void producerTaskWithMsgGrouping<T>( in BroadcastChannelWriter<T, IBroadcastChannelResponse> writer, in Stopwatch stopwatch, in int totalMessages, System.Func<int, T> objectFactory ) {
+    static void producerTaskWithMsgGrouping<T>( in IBroadcastChannelWriter<T, IBroadcastChannelResponse> writer, in Stopwatch stopwatch, in int totalMessages, System.Func<int, T> objectFactory ) {
         int i = 0;
         Console.WriteLine( $"Producer Task Starting at {stopwatch.ElapsedTicks:N0} on {Thread.CurrentThread.ManagedThreadId}" );
         Thread.Sleep( 50 ); // startup

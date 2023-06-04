@@ -13,14 +13,8 @@ using Microsoft.Extensions.Logging.Abstractions;
 
 namespace mkmrk.Channels;
 
-internal delegate void RemoveWriterByHashCode( in int hashCode );
-
-/// <summary>
-///
-/// </summary>
-/// <typeparam name="TData">Type of data the <see cref="BroadcastChannelWriter{TData,TResponse}"/> will send.</typeparam>
-/// <typeparam name="TResponse">Type of data the <see cref="BroadcastChannelWriter{TData,TResponse}"/> will receive.</typeparam>
-public class BroadcastChannelWriter<TData, TResponse> : ChannelWriter<TData>, IBroadcastChannelAddReaderProvider<TData>, IDisposable where TResponse : IBroadcastChannelResponse {
+/// <inheritdoc cref="IBroadcastChannelWriter{TData,TResponse}" />
+public class BroadcastChannelWriter<TData, TResponse> : ChannelWriter<TData>, IBroadcastChannelWriter<TData, TResponse>, IDisposable where TResponse : IBroadcastChannelResponse {
     private readonly ChannelReader<TResponse>                          _responseReader;
     private readonly Channel<TResponse>                                _responseChannel;
     private          ImmutableArray<ChannelWriter<TData>>              _outputWriters = ImmutableArray<ChannelWriter<TData>>.Empty;
@@ -28,9 +22,7 @@ public class BroadcastChannelWriter<TData, TResponse> : ChannelWriter<TData>, IB
     private readonly ILoggerFactory?                                   _loggerFactory;
     private readonly ILogger<BroadcastChannelWriter<TData, TResponse>> _logger;
 
-    /// <summary>
-    /// Return the number of <see cref="BroadcastChannelReader{TData,TResponse}"/>
-    /// </summary>
+    /// <inheritdoc />
     public int ReaderCount {
         get {
             lock ( this._readersLock ) {
@@ -39,6 +31,14 @@ public class BroadcastChannelWriter<TData, TResponse> : ChannelWriter<TData>, IB
         }
     }
 
+    /// <summary>
+    /// Necessary resources to be written to by this <see cref="BroadcastChannelWriter{TData,TResponse}"/>
+    /// </summary>
+    /// <param name="DataChannelReader"><see cref="ChannelReader{T}"/> for <c>TData</c> messages</param>
+    /// <param name="WriterHash">Hash code of writer to use for <paramref name="RemoveOutputWriterCallback"/></param>
+    /// <param name="RemoveOutputWriterCallback">Deregister / Dispose callback</param>
+    /// <param name="ResponseChannelWriter"><see cref="ChannelWriter{T}"/> for <c>TResponse</c> messages</param>
+    /// <param name="Logger"><see cref="BroadcastChannelReader{TData,TResponse}"/> specific Logger</param>
     internal record ReaderConfiguration(
         ChannelReader<TData>                              DataChannelReader,
         int                                               WriterHash,
@@ -51,8 +51,13 @@ public class BroadcastChannelWriter<TData, TResponse> : ChannelWriter<TData>, IB
     /// This is only for Dependency Injection and internal creation by <see cref="BroadcastChannel{TData,TResponse}.Writer"/>
     /// and should not be used directly, instead use <see cref="BroadcastChannel{TData,TResponse}.Writer"/>.
     /// </summary>
+    /// <remarks>
+    /// The <see cref="IBroadcastChannel{TData,TResponse}"/> constructor parameter is to pin to a single instance
+    /// when requesting <see cref="IBroadcastChannelWriter{TData,TResponse}"/> before <see cref="IBroadcastChannel{TData,TResponse}"/>
+    /// </remarks>
     [ EditorBrowsable( EditorBrowsableState.Never ) ]
-    public BroadcastChannelWriter( ILoggerFactory? loggerFactory = null ) {
+    // ReSharper disable once UnusedParameter.Local
+    public BroadcastChannelWriter( IBroadcastChannel<TData, TResponse> _, ILoggerFactory? loggerFactory = null ) {
         this._responseChannel = Channel.CreateUnbounded<TResponse>(
             new UnboundedChannelOptions() {
                 SingleReader = true,
@@ -67,9 +72,7 @@ public class BroadcastChannelWriter<TData, TResponse> : ChannelWriter<TData>, IB
 
     /* ************************************************** */
 
-    /// <summary>
-    /// Returns <see cref="ReaderConfiguration"/> containing necessary resources to be written to by this <see cref="BroadcastChannelWriter{TData,TResponse}"/>
-    /// </summary>
+    /// <inheritdoc cref="IBroadcastChannelWriter{TData,TResponse}.GetNewReaderConfiguration" />
     internal ReaderConfiguration GetNewReaderConfiguration( ) {
         Channel<TData> dataChannel = Channel.CreateUnbounded<TData>( new UnboundedChannelOptions() {
                                                                          SingleReader = true,
@@ -88,7 +91,10 @@ public class BroadcastChannelWriter<TData, TResponse> : ChannelWriter<TData>, IB
                                                 ?? NullLogger<BroadcastChannelReader<TData, TResponse>>.Instance );
     }
 
-    internal BroadcastChannelReader<TData, TResponse> GetReader( ) {
+    /// <inheritdoc />
+    ReaderConfiguration IBroadcastChannelWriter<TData, TResponse>.GetNewReaderConfiguration( ) => this.GetNewReaderConfiguration();
+
+    IBroadcastChannelReader<TData, TResponse> IBroadcastChannelWriter<TData, TResponse>.GetReader( ) {
         Channel<TData> dataChannel = Channel.CreateUnbounded<TData>( new UnboundedChannelOptions() {
                                                                          SingleReader = true,
                                                                          SingleWriter = true
@@ -111,7 +117,7 @@ public class BroadcastChannelWriter<TData, TResponse> : ChannelWriter<TData>, IB
 
     /// <inheritdoc />
     RemoveWriterByHashCode IBroadcastChannelAddReaderProvider<TData>.AddReader( ChannelWriter<TData> reader ) => this.AddReader( reader );
-    
+
     internal RemoveWriterByHashCode AddReader( ChannelWriter<TData> reader ) {
         this._logger.LogTrace( "Created Reader: {Reader}", reader.ToString() );
         lock ( this._readersLock ) {
@@ -195,7 +201,7 @@ public class BroadcastChannelWriter<TData, TResponse> : ChannelWriter<TData>, IB
 
     /* **** Data **** */
 
-    /// <inheritdoc />
+    /// <inheritdoc cref="IBroadcastChannelWriter{TData}.TryComplete"/>
     public override bool TryComplete( Exception? error = null ) {
         bool result = true;
         lock ( this._readersLock ) {
@@ -207,8 +213,7 @@ public class BroadcastChannelWriter<TData, TResponse> : ChannelWriter<TData>, IB
         return result;
     }
 
-    /// <inheritdoc />
-    /// <remarks>This returns <c>true</c> as if it had written regardless of if there was an actual reader to read it.</remarks>
+    /// <inheritdoc cref="IBroadcastChannelWriter{TData}.TryWrite(TData)"/>
     public override bool TryWrite( TData item ) {
         lock ( this._readersLock ) {
             if ( this._outputWriters.Length == 1 ) {
@@ -226,9 +231,8 @@ public class BroadcastChannelWriter<TData, TResponse> : ChannelWriter<TData>, IB
         }
     }
 
-    /// <summary>Write multiple <paramref name="items"/> to reader(s).</summary>
-    /// <remarks>This returns <c>true</c> as if it had written regardless of if there was an actual reader to read it.</remarks>
-    /// <seealso cref="TryWrite(TData)" />
+
+    /// <inheritdoc />
     public bool TryWrite( IEnumerable<TData> items ) {
         lock ( this._readersLock ) {
             TData[] itemsArray = items as TData[] ?? items.ToArray();
@@ -254,11 +258,11 @@ public class BroadcastChannelWriter<TData, TResponse> : ChannelWriter<TData>, IB
         }
     }
 
-    /// <inheritdoc />
+    /// <inheritdoc cref="IBroadcastChannelWriter{TData}.WaitToWriteAsync"/>
     public override ValueTask<bool> WaitToWriteAsync( CancellationToken cancellationToken = default )
         => new ValueTask<bool>( true );
 
-    /// <inheritdoc />
+    /// <inheritdoc cref="IBroadcastChannelWriter{TData}.WriteAsync"/>
     /// <remarks>This runs slower than using <see cref="WaitToWriteAsync"/> and <see cref="TryWrite(TData)"/>.</remarks> 
     public override ValueTask WriteAsync( TData item, CancellationToken cancellationToken = default ) {
         lock ( this._readersLock ) {
@@ -277,7 +281,7 @@ public class BroadcastChannelWriter<TData, TResponse> : ChannelWriter<TData>, IB
     /// <inheritdoc />
     public override string ToString( ) {
         lock ( this._readersLock ) {
-            return $"{this.GetType().GenericTypeShortDescriptor( useShortGenericName: false )} [Hash: {this.GetHashCode()}] [Readers ({ReaderCount}): {this._outputWriters.ToCommaSeparatedString()}]";
+            return $"{this.GetType().GenericTypeShortDescriptor( useShortGenericName: false )} [Hash: {this.GetHashCode()}] [Readers: ({ReaderCount}): {this._outputWriters.Select( w => w.GetHashCode() ).ToCommaSeparatedString()}]";
         }
     }
 }
@@ -289,5 +293,8 @@ public class BroadcastChannelWriter<TData, TResponse> : ChannelWriter<TData>, IB
 public class BroadcastChannelWriter<TData> : BroadcastChannelWriter<TData, IBroadcastChannelResponse> {
     /// <inheritdoc />
     [ EditorBrowsable( EditorBrowsableState.Never ) ]
-    public BroadcastChannelWriter( ILoggerFactory loggerFactory ) : base( loggerFactory ) { }
+    public BroadcastChannelWriter( IBroadcastChannel<TData> _, ILoggerFactory loggerFactory ) :
+        base( _ as IBroadcastChannel<TData, IBroadcastChannelResponse>
+              ?? ThrowHelper.ThrowInvalidCastException<IBroadcastChannel<TData>, IBroadcastChannel<TData, IBroadcastChannelResponse>>(),
+              loggerFactory ) { }
 }

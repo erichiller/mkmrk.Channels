@@ -15,28 +15,11 @@
             `ChannelMux` which is meant to aggregate multiple `BroadcastChannel` of multiple outputs into a single, awaitable object.--&gt;
         </Description>
         <PackageReadmeFile>README.md</PackageReadmeFile>
+<!--        TODO: check the below is added via the top level Directory.Build.props -->
         <!--        <Authors>Eric D. Hiller</Authors>-->
         <!--        <Company>mkmrk</Company>-->
         <!--        <Copyright>Copyright 2023 © Eric D. Hiller</Copyright>-->
         <!--        <PackageLicenseExpression>MIT</PackageLicenseExpression>-->
-        <!--&lt;!&ndash;        TODO: include the below or add a README ?? &ndash;&gt;-->
-        <!--&lt;!&ndash;        <Description>&ndash;&gt;-->
-        <!--&lt;!&ndash;            ## `BroadcastChannel`&ndash;&gt;-->
-
-        <!--&lt;!&ndash;            Is a single input, multi output type where each output is guaranteed to receive all the data from the input.&ndash;&gt;-->
-        <!--&lt;!&ndash;            This is in contrast to `System.Threading.Channels.Channel` or a _Queue_ type where each input is only ever read by a&ndash;&gt;-->
-        <!--&lt;!&ndash;            single output.&ndash;&gt;-->
-
-        <!--&lt;!&ndash;            ## `ChannelMux`&ndash;&gt;-->
-
-        <!--&lt;!&ndash;            `ChannelMux` is meant to aggregate multiple `BroadcastChannel` into a single, awaitable object.&ndash;&gt;-->
-        <!--&lt;!&ndash;            It is a generic type and each type parameter has a dedicated `TryRead(out T data)` method.&ndash;&gt;-->
-        <!--&lt;!&ndash;            `ChannelMuxInput` acts presents as a writer to `BroadcastChannelWriter` and each has a&ndash;&gt;-->
-        <!--&lt;!&ndash;            `SingleProducerSingleConsumerQueue`.&ndash;&gt;-->
-
-        <!--&lt;!&ndash;            Note that each `ChannelMuxInput` is a single input, single output where _single_ means both a single instance writing&ndash;&gt;-->
-        <!--&lt;!&ndash;            and a single instance reading, and thus can be optimized using `SingleProducerSingleConsumerQueue`.&ndash;&gt;-->
-        <!--&lt;!&ndash;        </Description>&ndash;&gt;-->
         <!--        <PackageTags>Channels;Interthread;Queues</PackageTags>-->
         <!--        &lt;!&ndash;<PackageIcon>channels-icon.png</PackageIcon>&ndash;&gt;-->
         <!--        <PackageProjectUrl>https://github.com/erichiller/mkmrk.Channels</PackageProjectUrl>-->
@@ -86,7 +69,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="JetBrains.Annotations" />
+        <PackageReference Include="JetBrains.Annotations" PrivateAssets="All" />
         <PackageReference Include="Microsoft.Extensions.Logging" />
         <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
     </ItemGroup>

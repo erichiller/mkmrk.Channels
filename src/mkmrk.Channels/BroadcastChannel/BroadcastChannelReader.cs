@@ -11,24 +11,20 @@ using Microsoft.Extensions.Logging;
 
 namespace mkmrk.Channels;
 
-/// <summary>
-/// 
-/// </summary>
-/// <typeparam name="TData">Type of data the <see cref="BroadcastChannelReader{TData,TResponse}"/> will receive.</typeparam>
-/// <typeparam name="TResponse">Type of data the <see cref="BroadcastChannelReader{TData,TResponse}"/> will send.</typeparam>
-public class BroadcastChannelReader<TData, TResponse> : ChannelReader<TData>, IDisposable where TResponse : IBroadcastChannelResponse {
-    private readonly RemoveWriterByHashCode _removeReader;
-    private readonly ChannelWriter<TResponse>                                       _responseWriter;
-    private readonly ChannelReader<TData>                                           _dataReader;
-    private          bool                                                           _isDisposed;
-    private readonly int                                                            _writerHash;
-    private readonly ILogger<BroadcastChannelReader<TData, TResponse>>              _logger;
+/// <inheritdoc cref="IBroadcastChannelReader{TData,TResponse}" />
+public class BroadcastChannelReader<TData, TResponse> : ChannelReader<TData>, IBroadcastChannelReader<TData, TResponse> where TResponse : IBroadcastChannelResponse {
+    private readonly RemoveWriterByHashCode                            _removeReader;
+    private readonly ChannelWriter<TResponse>                          _responseWriter;
+    private readonly ChannelReader<TData>                              _dataReader;
+    private          bool                                              _isDisposed;
+    private readonly int                                               _writerHash;
+    private readonly ILogger<BroadcastChannelReader<TData, TResponse>> _logger;
 
     internal BroadcastChannelReader(
         ChannelReader<TData>                              dataReader,
         int                                               inputDataWriterHashCode,
         ChannelWriter<TResponse>                          responseWriter,
-        RemoveWriterByHashCode  removeReaderFunction,
+        RemoveWriterByHashCode                            removeReaderFunction,
         ILogger<BroadcastChannelReader<TData, TResponse>> logger
     ) {
         this._writerHash     = inputDataWriterHashCode;
@@ -39,13 +35,13 @@ public class BroadcastChannelReader<TData, TResponse> : ChannelReader<TData>, ID
     }
 
     /// <summary>
-    /// This is only for Dependency Injection purposes and should not be used by the user. Instead use <see cref="BroadcastChannelWriter{TData,TResponse}.GetReader"/>
+    /// This is only for Dependency Injection purposes and should not be used by the user. Instead use <see cref="IBroadcastChannelWriter{TData,TResponse}.GetReader"/>
     /// </summary>
     /// <param name="broadcastChannelWriter"></param>
     [ EditorBrowsable( EditorBrowsableState.Never ) ]
-    public BroadcastChannelReader( BroadcastChannelWriter<TData, TResponse> broadcastChannelWriter ) {
+    public BroadcastChannelReader( IBroadcastChannelWriter<TData, TResponse> broadcastChannelWriter ) {
         ArgumentNullException.ThrowIfNull( broadcastChannelWriter );
-        ( this._dataReader, this._writerHash, this._removeReader, this._responseWriter, this._logger ) = broadcastChannelWriter.GetNewReaderConfiguration( );
+        ( this._dataReader, this._writerHash, this._removeReader, this._responseWriter, this._logger ) = broadcastChannelWriter.GetNewReaderConfiguration();
         this._logger.LogTrace( "Registered with Writer: {Writer}", broadcastChannelWriter );
     }
 
@@ -57,16 +53,19 @@ public class BroadcastChannelReader<TData, TResponse> : ChannelReader<TData>, ID
     /// <inheritdoc cref="System.Threading.Channels.ChannelReader{T}.TryPeek"/>
     public override bool TryPeek( [ MaybeNullWhen( false ) ] out TData item ) => !this._isDisposed ? this._dataReader.TryPeek( out item ) : ThrowHelper.ThrowObjectDisposedException( nameof(BroadcastChannelReader<TData, TResponse>), out item );
 
-    /// <inheritdoc />
+    /// <inheritdoc cref="System.Threading.Channels.ChannelReader{T}.WaitToReadAsync"/>
     public override ValueTask<bool> WaitToReadAsync( CancellationToken cancellationToken = default ) =>
         !this._isDisposed
             ? this._dataReader.WaitToReadAsync( cancellationToken )
             : ThrowHelper.ThrowObjectDisposedException<ValueTask<bool>>( nameof(BroadcastChannelReader<TData, TResponse>) );
 
+    // warning occurs because there is no `yield` statement, but this is a direct return for ChannelReader<T>.ReadAllAsync
 #pragma warning disable CS8424
-    /// <inheritdoc />
+    // TODO: try: does [AggressiveInlining] help here?
+    /// <inheritdoc cref="System.Threading.Channels.ChannelReader{T}.ReadAllAsync"/>
     public override IAsyncEnumerable<TData> ReadAllAsync( [ EnumeratorCancellation ] CancellationToken cancellationToken = default )
         => !this._isDisposed ? this._dataReader.ReadAllAsync( cancellationToken ) : ThrowHelper.ThrowObjectDisposedException<IAsyncEnumerable<TData>>( nameof(BroadcastChannelReader<TData, TResponse>) );
+
 #pragma warning restore CS8424
 
     /// <inheritdoc cref="ChannelWriter{T}.WriteAsync" />
@@ -126,7 +125,7 @@ public class BroadcastChannelReader<TData, TResponse> : ChannelReader<TData>, ID
     /// <inheritdoc />
     // NULL checking is required here, as this could be called from within the constructor before the properties are set.
     // ReSharper disable ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
-    public override string ToString( ) => $"{this.GetType().GenericTypeShortDescriptor( useShortGenericName: false )} [Hash: {this.GetHashCode()}] [ChannelReader: {this._dataReader?.GetHashCode()}] [ChannelWriter: {this._responseWriter?.GetHashCode()}]";
+    public override string ToString( ) => $"{this.GetType().GenericTypeShortDescriptor( useShortGenericName: false )} [Hash: {this.GetHashCode()}] [Writer Hash: {_writerHash}] [Data Reader: {this._dataReader?.GetHashCode()}] [Response Writer: {this._responseWriter?.GetHashCode()}]";
     // ReSharper restore ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
 }
 
@@ -137,5 +136,7 @@ public class BroadcastChannelReader<TData, TResponse> : ChannelReader<TData>, ID
 public class BroadcastChannelReader<TData> : BroadcastChannelReader<TData, IBroadcastChannelResponse> {
     /// <inheritdoc />
     [ EditorBrowsable( EditorBrowsableState.Never ) ]
-    public BroadcastChannelReader( BroadcastChannelWriter<TData> broadcastChannelWriter ) : base( broadcastChannelWriter ) { }
+    public BroadcastChannelReader( IBroadcastChannelWriter<TData> broadcastChannelWriter )
+        : base( broadcastChannelWriter as IBroadcastChannelWriter<TData, IBroadcastChannelResponse>
+                ?? ThrowHelper.ThrowInvalidCastException<IBroadcastChannelWriter<TData>, IBroadcastChannelWriter<TData, IBroadcastChannelResponse>>( broadcastChannelWriter ) ) { }
 }

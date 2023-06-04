@@ -30,7 +30,7 @@ public class ChannelMuxBenchmarks {
     //         Thread.Sleep( TimeSpan.FromMilliseconds( 100 ) );
     // }
 
-    private static void producerTask<T>( in BroadcastChannelWriter<T, IBroadcastChannelResponse> writer, in int totalMessages, System.Func<int, T> objectFactory ) {
+    private static void producerTask<T>( in IBroadcastChannelWriter<T, IBroadcastChannelResponse> writer, in int totalMessages, System.Func<int, T> objectFactory ) {
         int i = 0;
         while ( i++ < totalMessages ) {
             writer.TryWrite( objectFactory( i ) );

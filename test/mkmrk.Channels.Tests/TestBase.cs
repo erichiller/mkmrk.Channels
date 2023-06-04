@@ -16,6 +16,7 @@ public class TestBase<T> {
     protected delegate void TestOutputHelperWriteLine( string msg );
 
     protected TestOutputHelperWriteLine _writeLine;
+    protected   ITestOutputHelper?        _output;
 
     protected readonly Microsoft.Extensions.Logging.ILogger _logger;
 
@@ -38,8 +39,11 @@ public class TestBase<T> {
         return createLogger<TLogger>();
     }
 
-    protected TestBase( ITestOutputHelper? output, Microsoft.Extensions.Logging.ILogger? logger = null, LogEventLevel logLevel = LogEventLevel.Verbose ) {
-        _logger         = logger ?? ( output is not null ? configureLogging<T>( output, logLevel ) : throw new ArgumentNullException( nameof(output) ) );
+    protected TestBase( ITestOutputHelper? output, 
+                        Microsoft.Extensions.Logging.ILogger? logger = null, 
+                        LogEventLevel logLevel = LogEventLevel.Verbose ) {
+        _output    = output;
+        _logger    = logger ?? ( output is not null ? configureLogging<T>( output, logLevel ) : throw new ArgumentNullException( nameof(output) ) );
         _writeLine = output is not null ? output.WriteLine : System.Console.Out.WriteLine;
     }
 }

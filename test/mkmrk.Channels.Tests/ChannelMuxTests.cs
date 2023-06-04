@@ -49,7 +49,7 @@ public class ChannelMuxTests : TestBase<ChannelMuxTests> {
     public ChannelMuxTests( ITestOutputHelper testOutputHelper ) : base( testOutputHelper, logLevel: LogEventLevel.Information ) { }
 
 
-    private static void producerTaskSimple<T>( in BroadcastChannelWriter<T, IBroadcastChannelResponse> writer, in int totalMessages, System.Func<int, T> objectFactory ) {
+    private static void producerTaskSimple<T>( in IBroadcastChannelWriter<T, IBroadcastChannelResponse> writer, in int totalMessages, System.Func<int, T> objectFactory ) {
         int i = 0;
         while ( i++ < totalMessages ) {
             writer.TryWrite( objectFactory( i ) );
@@ -183,7 +183,7 @@ public class ChannelMuxTests : TestBase<ChannelMuxTests> {
     [ InlineData( false ) ]
     [ Theory ]
     public async Task MuxShouldWaitForBothChannelsToComplete( bool withCancellableCancellationToken ) {
-        static void producerTaskWithDelay<T>( in BroadcastChannelWriter<T, IBroadcastChannelResponse> writer, in int totalMessages, TimeSpan sleepTime, System.Func<int, T> objectFactory ) {
+        static void producerTaskWithDelay<T>( in IBroadcastChannelWriter<T, IBroadcastChannelResponse> writer, in int totalMessages, TimeSpan sleepTime, System.Func<int, T> objectFactory ) {
             Thread.Sleep( sleepTime );
             for ( int i = 0 ; i < totalMessages ; i++ ) {
                 writer.TryWrite( objectFactory( i ) );
@@ -227,9 +227,9 @@ public class ChannelMuxTests : TestBase<ChannelMuxTests> {
 
     [ Fact ]
     public async Task AlternateChannelWriterMethods( ) {
-        static async Task producerTaskUsingAsync<T>( BroadcastChannelWriter<T, IBroadcastChannelResponse> writer, int totalMessages, System.Func<int, T> objectFactory ) {
+        static async Task producerTaskUsingAsync<T>( IBroadcastChannelWriter<T, IBroadcastChannelResponse> writer, int totalMessages, System.Func<int, T> objectFactory ) {
             for ( int i = 0 ; i < totalMessages ; i++ ) {
-                await writer.WriteAsync( objectFactory( i ) );
+                await writer.WriteAsync( objectFactory( i ), CancellationToken.None );
             }
             writer.Complete();
         }
@@ -541,7 +541,7 @@ public class ChannelMuxTests : TestBase<ChannelMuxTests> {
     [ InlineData( false ) ]
     [ Theory ]
     public async Task ChannelComplete_WithException_ShouldThrow_UponAwait( bool withCancellableCancellationToken ) {
-        static void producerTaskCompleteWithErrorAfter<T>( in BroadcastChannelWriter<T, IBroadcastChannelResponse> writer, in int completeWithExceptionAfterCount, System.Func<int, T> objectFactory ) {
+        static void producerTaskCompleteWithErrorAfter<T>( in IBroadcastChannelWriter<T, IBroadcastChannelResponse> writer, in int completeWithExceptionAfterCount, System.Func<int, T> objectFactory ) {
             TimeSpan sleepTime = TimeSpan.FromTicks( 10_000 );
             for ( int i = 0 ; i < completeWithExceptionAfterCount ; i++ ) {
                 writer.TryWrite( objectFactory( i ) );

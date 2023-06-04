@@ -18,7 +18,12 @@ using Xunit.Sdk;
 namespace mkmrk.Channels.Tests;
 
 [ SuppressMessage( "ReSharper", "NotAccessedPositionalProperty.Global" ) ]
-public record ChannelMessage( int Id, string Property1 = "some text" );
+public record ChannelMessage {
+    public int    Id        { get; init; }
+    public string Property1 { get; init; } = "foo value";
+    public ChannelMessage( ) { }
+    public ChannelMessage( int id ) => Id = id;
+}
 
 [ SuppressMessage( "ReSharper", "NotAccessedPositionalProperty.Global" ) ]
 public record ChannelResponse(
@@ -31,7 +36,7 @@ public class BroadcastChannelTests : TestBase<BroadcastChannelTests> {
     public BroadcastChannelTests( ITestOutputHelper testOutputHelper ) : base( testOutputHelper ) { }
 
     static async Task<int> writerTask(
-        BroadcastChannelWriter<ChannelMessage, ChannelResponse> bqWriter,
+        IBroadcastChannelWriter<ChannelMessage, ChannelResponse> bqWriter,
         int                                                     messageCount,
         CancellationToken                                       ct,
         ( int min, int max )?                                   delayMs                        = null,
@@ -61,7 +66,7 @@ public class BroadcastChannelTests : TestBase<BroadcastChannelTests> {
         return -1;
     }
 
-    static async Task<int> writerTryWriteEnumerableTask( BroadcastChannelWriter<ChannelMessage, ChannelResponse> bqWriter, int messageCount, CancellationToken ct, ( int min, int max )? delayMs = null, ILogger? logger = null ) {
+    static async Task<int> writerTryWriteEnumerableTask( IBroadcastChannelWriter<ChannelMessage, ChannelResponse> bqWriter, int messageCount, CancellationToken ct, ( int min, int max )? delayMs = null, ILogger? logger = null ) {
         int i      = 0;
         var random = new Random();
         while ( await bqWriter.WaitToWriteAsync( ct ) ) {
@@ -91,7 +96,7 @@ public class BroadcastChannelTests : TestBase<BroadcastChannelTests> {
         return -1;
     }
 
-    static async Task<int> readerTask( BroadcastChannelReader<ChannelMessage, ChannelResponse> bqReader, int messageCount, string taskName, CancellationToken ct, ILogger? logger = null ) {
+    static async Task<int> readerTask( IBroadcastChannelReader<ChannelMessage, ChannelResponse> bqReader, int messageCount, string taskName, CancellationToken ct, ILogger? logger = null ) {
         int lastMessage = -1;
         logger?.LogDebug( $"[BroadcastChannelReader] start" );
         while ( await bqReader.WaitToReadAsync( ct ) ) {
