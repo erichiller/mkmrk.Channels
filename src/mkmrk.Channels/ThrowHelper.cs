@@ -52,13 +52,6 @@ internal static class ThrowHelper {
     /// Throw <see cref="InvalidCastException"/>, supplying the destination type for the message
     /// </summary>
     [ DoesNotReturn ]
-    public static TCast ThrowInvalidCastException<TInput, TCast>( )
-        => throw new InvalidCastException( $"Unable to cast type {typeof(TInput).Name} to type {typeof(TCast).Name}" );
-    
-    /// <summary>
-    /// Throw <see cref="InvalidCastException"/>, supplying the destination type for the message
-    /// </summary>
-    [ DoesNotReturn ]
-    public static TCast ThrowInvalidCastException<TInput, TCast>( TInput? variable )
+    internal static TCast ThrowInvalidCastException<TInput, TCast>( TInput? variable )
         => throw new InvalidCastException( $"Unable to cast type {typeof(TInput).Name} with value {variable} to type {typeof(TCast).Name}" );
 }

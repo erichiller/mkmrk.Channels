@@ -28,18 +28,21 @@ public class BroadcastChannel<TData, TResponse> : IBroadcastChannel<TData, TResp
     public IBroadcastChannelWriter<TData, TResponse> Writer
         => _writer ??= new BroadcastChannelWriter<TData, TResponse>( _loggerFactory );
 
+    IBroadcastChannelWriter<TData> IBroadcastChannel<TData>.Writer => this.Writer;
+
     /// <summary>
     /// Create a new <see cref="BroadcastChannelReader{TData,TResponse}"/> and return it.
     /// </summary>
     public IBroadcastChannelReader<TData, TResponse> GetReader( )
         => Writer.GetReader();
-
-    IBroadcastChannelWriter<TData> IBroadcastChannel<TData>.Writer       => this.Writer;
     IBroadcastChannelReader<TData> IBroadcastChannel<TData>.GetReader( ) => this.GetReader();
-
 
     /// <inheritdoc />
     RemoveWriterByHashCode IBroadcastChannelAddReaderProvider<TData>.AddReader( ChannelWriter<TData> reader ) => this.Writer.AddReader( reader );
+
+    /// <inheritdoc />
+    public IBroadcastChannelReaderSource<TData, TResponse> GetReaderSource( ) => new BroadcastChannelReaderSource<TData, TResponse>( this.Writer );
+    IBroadcastChannelReaderSource<TData> IBroadcastChannel<TData>.GetReaderSource( ) => this.GetReaderSource();
 
     private bool _isDisposed;
 

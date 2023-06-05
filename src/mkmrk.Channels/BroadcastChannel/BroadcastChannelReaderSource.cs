@@ -36,11 +36,12 @@ public class BroadcastChannelReaderSource<TData, TResponse>
     /// <inheritdoc />
     public IBroadcastChannelReader<TData, TResponse> ToReader( ) => this.GetReader() as BroadcastChannelReader<TData, TResponse> ?? ThrowHelper.ThrowInvalidCastException<IBroadcastChannelReader<TData, TResponse>, BroadcastChannelReader<TData, TResponse>>( this.GetReader() );
 
+    /// <inheritdoc />
+    IBroadcastChannelReader<TData> IBroadcastChannelReaderSource<TData>.ToReader( ) => this.GetReader();
+
     /// <summary>
     /// Enables easy use as <see cref="BroadcastChannelReader{TData,TResponse}"/>
     /// </summary>
-    /// <param name="src"></param>
-    /// <returns></returns>
     public static implicit operator BroadcastChannelReader<TData, TResponse>( BroadcastChannelReaderSource<TData, TResponse> src ) =>
         src.GetReader() as BroadcastChannelReader<TData, TResponse> ?? ThrowHelper.ThrowInvalidCastException<IBroadcastChannelReader<TData, TResponse>, BroadcastChannelReader<TData, TResponse>>( src.GetReader() );
 }
@@ -53,4 +54,14 @@ public class BroadcastChannelReaderSource<TData>
     public BroadcastChannelReaderSource( IBroadcastChannelWriter<TData> broadcastChannelWriter ) :
         base( broadcastChannelWriter as IBroadcastChannelWriter<TData, IBroadcastChannelResponse>
               ?? ThrowHelper.ThrowInvalidCastException<IBroadcastChannelWriter<TData>, IBroadcastChannelWriter<TData, IBroadcastChannelResponse>>( broadcastChannelWriter ) ) { }
+
+
+    /// <inheritdoc />
+    IBroadcastChannelReader<TData> IBroadcastChannelReaderSource<TData>.ToReader( ) => this.GetReader();
+
+    /// <summary>
+    /// Enables easy use as <see cref="BroadcastChannelReader{TData,TResponse}"/>
+    /// </summary>
+    public static implicit operator BroadcastChannelReader<TData>( BroadcastChannelReaderSource<TData> src ) =>
+        src.GetReader() as BroadcastChannelReader<TData> ?? ThrowHelper.ThrowInvalidCastException<IBroadcastChannelReader<TData>, BroadcastChannelReader<TData>>( src.GetReader() );
 }

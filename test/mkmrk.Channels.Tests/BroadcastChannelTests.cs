@@ -11,6 +11,8 @@ using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 
+using Serilog.Events;
+
 using Xunit;
 using Xunit.Abstractions;
 using Xunit.Sdk;
@@ -21,7 +23,7 @@ namespace mkmrk.Channels.Tests;
 public record ChannelMessage {
     public int    Id        { get; init; }
     public string Property1 { get; init; } = "foo value";
-    public ChannelMessage( ) { }
+    protected ChannelMessage( ) { }
     public ChannelMessage( int id ) => Id = id;
 }
 
@@ -33,7 +35,7 @@ public record ChannelResponse(
 ) : IBroadcastChannelResponse;
 
 public class BroadcastChannelTests : TestBase<BroadcastChannelTests> {
-    public BroadcastChannelTests( ITestOutputHelper testOutputHelper ) : base( testOutputHelper ) { }
+    public BroadcastChannelTests( ITestOutputHelper testOutputHelper ) : base( testOutputHelper, logLevel: LogEventLevel.Information ) { }
 
     static async Task<int> writerTask(
         IBroadcastChannelWriter<ChannelMessage, ChannelResponse> bqWriter,
@@ -75,9 +77,9 @@ public class BroadcastChannelTests : TestBase<BroadcastChannelTests> {
                 new ChannelMessage( i++ )
             };
             while ( bqWriter.TryWrite( messages ) ) {
-                logger?.LogDebug( "[BroadcastChannelWriter] wrote messages: {Messages}", new List<ChannelMessage>( messages ) );
+                logger?.LogTrace( "[BroadcastChannelWriter] wrote messages: {Messages}", new List<ChannelMessage>( messages ) );
                 if ( i > messageCount ) {
-                    logger?.LogDebug( "[BroadcastChannelWriter] wrote messageCount: {MessageCount}", i );
+                    logger?.LogTrace( "[BroadcastChannelWriter] wrote messageCount: {MessageCount}", i );
                     return i;
                 }
 
@@ -98,11 +100,11 @@ public class BroadcastChannelTests : TestBase<BroadcastChannelTests> {
 
     static async Task<int> readerTask( IBroadcastChannelReader<ChannelMessage, ChannelResponse> bqReader, int messageCount, string taskName, CancellationToken ct, ILogger? logger = null ) {
         int lastMessage = -1;
-        logger?.LogDebug( $"[BroadcastChannelReader] start" );
+        logger?.LogTrace( $"[BroadcastChannelReader] start" );
         while ( await bqReader.WaitToReadAsync( ct ) ) {
-            logger?.LogDebug( $"[BroadcastChannelReader] start receiving" );
+            logger?.LogTrace( $"[BroadcastChannelReader] start receiving" );
             while ( bqReader.TryRead( out ChannelMessage? result ) ) {
-                logger?.LogDebug( "[BroadcastChannelReader] received messageCount: {MessageId}", result.Id );
+                logger?.LogTrace( "[BroadcastChannelReader] received messageCount: {MessageId}", result.Id );
                 result.Id.Should().Be( lastMessage + 1, "[BroadcastChannelReader] ERROR at message ID" );
                 if ( result.Id >= messageCount ) {
                     await bqReader.WriteResponseAsync( new ChannelResponse( result.Id, taskName ), ct );
@@ -127,11 +129,11 @@ public class BroadcastChannelTests : TestBase<BroadcastChannelTests> {
             long now = DateTime.UtcNow.Ticks;
             intervals.Add( now - lastTime );
             lastTime = now;
-            logger!.LogDebug( "[{MethodName}][{ReaderCount}] looping", nameof(addReaderTask), readerCount );
+            logger!.LogTrace( "[{MethodName}][{ReaderCount}] looping", nameof(addReaderTask), readerCount );
             using ( var reader = broadcastChannel.GetReader() ) {
-                logger?.LogDebug( "[{MethodName}][{ReaderCount}] Waiting to read", nameof(addReaderTask), readerCount );
+                logger?.LogTrace( "[{MethodName}][{ReaderCount}] Waiting to read", nameof(addReaderTask), readerCount );
                 await reader.WaitToReadAsync( ct ); // read at least one message
-                logger?.LogDebug( "[{MethodName}] Waiting to read...found {ReaderCount}", nameof(addReaderTask), readerCount );
+                logger?.LogTrace( "[{MethodName}] Waiting to read...found {ReaderCount}", nameof(addReaderTask), readerCount );
                 // while ( reader.TryRead( out ChannelMessage? message ) ) {
                 if ( !reader.TryRead( out ChannelMessage? message ) ) {
                     // Read a single message
@@ -141,7 +143,7 @@ public class BroadcastChannelTests : TestBase<BroadcastChannelTests> {
                     threadIds.Add( Thread.CurrentThread.ManagedThreadId );
                 }
 
-                logger?.LogDebug( "[{MethodName}][{ReaderCount}] New reader read: {Message}", nameof(addReaderTask), readerCount, message );
+                logger?.LogTrace( "[{MethodName}][{ReaderCount}] New reader read: {Message}", nameof(addReaderTask), readerCount, message );
                 if ( message.Id == expectedMessageCount ) {
                     return ( readerCount, threadIds, intervals );
                 }
@@ -162,6 +164,7 @@ public class BroadcastChannelTests : TestBase<BroadcastChannelTests> {
     [ InlineData( /* maxTestMs: */ 300_000, /* messageCount: */ 10_000, /* subscriberCount: */ 3 ) ]
     [ Theory ]
     public void AddingAndRemovingReadersShouldNeverError( int maxTestMs, int messageCount, int subscriberCount ) {
+        _logger.LogInformation( $"Running {nameof(AddingAndRemovingReadersShouldNeverError)} for {{MaxTestMs}} ms", maxTestMs );
         int          maxWriteInterval   = maxTestMs / messageCount; // was: 100
         ( int, int ) writeIntervalRange = ( 1, maxWriteInterval );
         using var    broadcastChannel   = new BroadcastChannel<ChannelMessage, ChannelResponse>();
@@ -277,7 +280,7 @@ public class BroadcastChannelTests : TestBase<BroadcastChannelTests> {
     /* Cancellation Tests */
 
     [ SuppressMessage( "ReSharper", "IteratorNeverReturns" ) ]
-    private static async IAsyncEnumerable<int> GetIndefinitelyRunningRangeAsync( [ EnumeratorCancellation ] CancellationToken ct = default ) {
+    private static async IAsyncEnumerable<int> getIndefinitelyRunningRangeAsync( [ EnumeratorCancellation ] CancellationToken ct = default ) {
         int index = 0;
         while ( true ) {
             await Task.Delay( 1000, ct );
@@ -290,8 +293,9 @@ public class BroadcastChannelTests : TestBase<BroadcastChannelTests> {
         static async Task iterate( ) {
             using var cts = new CancellationTokenSource();
             cts.CancelAfter( 250 );
-            var indefinitelyRunningRange = GetIndefinitelyRunningRangeAsync();
-            await foreach ( int index in indefinitelyRunningRange.WithCancellation( cts.Token ) ) {
+            // ReSharper disable once MethodSupportsCancellation
+            var indefinitelyRunningRange = getIndefinitelyRunningRangeAsync();
+            await foreach ( int _ in indefinitelyRunningRange.WithCancellation( cts.Token ) ) {
                 // Do something with the index 
             }
         }
@@ -327,38 +331,13 @@ public class BroadcastChannelTests : TestBase<BroadcastChannelTests> {
     }
 
     [ Fact ]
-    public async Task CancellationWhileWaitingForChannelReadShouldThrowOperationCancelledxxxx( ) {
-        static async Task iterate( ) {
-            System.Threading.Channels.Channel<int> channel = System.Threading.Channels.Channel.CreateBounded<int>( 10 );
-            using var                              cts     = new CancellationTokenSource();
-            cts.CancelAfter( 250 );
-
-            var x = await channel.Reader.ReadAsync( cts.Token );
-            // await foreach ( var x in channel.Reader.ReadAllAsync( cts.Token ) ) { }
-            //     if ( filterCallback( enumerator.Current ) ) {
-            //         logger?.LogDebug( "Enumerator.Current (initial): {Current}", enumerator.Current );
-            //         yield return enumerator.Current;
-            //     }
-            // }
-            // var indefinitelyRunningRange = GetIndefinitelyRunningRangeAsync();
-            // await foreach ( int index in indefinitelyRunningRange.WithCancellation( cts.Token ) ) {
-            // Do something with the index 
-            // }
-        }
-
-        Func<Task> action = iterate;
-        await action.Should().ThrowAsync<OperationCanceledException>();
-
-        this._logger.LogTrace( "Reading Complete" );
-    }
-
-    [ Fact ]
     public async Task CancellationWhileEnumeratingShouldNotThrow( ) {
         static async Task iterate( ) {
             using var cts = new CancellationTokenSource();
             cts.CancelAfter( 250 );
-            var indefinitelyRunningRange = GetIndefinitelyRunningRangeAsync();
-            await foreach ( int index in indefinitelyRunningRange.WithCancellation( cts.Token ) ) {
+            // ReSharper disable once MethodSupportsCancellation
+            var indefinitelyRunningRange = getIndefinitelyRunningRangeAsync();
+            await foreach ( int _ in indefinitelyRunningRange.WithCancellation( cts.Token ) ) {
                 // Do something with the index 
             }
         }

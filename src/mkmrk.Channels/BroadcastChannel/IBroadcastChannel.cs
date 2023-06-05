@@ -16,25 +16,41 @@ namespace mkmrk.Channels;
 /// <seealso href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.channels.channel-1">Channel&lt;T&gt;</seealso>
 public interface IBroadcastChannel<TData, TResponse> : IBroadcastChannelAddReaderProvider<TData>, IDisposable where TResponse : IBroadcastChannelResponse {
     /// <summary>
-    /// Get the single <see cref="BroadcastChannelWriter{TData,TResponse}"/>
+    /// Get the single <see cref="IBroadcastChannelWriter{TData,TResponse}"/>.
     /// </summary>
-    IBroadcastChannelWriter<TData, TResponse> Writer { get; }
+    /// <remarks>
+    /// Only one is ever created per <see cref="IBroadcastChannel{TData,TResponse}"/>.
+    /// An instance is created if not present and cached for return in all future requests.
+    /// </remarks>
+    public IBroadcastChannelWriter<TData, TResponse> Writer { get; }
 
     /// <summary>
-    /// Create a new <see cref="BroadcastChannelReader{TData,TResponse}"/> and return it.
+    /// Create a new <see cref="IBroadcastChannelReader{TData,TResponse}"/> and return it.
     /// </summary>
-    IBroadcastChannelReader<TData, TResponse> GetReader( );
+    public IBroadcastChannelReader<TData, TResponse> GetReader( );
+
+    /// <summary>
+    /// Create a new <see cref="IBroadcastChannelReaderSource{TData,TResponse}"/> and return it;
+    /// </summary>
+    /// <returns></returns>
+    public IBroadcastChannelReaderSource<TData, TResponse> GetReaderSource( );
 }
 
 /// <inheritdoc cref="IBroadcastChannel{TData,TResponse}" />
-public interface IBroadcastChannel<TData> : IBroadcastChannelAddReaderProvider<TData>, IDisposable { 
+public interface IBroadcastChannel<TData> : IBroadcastChannelAddReaderProvider<TData>, IDisposable {
     /// <summary>
     /// Get the single <see cref="IBroadcastChannelReader{TData}"/>
     /// </summary>
-    IBroadcastChannelWriter<TData> Writer { get; }
+    public IBroadcastChannelWriter<TData> Writer { get; }
 
     /// <summary>
     /// Create a new <see cref="IBroadcastChannelReader{TData}"/> and return it.
     /// </summary>
-    IBroadcastChannelReader<TData> GetReader( );
+    public IBroadcastChannelReader<TData> GetReader( );
+
+    /// <summary>
+    /// Create a new <see cref="IBroadcastChannelReaderSource{TData}"/> and return it;
+    /// </summary>
+    /// <returns></returns>
+    public IBroadcastChannelReaderSource<TData> GetReaderSource( );
 }

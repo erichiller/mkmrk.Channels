@@ -19,7 +19,12 @@ public interface IBroadcastChannelAddReaderProvider<TData> {
 /// Meant for use as a one time resource allocator of Reader resources for <see cref="BroadcastChannel{TData,TResponse}"/>
 /// </summary>
 /// <typeparam name="TData"></typeparam>
-public interface IBroadcastChannelReaderSource<TData> : IBroadcastChannelAddReaderProvider<TData> { }
+public interface IBroadcastChannelReaderSource<TData> : IBroadcastChannelAddReaderProvider<TData> { 
+    /// <summary>
+    /// Perform conversion to <see cref="IBroadcastChannelReaderSource{TData, TResponse}"/>
+    /// </summary>
+    public IBroadcastChannelReader<TData> ToReader( );
+}
 
 /// <inheritdoc cref="IBroadcastChannelReaderSource{TData}"/>
 /// <typeparam name="TResponse">
@@ -33,6 +38,6 @@ public interface IBroadcastChannelReaderSource<TData, TResponse> :
     /// <summary>
     /// Perform conversion to <see cref="IBroadcastChannelReaderSource{TData, TResponse}"/>
     /// </summary>
-    public IBroadcastChannelReader<TData, TResponse> ToReader( );
+    public new IBroadcastChannelReader<TData, TResponse> ToReader( );
 }
 #pragma warning restore CS1712

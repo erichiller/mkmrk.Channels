@@ -6,8 +6,10 @@
         <Company>mkmrk</Company>
         <Copyright>Copyright 2023 © Eric D. Hiller</Copyright>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <PackageTags>Channels;Interthread;Queues</PackageTags>
+        <PackageTags>Channels;Interthread;Queues;Hosting;Dependency Injection</PackageTags>
         <!--<PackageIcon>channels-icon.png</PackageIcon>-->
+        <!-- TODO: SET RELEASE NOTES TO COMMIT PAGE IN GITHUB AS A TEMP SOLUTION -->
+        <!--<PackageReleaseNotes></PackageReleaseNotes>-->
         <PackageProjectUrl>https://github.com/erichiller/mkmrk.Channels</PackageProjectUrl>
         <RepositoryUrl>https://github.com/erichiller/mkmrk.Channels</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
@@ -16,7 +18,7 @@
         <IncludeSymbols>true</IncludeSymbols>
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     </PropertyGroup>
-    
+
     <PropertyGroup>
         <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     </PropertyGroup>
