@@ -6,7 +6,6 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
-    <!--    -->
     <!-- Nuget package metadata -->
     <PropertyGroup>
         <PackageId>mkmrk.Channels</PackageId>
@@ -15,11 +14,8 @@
             is guaranteed to receive all the data from the input.
             `ChannelMux` is used to aggregate multiple `BroadcastChannel` of multiple outputs into a single, awaitable object.
         </Description>
-        <!-- TODO: Check that the TOP level Directory.Build.props carry over here. -->
-        <!-- TODO: Check that the plus before the commit is properly applied -->
-        <PackageVersion>1.0.0-beta.$([System.DateTime]::Now.ToString("yyyy-MM-dd.Hmm"))$(SourceRevisionId)</PackageVersion>
         <PackageReadmeFile>README.md</PackageReadmeFile>
-        <!--        TODO: check the below is added via the top level Directory.Build.props -->
+        <!-- TODO: Check that the TOP level Directory.Build.props carry over here. -->
     </PropertyGroup>
 
     <PropertyGroup>
@@ -32,33 +28,37 @@
         <!--<ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>-->
     </PropertyGroup>
 
-    <ItemGroup>
-        <None Include="../../README.md" Pack="true" PackagePath="\" />
-    </ItemGroup>
-
-
     <Target Name="SetSourceRevisionId" BeforeTargets="InitializeSourceControlInformation">
         <Exec Command="git log -n1 --format=format:'%h'" ConsoleToMSBuild="True" IgnoreExitCode="False">
-            <Output PropertyName="SourceRevisionId" TaskParameter="ConsoleOutput" />
+            <Output PropertyName="SourceRevisionId" TaskParameter="ConsoleOutput"/>
+            <Output PropertyName="TwentyTwo" TaskParameter="ConsoleOutput"/>
         </Exec>
-        <Message Importance="high" Text="Project File Name = $(MSBuildProjectFile)" />
-        <Message Text="Project Extension = $(MSBuildProjectExtension)" />
-        <Message Text="Project SourceRevisionId = $(SourceRevisionId)" />
+        <PropertyGroup>
+            <Version>$([System.DateTime]::Now.ToString("yyyy.MM.dd.HHmm"))</Version>
+            <InformationalVersion>$([System.DateTime]::Now.ToString("yyyy.MM.dd.HHmmss"))+$(SourceRevisionId)</InformationalVersion>
+            <PackageVersion>1.0.0-beta.$([System.DateTime]::Now.ToString("yyyy-MM-dd.Hmm"))+$(SourceRevisionId)</PackageVersion>
+        </PropertyGroup>
+        <Message Importance="high" Text="Project File Name    = $(MSBuildProjectFile)"/>
+        <Message Importance="high" Text="Project Extension    = $(MSBuildProjectExtension)"/>
+        <Message Importance="high" Text="SourceRevisionId     = $(SourceRevisionId)"/>
+        <Message Importance="high" Text="InformationalVersion = $(InformationalVersion)"/>
+        <Message Importance="high" Text="PackageVersion       = $(PackageVersion)"/>
+        <Message Importance="high" Text="RepositoryUrl        = $(RepositoryUrl)"/>
     </Target>
-    <PropertyGroup>
-        <Version>$([System.DateTime]::Now.ToString("yyyy.MM.dd.HHmm"))</Version>
-        <InformationalVersion>$([System.DateTime]::Now.ToString("yyyy.MM.dd.HHmmss"))$(SourceRevisionId)</InformationalVersion>
-    </PropertyGroup>
+
+    <ItemGroup>
+        <None Include="../../README.md" Pack="true" PackagePath="\"/>
+    </ItemGroup>
 
     <ItemGroup Condition=" '$(TargetFramework)' == 'net8.0' ">
-        <PackageReference Include="Microsoft.CodeAnalysis.PublicApiAnalyzers" PrivateAssets="All" />
+        <PackageReference Include="Microsoft.CodeAnalysis.PublicApiAnalyzers" PrivateAssets="All"/>
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="All" />
-        <PackageReference Include="JetBrains.Annotations" PrivateAssets="All" />
-        
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
-        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+        <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="All"/>
+        <PackageReference Include="JetBrains.Annotations" PrivateAssets="All"/>
+
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions"/>
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions"/>
     </ItemGroup>
 
 </Project>

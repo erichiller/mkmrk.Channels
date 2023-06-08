@@ -6,7 +6,7 @@
         <Company>mkmrk</Company>
         <Copyright>Copyright 2023 © Eric D. Hiller</Copyright>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <PackageTags>Channels;Interthread;Queues;Hosting;Dependency Injection</PackageTags>
+        <PackageTags>Channels;Queues;Hosting;Dependency Injection;Interthread;Tasks;Threading;Async;Asynchronous Communications;</PackageTags>
         <!--<PackageIcon>channels-icon.png</PackageIcon>-->
         <!-- TODO: SET RELEASE NOTES TO COMMIT PAGE IN GITHUB AS A TEMP SOLUTION -->
         <!--<PackageReleaseNotes></PackageReleaseNotes>-->

@@ -9,7 +9,8 @@ using System.Threading.Tasks;
 namespace mkmrk.Channels;
 
 /// <inheritdoc cref="IBroadcastChannelReader{TData,TResponse}" />
-public interface IBroadcastChannelReader<TData> : IDisposable {
+public interface IBroadcastChannelReader<TData> : IDisposable,
+                                                  IConvertibleFromBroadcastChannelReaderSource<IBroadcastChannelReaderSource<TData>, BroadcastChannelReader<TData>, TData> {
     /// <inheritdoc cref="ChannelReader{T}.WaitToReadAsync" />
     public ValueTask<bool> WaitToReadAsync( CancellationToken cancellationToken = default );
 
@@ -24,6 +25,20 @@ public interface IBroadcastChannelReader<TData> : IDisposable {
     /// <inheritdoc cref="System.Threading.Channels.ChannelReader{T}.TryRead"/>
     public bool TryRead( [ MaybeNullWhen( false ) ] out TData item );
 
+    /// <inheritdoc cref="System.Threading.Channels.ChannelReader{T}.Completion"/>
+    public Task Completion { get; }
+}
+
+/// <summary>
+/// Conversion operator to <typeparamref name="TOutput"/> an implementation of <see cref="IBroadcastChannelReader{TData}"/>,
+/// from <typeparamref name="TInput"/> an implementation of <see cref="IBroadcastChannelReaderSource{TData}"/>.
+/// This allows for easy conversion of <see cref="IBroadcastChannelReaderSource{TData}"/> to <see cref="IBroadcastChannelReader{TData}"/>.
+/// </summary>
+public interface IConvertibleFromBroadcastChannelReaderSource<in TInput, out TOutput, TData>
+    where TInput : IBroadcastChannelReaderSource<TData>
+    where TOutput : class, IBroadcastChannelReader<TData>, IConvertibleFromBroadcastChannelReaderSource<TInput, TOutput, TData> {
+    /// <inheritdoc cref="IConvertibleFromBroadcastChannelReaderSource{TInput,TOutput,TData}" />
+    public static virtual implicit operator TOutput( TInput source ) => ( source.ToReader() as TOutput )!;
 }
 
 // TODO: improve docs
@@ -33,8 +48,6 @@ public interface IBroadcastChannelReader<TData> : IDisposable {
 /// <typeparam name="TData">Type of data the <see cref="BroadcastChannelReader{TData,TResponse}"/> will receive.</typeparam>
 /// <typeparam name="TResponse">Type of data the <see cref="BroadcastChannelReader{TData,TResponse}"/> will send.</typeparam>
 public interface IBroadcastChannelReader<TData, TResponse> : IBroadcastChannelReader<TData>, IDisposable {
-
     /// <inheritdoc cref="ChannelWriter{T}.WriteAsync" />
     public ValueTask WriteResponseAsync( TResponse response, CancellationToken cancellationToken = default );
-
 }

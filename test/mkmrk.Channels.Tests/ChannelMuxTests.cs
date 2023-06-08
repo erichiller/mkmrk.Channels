@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
@@ -99,8 +100,10 @@ public class ChannelMuxTests : TestBase<ChannelMuxTests> {
     [ InlineData( false ) ]
     [ Theory ]
     public async Task ChannelMuxLatencyTest( bool withCancellableCancellationToken ) {
-        const int                                                msgCountChannel1  = 50;
-        const int                                                groups            = 10;
+        // const int                                                msgCountChannel1  = 50;
+        // const int                                                groups            = 10;
+        const int                                                msgCountChannel1  = 1_000;
+        const int                                                groups            = 200;
         const int                                                groupSize         = msgCountChannel1 / groups;
         const int                                                sleepMs           = 4;
         BroadcastChannel<MessageWithSendTicksA>                  channel1          = new ();
@@ -159,7 +162,7 @@ public class ChannelMuxTests : TestBase<ChannelMuxTests> {
                 _logger.LogDebug( "[Loop: {Loop}] Received {Id}:{Group} at {Ticks:N0}, message Ticks is {MsgTicks:N0}, delta is {Delta:N0} ( {DeltaMs:N3}ms ). SinceLoopStartTicks: {SinceLoopStartTicks:N0} ( {SinceLoopStartMs:N3}ms )",
                                   loops, a.Id, a.Group, ticksNow, a.Ticks, deltaTicks, ( ( double )ticksNow - ( double )a.Ticks ) / _1ms, ticksNow - loopStartTicks, ( ticksNow - loopStartTicks ) / _1ms );
                 if ( deltaTicks > maxAllowedLatency && receivedCountA > 5 ) {
-                    _logger.LogError( "[Loop: {Loop}, {Id}:{Group}] TOO LATENT: {DeltaTicks:N0} !!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", loops, a.Id, a.Group, deltaTicks );
+                    _logger.LogError( "[Loop: {Loop}, {Id}:{Group}] LATENCY GREATER THAN {MaxLatency:N3}ms: {DeltaTicks:N6}ms !!!!!!!!!!!!!!!!!!!!!!!!!!!!!", loops, a.Id, a.Group, maxAllowedLatency / (double)_1ms, deltaTicks / (double)_1ms );
                     errorIds.Add( a );
                 }
                 messageLatencies[ receivedCountA ] = deltaTicks;
@@ -167,7 +170,6 @@ public class ChannelMuxTests : TestBase<ChannelMuxTests> {
             }
             loops++;
         }
-        errorIds.Should().BeEmpty();
         await producer1;
         receivedCountA.Should().Be( msgCountChannel1 );
         mux.Completion.IsCompleted.Should().BeTrue();
@@ -176,7 +178,9 @@ public class ChannelMuxTests : TestBase<ChannelMuxTests> {
         if ( receivedCountA != msgCountChannel1 ) {
             throw new System.Exception( $"Not all messages were read. {nameof(receivedCountA)}: {receivedCountA}" );
         }
-        _logger.LogInformation( "Latencies: {Latencies}", String.Join( ", ", messageLatencies ) );
+        _logger.LogInformation( "Latency Avg: {Avg:N3}ms Min: {Min:N3}ms Max: {Max:N3}ms Top 5: {Top5}", messageLatencies.Average() / (double)_1ms, messageLatencies.Min() / (double)_1ms, messageLatencies.Max() / (double)_1ms, String.Join( ", ",messageLatencies.OrderDescending().Take( 5 ).Select( n => ((double)n / (double)_1ms).ToString("N3") +"ms" )) );
+        // _logger.LogInformation( "Latencies: {Latencies}", String.Join( ", ", messageLatencies ) );
+        errorIds.Should().BeEmpty();
     }
 
     [ InlineData( true ) ]

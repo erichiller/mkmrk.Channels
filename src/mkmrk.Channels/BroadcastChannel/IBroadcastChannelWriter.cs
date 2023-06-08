@@ -5,6 +5,10 @@ using System.Threading.Channels;
 
 namespace mkmrk.Channels;
 
+/// <summary>
+/// Callback to remove <see cref="IBroadcastChannelReader{TData}"/> with the hash code specified in <paramref name="hashCode"/> from
+/// the array of readers maintained by <see cref="IBroadcastChannelWriter{TData,TResponse}"/>.
+/// </summary>
 internal delegate void RemoveWriterByHashCode( in int hashCode );
 
 /// <inheritdoc cref="IBroadcastChannelWriter{TData,TResponse}" />

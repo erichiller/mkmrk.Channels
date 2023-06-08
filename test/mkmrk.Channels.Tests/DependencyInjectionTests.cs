@@ -107,6 +107,24 @@ public sealed class DependencyInjectionTests : TestBase<DependencyInjectionTests
     }
 
     [ Fact ]
+    public void IBroadcastChannelReaderSource_ShouldBe_ConvertibleTo_IBroadcastChannelReader( ) {
+        using IHost host = getHost().ConfigureServices(
+            services => {
+                services.AddBroadcastChannel<ChannelMessageSubA, ChannelResponse>();
+                services.AddBroadcastChannels();
+            } ).Build();
+        var writer = host.Services.GetRequiredService<IBroadcastChannelWriter<ChannelMessageSubA, ChannelResponse>>();
+        writer.Should().BeSameAs( host.Services.GetRequiredService<IBroadcastChannelWriter<ChannelMessageSubA, ChannelResponse>>() );
+        writer.ReaderCount.Should().Be( 0 );
+        host.Services.GetRequiredService<IBroadcastChannelReader<ChannelMessageSubA, ChannelResponse>>();
+        writer.ReaderCount.Should().Be( 1 );
+        host.Services.GetRequiredService<IBroadcastChannelReader<ChannelMessageSubA>>();
+        writer.ReaderCount.Should().Be( 2 );
+        IBroadcastChannelReader<ChannelMessageSubA> readerFromInterfaceSource = host.Services.GetRequiredService<IBroadcastChannelReaderSource<ChannelMessageSubA>>().ToReader();
+        writer.ReaderCount.Should().Be( 3 );
+    }
+
+    [ Fact ]
     public void ReadersOfSameType_ShouldHaveSame_BroadcastChannelWriter_WhenRequestedLast( ) {
         using IHost host = getHost().ConfigureServices(
             services => {

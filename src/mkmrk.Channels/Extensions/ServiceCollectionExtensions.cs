@@ -46,7 +46,7 @@ public static class BroadcastChannelServiceCollectionExtensions {
         } );
 
         // reader sources
-        services.TryAddTransient<BroadcastChannelReaderSource<TData, TResponse>, BroadcastChannelReaderSource<TData, TResponse>>(); // concrete so that the implicit conversion to BroadcastChannelReader can be used.
+        services.TryAddTransient<BroadcastChannelReaderSource<TData, TResponse>>(); // concrete so that the implicit conversion to BroadcastChannelReader can be used.
         services.TryAddTransient<IBroadcastChannelReaderSource<TData, TResponse>, BroadcastChannelReaderSource<TData, TResponse>>();
         services.TryAddTransient<IBroadcastChannelReaderSource<TData>, BroadcastChannelReaderSource<TData, TResponse>>();
         services.TryAddTransient<IBroadcastChannelAddReaderProvider<TData>, BroadcastChannelReaderSource<TData, TResponse>>();
