@@ -53,12 +53,14 @@ public sealed class HostingTests : TestBase<HostingTests>, IDisposable {
                                              //     options.IncludeScopes     = true;
                                              // } )
                                              // .AddConsole( opts => opts.TimestampFormat = @"HH:mm:ss.ffff " )
+                                             /*
                                              .AddSimpleConsole( options => {
                                                  options.TimestampFormat = @"HH:mm:ss.ffff ";
                                                  // options.SingleLine      = true;
                                                  options.IncludeScopes = true;
                                                  // options.ColorBehavior   = LoggerColorBehavior.Default;
                                              } )
+                                             */
                                              .SetMinimumLevel( LogLevel.Trace )
                                              // Serilog can be added as well
                                              .AddSerilog( loggerConfiguration, dispose: true )

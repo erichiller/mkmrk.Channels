@@ -37,6 +37,8 @@ msbuild.log
 msbuild.err
 msbuild.wrn
 
+TestResults
+
 # Benchmark.Net
 #BenchmarkDotNet.Artifacts/
 /**/BenchmarkDotNet.Artifacts/*.log

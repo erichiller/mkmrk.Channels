@@ -22,10 +22,10 @@ public sealed class DependencyInjectionTests : TestBase<DependencyInjectionTests
                                                services.AddLogging( logBuilder =>
                                                                         logBuilder
                                                                             .ClearProviders()
-                                                                            .AddSimpleConsole( options => {
-                                                                                options.TimestampFormat = @"HH:mm:ss.ffff ";
-                                                                                options.IncludeScopes   = true;
-                                                                            } )
+                                                                            // .AddSimpleConsole( options => {
+                                                                            //     options.TimestampFormat = @"HH:mm:ss.ffff ";
+                                                                            //     options.IncludeScopes   = true;
+                                                                            // } )
                                                                             .SetMinimumLevel( LogLevel.Trace )
                                                );
                                            } );

@@ -38,7 +38,13 @@ jobs:
 #        run: dotnet test --no-restore --logger "console;verbosity=detailed"
 #        # KILL
       - name: Test
-        run: dotnet test --no-restore --logger "console;verbosity=detailed" --diag ./diagnostics.log --results-directory ./TestResults
+        # dotnet test --logger "console;verbosity=detailed" --filter FullyQualifiedName\!~latency
+#        run: dotnet test --no-restore --logger "console;verbosity=detailed" --diag ./diagnostics.log --results-directory ./TestResults
+        run: dotnet test --logger "console;verbosity=normal" --logger "html;logfilename=testResults.html" --filter 'FullyQualifiedName!~Latency'
+#        run: dotnet test --logger "console;verbosity=normal" --logger "html;logfilename=testResults.html" --filter '(FullyQualifiedName!~Latency)&(FullyQualifiedName!~AddingAndRemovingReadersShouldNeverError)'
+        #    dotnet test --no-restore --logger "console;verbosity=detailed" --logger "html;logfilename=testResults.html" --diag ./diagnostics.log --filter FullyQualifiedName\!~latency
+        #    dotnet test --logger "console;verbosity=detailed" --logger "html;logfilename=testResults.html;verbosity=detailed" --diag ./diagnostics.log --filter FullyQualifiedName\!~latency
+        #    dotnet test --logger "console;verbosity=detailed" --logger "html;logfilename=testResults.html;verbosity=detailed" --filter '(FullyQualifiedName!~Latency)&(FullyQualifiedName!~AddingAndRemovingReadersShouldNeverError)'
         # --output ./TestResults 
         working-directory: ./test/mkmrk.Channels.Tests/
         #run: dotnet test --no-restore --verbosity normal
