@@ -20,7 +20,7 @@ jobs:
       pull-requests: write
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       
       # Analyze repositories source metrics:
       # Create (or update) CODE_METRICS.md file.
@@ -32,6 +32,9 @@ jobs:
           name: ${{ github.repository }}
           branch: ${{ github.ref }}
           dir: ${{ './github-actions/DotNet.GitHubAction' }}
+
+      - name: Lookaround
+        run: ls -la
 
       # https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net#packaging-workflow-data-as-artifacts
       - name: Upload dotnet test results
