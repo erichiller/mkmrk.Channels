@@ -75,6 +75,8 @@ public class BroadcastChannelWriter<TData, TResponse> : ChannelWriter<TData>, IB
                                                                          SingleWriter = true
                                                                      } );
         lock ( this._readersLock ) {
+            // TODO: try the below ;; TEST IT! -- use in any other writes to _outputWriters ?
+            // ImmutableInterlocked.InterlockedExchange( ref this._outputWriters, this._outputWriters.Add( dataChannel.Writer )  );
             this._outputWriters = this._outputWriters.Add( dataChannel.Writer );
         }
 

@@ -1,0 +1,58 @@
+# https://learn.microsoft.com/en-us/dotnet/devops/dotnet-test-github-action
+# 
+name: Channel Tests
+
+on:
+  push:
+    paths:
+      - '**.cs'
+      - '**.csproj'
+# TODO: filter by paths ./src/mkmrk.Channels only
+# (so I don't use up all the runner minutes)
+
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    #strategy:
+    #  matrix:
+    #    dotnet-version: ['7.0.x']
+    steps:
+      # action checks-out your repository under $GITHUB_WORKSPACE, so your workflow can access it.
+      # https://github.com/actions/checkout
+      - uses: actions/checkout@v3
+      # 
+      - name: Setup .NET Core SDK ${{ matrix.dotnet-version }}
+        uses: actions/setup-dotnet@v3
+        with:
+          global-json-file: ./global.json
+          # Setup the Nuget feed
+          # source-url: https://nuget.pkg.github.com/<owner>/index.json
+          # TODO: I think if I set this, I don't have to see it EXPLICITLY in the below 
+      - name: Install dependencies
+        run: dotnet restore
+      - name: Build
+        run: dotnet build --configuration Release --no-restore
+      - name: Test
+        run: dotnet test --no-restore --logger "console;verbosity=detailed"
+        working-directory: ./src/mkmrk.Channels/
+        #run: dotnet test --no-restore --verbosity normal
+        #run: dotnet test --no-restore --logger "console;verbosity=detailed" --filter "MarketDepth_SaveToDbTest" ./src/DataSource.Tests/DataSource.Tests.csproj
+        # or
+        # https://learn.microsoft.com/en-us/dotnet/core/tools/dotnet-test#filter-option-details
+        # 
+        # TODO: could add something like this to not do PostgreSQL tests:
+        #   --filter Category!=Sql
+        # TODO: eventually, it'd be nice to fully test, including setting up a PostgreSQL instance
+        # URGENT: UNTESTED
+      # URGENT: DISABLE THE BELOW
+      # https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net#packaging-workflow-data-as-artifacts
+      - name: Upload dotnet test results
+        uses: actions/upload-artifact@v3
+        with:
+          name: dotnet-test-results
+          path: TestResults
+        # Use always() to always run this step to publish test results when there are test failures
+        if: ${{ always() }}
+#
+#
