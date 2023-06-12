@@ -34,6 +34,12 @@ jobs:
         run: dotnet restore
       - name: Build
         run: dotnet build --configuration Release --no-restore
+      - name: Lookaround
+        run: ls -la && ls -la ./src && ls -la ./src/mkmrk.Channels
+        # KILL
+      - name: Test at Root
+        run: dotnet test --no-restore --logger "console;verbosity=detailed"
+        # KILL
       - name: Test
         run: dotnet test --no-restore --logger "console;verbosity=detailed"
         working-directory: ./src/mkmrk.Channels/
