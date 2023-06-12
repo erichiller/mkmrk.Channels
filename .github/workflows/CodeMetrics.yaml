@@ -1,0 +1,43 @@
+name: '.NET code metrics'
+
+on:
+  workflow_dispatch:
+  push:
+#    branches: [ main ]
+#    paths:
+#      - '**.cs'
+#      - '**.csproj'
+    paths-ignore:
+      # Ignore CODE_METRICS.md and README.md files
+      - '**.md'
+
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - uses: actions/checkout@v2
+      
+      # Analyze repositories source metrics:
+      # Create (or update) CODE_METRICS.md file.
+      - name: .NET code metrics
+        id: dotnet-code-metrics
+        uses: dotnet/samples/github-actions/DotNet.GitHubAction@main
+        with:
+          owner: ${{ github.repository_owner }}
+          name: ${{ github.repository }}
+          branch: ${{ github.ref }}
+          dir: ${{ './github-actions/DotNet.GitHubAction' }}
+
+      # https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net#packaging-workflow-data-as-artifacts
+      - name: Upload dotnet test results
+        uses: actions/upload-artifact@v3
+        with:
+          name: dotnet-test-results
+          path: '*.md'
+        # Use always() to always run this step to publish test results when there are test failures
+        if: ${{ always() }}

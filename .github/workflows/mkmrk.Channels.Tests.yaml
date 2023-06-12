@@ -27,6 +27,8 @@ jobs:
           # Setup the Nuget feed
           # source-url: https://nuget.pkg.github.com/<owner>/index.json
           # TODO: I think if I set this, I don't have to see it EXPLICITLY in the below 
+      - name: Get .NET information
+        run: dotnet --info
       - name: Install dependencies
         run: dotnet restore
       - name: Build
@@ -40,7 +42,7 @@ jobs:
       - name: Test
         # dotnet test --logger "console;verbosity=detailed" --filter FullyQualifiedName\!~latency
 #        run: dotnet test --no-restore --logger "console;verbosity=detailed" --diag ./diagnostics.log --results-directory ./TestResults
-        run: dotnet test --logger "console;verbosity=normal" --logger "html;logfilename=testResults.html" --filter 'FullyQualifiedName!~Latency'
+        run: dotnet test --logger "console;verbosity=normal" --logger "html;logfilename=testResults.html" --logger:"trx;LogFilePrefix=testResults" --filter 'FullyQualifiedName!~Latency'
 #        run: dotnet test --logger "console;verbosity=normal" --logger "html;logfilename=testResults.html" --filter '(FullyQualifiedName!~Latency)&(FullyQualifiedName!~AddingAndRemovingReadersShouldNeverError)'
         #    dotnet test --no-restore --logger "console;verbosity=detailed" --logger "html;logfilename=testResults.html" --diag ./diagnostics.log --filter FullyQualifiedName\!~latency
         #    dotnet test --logger "console;verbosity=detailed" --logger "html;logfilename=testResults.html;verbosity=detailed" --diag ./diagnostics.log --filter FullyQualifiedName\!~latency
@@ -63,8 +65,8 @@ jobs:
         with:
           name: dotnet-test-results
           path: |
-            TestResults
-            diagnostics.log
+            TestResults/
+            diagnostics.*
         # Use always() to always run this step to publish test results when there are test failures
         if: ${{ always() }}
 #
