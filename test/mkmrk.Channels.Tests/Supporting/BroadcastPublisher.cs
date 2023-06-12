@@ -1,7 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -57,7 +54,6 @@ public class BroadcastPublisher<T> : BroadcastPublisher where T : ChannelMessage
             _writerMarkedComplete = true;
             _writer.Complete();
         }
-        return;
     }
 
     public override async Task StopAsync( CancellationToken cancellationToken ) {
@@ -68,39 +64,5 @@ public class BroadcastPublisher<T> : BroadcastPublisher where T : ChannelMessage
             _writer.Complete();
         }
         await base.StopAsync( cancellationToken );
-    }
-}
-
-public abstract class foo<T> {
-    /// <summary>Returns a <see cref="ValueTask{Boolean}"/> that will complete when data is available to read.</summary>
-    /// <param name="cancellationToken">A <see cref="CancellationToken"/> used to cancel the wait operation.</param>
-    /// <returns>
-    /// A <see cref="ValueTask{Boolean}"/> that will complete with a <c>true</c> result when data is available to read
-    /// or with a <c>false</c> result when no further data will ever be available to be read.
-    /// </returns>
-    public abstract ValueTask<bool> WaitToReadAsync(CancellationToken cancellationToken = default);
-
-    /// <summary>Attempts to read an item from the channel.</summary>
-    /// <param name="item">The read item, or a default value if no item could be read.</param>
-    /// <returns>true if an item was read; otherwise, false if no item was read.</returns>
-    public abstract bool TryRead([MaybeNullWhen(false)] out T item);
-
-    
-    /// <summary>Creates an <see cref="IAsyncEnumerable{T}"/> that enables reading all of the data from the channel.</summary>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/> to use to cancel the enumeration.</param>
-    /// <remarks>
-    /// Each <see cref="IAsyncEnumerator{T}.MoveNextAsync"/> call that returns <c>true</c> will read the next item out of the channel.
-    /// <see cref="IAsyncEnumerator{T}.MoveNextAsync"/> will return false once no more data is or will ever be available to read.
-    /// </remarks>
-    /// <returns>The created async enumerable.</returns>
-    public virtual async IAsyncEnumerable<T> ReadAllAsync([EnumeratorCancellation] CancellationToken cancellationToken = default)
-    {
-        while (await WaitToReadAsync(cancellationToken).ConfigureAwait(false))
-        {
-            while (TryRead(out T? item))
-            {
-                yield return item;
-            }
-        }
     }
 }
