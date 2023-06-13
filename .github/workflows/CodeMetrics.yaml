@@ -31,7 +31,7 @@ jobs:
           owner: ${{ github.repository_owner }}
           name: ${{ github.repository }}
           branch: ${{ github.ref }}
-          dir: './src/mkmrk.Channels'
+          dir: ${{ './src/mkmrk.Channels' }}
 
       - name: Lookaround
         run: ls -la
