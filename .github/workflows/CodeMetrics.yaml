@@ -31,10 +31,14 @@ jobs:
           owner: ${{ github.repository_owner }}
           name: ${{ github.repository }}
           branch: ${{ github.ref }}
-          dir: ${{ './github-actions/DotNet.GitHubAction' }}
+          dir: './src/mkmrk.Channels'
 
       - name: Lookaround
         run: ls -la
+        
+      - name: Show Changes
+        run: |
+          git status
 
       # https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net#packaging-workflow-data-as-artifacts
       - name: Upload dotnet test results

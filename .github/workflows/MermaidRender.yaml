@@ -1,0 +1,57 @@
+name: Render Mermaid Diagrams
+#run-name: ${{ github.actor }} is learning GitHub Actions
+on: [push]
+  #  push:
+  # Sequence of patterns matched against refs/tags
+  #tags:        
+  #  - release/*
+  # or just look for markdown changes?
+  # NOTE: this whole thing would be great for building Hugo!
+  #paths:
+  # or could make special .mmd mermaid only files
+  #- '**.mmd'
+  # or all markdown
+  #- '*.md'
+  # or just a path
+  # URGENT: re-enable
+# - '/docs/Data Sources/Interactive Brokers/TWS/**.md'
+
+# This allows a subsequently queued workflow run to interrupt previous runs
+concurrency:
+  group: '${{ github.workflow }} @ ${{ github.event.pull_request.head.label || github.head_ref || github.ref }}'
+  cancel-in-progress: true
+#
+jobs:
+  render-mermaid-diagrams:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+      - run: npm install -g @mermaid-js/mermaid-cli
+
+      - name: get changed files
+        id: getfile
+        run: |
+          echo "::set-output name=files::$(git diff-tree --no-commit-id --name-only -r ${{ github.sha }} | grep -e '.*\.md$' | xargs)"
+
+      - run: 'echo -n Working Directory: && pwd && echo -n -e \nDirectory Listing: && ls -la && echo -e \nGITHUB_WORKSPACE:$GITHUB_WORKSPACE'
+      - run: mkdir -p ./docs/rendered
+      - run: mmdc --input README.md --output ./docs/rendered/README.md
+      #      - run: mmdc --input "./docs/Data Sources/Interactive Brokers/TWS/*"
+      # ...
+      # TODO: other jobs here?
+      # ...
+      #
+
+      - name: Show Changes
+        run: |
+          git status
+
+      # https://github.com/actions/upload-artifact
+      - name: Upload mermaid diagram render outputs
+        uses: actions/upload-artifact@v3
+        with:
+          name: Mermaid Render Results
+          path: 'docs/rendered/'
+        # Use always() to always run this step to publish test results when there are test failures
+        if: ${{ always() }}
