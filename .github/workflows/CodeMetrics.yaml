@@ -27,9 +27,9 @@ jobs:
       - name: .NET code metrics
         id: dotnet-code-metrics
         uses: dotnet/samples/github-actions/DotNet.GitHubAction@main
-        env:
-          # URGENT: bad hack to fix their broken code?  https://github.com/dotnet/samples/blob/main/github-actions/DotNet.GitHubAction/DotNet.GitHubAction/Program.cs#L78
-          GITHUB_OUTPUT: ''
+#        env:
+#          # URGENT: bad hack to fix their broken code?  https://github.com/dotnet/samples/blob/main/github-actions/DotNet.GitHubAction/DotNet.GitHubAction/Program.cs#L78
+#          GITHUB_OUTPUT: ''
         with:
           owner: ${{ github.repository_owner }}
           name: ${{ github.repository }}
@@ -42,6 +42,8 @@ jobs:
       - name: Show Changes
         run: |
           git status
+        # Use always() to always run this step to publish test results when there are test failures
+        if: ${{ always() }}
 
       # https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net#packaging-workflow-data-as-artifacts
       - name: Upload dotnet test results
