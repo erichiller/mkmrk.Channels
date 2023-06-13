@@ -27,6 +27,9 @@ jobs:
       - name: .NET code metrics
         id: dotnet-code-metrics
         uses: dotnet/samples/github-actions/DotNet.GitHubAction@main
+        env:
+          # URGENT: bad hack to fix their broken code?  https://github.com/dotnet/samples/blob/main/github-actions/DotNet.GitHubAction/DotNet.GitHubAction/Program.cs#L78
+          GITHUB_OUTPUT: ''
         with:
           owner: ${{ github.repository_owner }}
           name: ${{ github.repository }}
