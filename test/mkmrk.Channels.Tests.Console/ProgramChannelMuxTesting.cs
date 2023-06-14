@@ -460,7 +460,7 @@ public static partial class Program {
                            $"{nameof(_msgsPerSecond)}: {_msgsPerSecond:N0}\n"           +
                            $"{nameof(_msgsPerMsgGroup)}: {_msgsPerMsgGroup:N0}\n"       +
                            $"" );
-        Log( $"StopWatch Frequency is: {Stopwatch.Frequency:N0}" );
+        log( $"StopWatch Frequency is: {Stopwatch.Frequency:N0}" );
         // using (StreamWriter outputFile = new StreamWriter(file.FullName)){
         Console.WriteLine( $"Beginning at Stopwatch ticks: {stopwatch.ElapsedTicks:N0} on {Thread.CurrentThread.ManagedThreadId}" );
         TimeInfo[] timeInfo1 = new TimeInfo[ messageCount ];

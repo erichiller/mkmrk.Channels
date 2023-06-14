@@ -1,19 +1,15 @@
-
-#nullable enable
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 
-using JetBrains.Annotations;
-
 namespace mkmrk.Channels; 
 
 /// <summary>
 /// Extensions for <see cref="IEnumerable{T}"/> and similar, mostly for <see cref="System.Linq"/> type applications
 /// </summary>
-public static class Extensions {
+internal static class Extensions {
     
     /// <summary>
     /// Display a more concise Generic Type representation
@@ -29,9 +25,8 @@ public static class Extensions {
     /// <summary>
     /// Create <paramref name="joinString"/> separated string of elements
     /// </summary>
-    [PublicAPI]
     [ return: NotNullIfNotNull("list")]
-    public static string? ToXSeparatedString( this System.Collections.IEnumerable? list, int? maxElementsToPrint, string joinString ) {
+    private static string? toXSeparatedString( this System.Collections.IEnumerable? list, int? maxElementsToPrint, string joinString ) {
         if ( list is null ) {
             return null;
         }
@@ -53,19 +48,19 @@ public static class Extensions {
     /// eg. <c>element1, element2, element3</c>
     /// </returns>
     [ return: NotNullIfNotNull( "list" ) ]
-    public static string? ToCommaSeparatedString( this System.Collections.IEnumerable? list, int? maxElementsToPrint = null, string joinString = ", " )
-        => ToXSeparatedString( list, maxElementsToPrint, joinString );
+    internal static string? ToCommaSeparatedString( this System.Collections.IEnumerable? list, int? maxElementsToPrint = null, string joinString = ", " )
+        => toXSeparatedString( list, maxElementsToPrint, joinString );
 }
 
 /// <summary>
 /// Augmentations for <see cref="System.Threading.Tasks.ValueTask"/>
 /// </summary>
-public static class ValueTaskExtensions {
+internal static class ValueTaskExtensions {
     /// <summary>
     /// 
     /// </summary>
     /// <remarks>This runs faster than using <c>Task.WhenAll( ...Select( ...AsTask ) )</c></remarks>
-    public static async ValueTask WhenAll( this ValueTask[] tasks ) {
+    internal static async ValueTask WhenAll( this ValueTask[] tasks ) {
         // We don't allocate the list if no task throws
         List<Exception>? exceptions = null;
 

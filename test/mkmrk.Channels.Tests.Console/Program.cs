@@ -6,7 +6,7 @@ namespace mkmrk.Channels.Tests.Cli;
 
 public static partial class Program {
     [Conditional("LOG")]
-    private static void Log(string? msg) => System.Console.WriteLine(msg);
+    private static void log(string? msg) => System.Console.WriteLine(msg);
 
     static async Task<int> Main(string[] args) {
 
@@ -39,7 +39,7 @@ public static partial class Program {
                             await SimpleTest();
                             break;
                         default:
-                            throw new Exception(args.ToCommaSeparatedString());
+                            throw new Exception(String.Join( ',', args ));
                     }
                     break;
                 }
@@ -86,7 +86,7 @@ public static partial class Program {
                     await ChannelComplete_WithException_ShouldThrow_UponAwait();
                     break;
                 default:
-                    Log($"not known: {args[0]}");
+                    log($"not known: {args[0]}");
                     return 1;
             }
             return 0;

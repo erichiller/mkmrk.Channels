@@ -36,7 +36,12 @@
         <PropertyGroup>
             <Version>$([System.DateTime]::Now.ToString("yyyy.MM.dd.HHmm"))</Version>
             <InformationalVersion>$([System.DateTime]::Now.ToString("yyyy.MM.dd.HHmmss"))+$(SourceRevisionId)</InformationalVersion>
+            <!-- BETA -->
             <PackageVersion>1.0.0-beta.$([System.DateTime]::Now.ToString("yyyy-MM-dd.Hmm"))+$(SourceRevisionId)</PackageVersion>
+            <!-- PRE-RELEASE -->
+            <!-- <PackageVersion>1.0.0-$([System.DateTime]::Now.ToString("yyyy-MM-dd.Hmm"))+$(SourceRevisionId)</PackageVersion> -->
+            <!-- RELEASE -->
+            <!-- <PackageVersion>1.0.0+$([System.DateTime]::Now.ToString("yyyy-MM-dd.Hmm")).$(SourceRevisionId)</PackageVersion> -->
         </PropertyGroup>
         <Message Importance="high" Text="Project File Name    = $(MSBuildProjectFile)"/>
         <Message Importance="high" Text="Project Extension    = $(MSBuildProjectExtension)"/>
