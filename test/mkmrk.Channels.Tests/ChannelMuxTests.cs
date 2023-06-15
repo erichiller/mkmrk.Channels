@@ -220,8 +220,8 @@ public class ChannelMuxTests : TestBase<ChannelMuxTests> {
         await producer1;
         await producer2;
         _logger.LogDebug( $"{nameof(waitToReadLoopCount)}: {{WaitToReadLoopCount}}\n\t" +
-                          $"receivedCountA: {{receivedCountA}}\n\t"                     +
-                          $"receivedCountB: {{receivedCountB}}", waitToReadLoopCount, receivedCountA, receivedCountB );
+                          $"receivedCountA: {{ReceivedCountA}}\n\t"                     +
+                          $"receivedCountB: {{ReceivedCountB}}", waitToReadLoopCount, receivedCountA, receivedCountB );
         receivedCountA.Should().Be( msgCountChannel1 );
         receivedCountB.Should().Be( msgCountChannel2 );
         mux.Completion.IsCompleted.Should().BeTrue();
@@ -569,8 +569,8 @@ public class ChannelMuxTests : TestBase<ChannelMuxTests> {
                 onChannelCompleteCounter++;
                 _logger.LogDebug( $"OnException: {{Exception}} for channel of type {{DType}}\n\t" +
                                   $"{nameof(waitToReadLoopCount)}: {{WaitToReadLoopCount}}\n\t"   +
-                                  $"receivedCountA: {{receivedCountA}}\n\t"                       +
-                                  $"receivedCountB: {{receivedCountB}}", exception, dType.Name, waitToReadLoopCount, receivedCountA, receivedCountB );
+                                  $"receivedCountA: {{ReceivedCountA}}\n\t"                       +
+                                  $"receivedCountB: {{ReceivedCountB}}", exception, dType.Name, waitToReadLoopCount, receivedCountA, receivedCountB );
                 // ReSharper disable once ConvertIfStatementToConditionalTernaryExpression
                 if ( exception is { } ) {
                     dType.Should().Be( typeof(DataTypeB) );
@@ -597,8 +597,8 @@ public class ChannelMuxTests : TestBase<ChannelMuxTests> {
         await asyncWriterShouldThrow.Should().ThrowAsync<ChannelClosedException>()
                                     .WithInnerException( typeof(SomeException) );
         _logger.LogDebug( $"{nameof(waitToReadLoopCount)}: {{WaitToReadLoopCount}}\n\t" +
-                          $"receivedCountA: {{receivedCountA}}\n\t"                     +
-                          $"receivedCountB: {{receivedCountB}}", waitToReadLoopCount, receivedCountA, receivedCountB );
+                          $"receivedCountA: {{ReceivedCountA}}\n\t"                     +
+                          $"receivedCountB: {{ReceivedCountB}}", waitToReadLoopCount, receivedCountA, receivedCountB );
         // read remaining messages ( if any )
         while ( ( mux.TryRead( out DataTypeA _ ), mux.TryRead( out DataTypeB _ ) ) != ( false, false ) ) { }
 

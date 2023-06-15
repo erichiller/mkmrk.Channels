@@ -100,9 +100,9 @@ public sealed class DependencyInjectionTests : TestBase<DependencyInjectionTests
         writer.ReaderCount.Should().Be( 1 );
         host.Services.GetRequiredService<IBroadcastChannelReader<ChannelMessageSubA>>();
         writer.ReaderCount.Should().Be( 2 );
-        BroadcastChannelReader<ChannelMessageSubA, ChannelResponse> readerFromConcreteSource = host.Services.GetRequiredService<BroadcastChannelReaderSource<ChannelMessageSubA, ChannelResponse>>();
+        using BroadcastChannelReader<ChannelMessageSubA, ChannelResponse> readerFromConcreteSource = host.Services.GetRequiredService<BroadcastChannelReaderSource<ChannelMessageSubA, ChannelResponse>>();
         writer.ReaderCount.Should().Be( 3 );
-        IBroadcastChannelReader<ChannelMessageSubA, ChannelResponse> readerFromInterfaceSource = host.Services.GetRequiredService<IBroadcastChannelReaderSource<ChannelMessageSubA, ChannelResponse>>().ToReader();
+        using IBroadcastChannelReader<ChannelMessageSubA, ChannelResponse> _ = host.Services.GetRequiredService<IBroadcastChannelReaderSource<ChannelMessageSubA, ChannelResponse>>().ToReader();
         writer.ReaderCount.Should().Be( 4 );
     }
 
@@ -115,9 +115,9 @@ public sealed class DependencyInjectionTests : TestBase<DependencyInjectionTests
             } ).Build();
         host.Services.GetRequiredService<IBroadcastChannelReader<ChannelMessageSubA, ChannelResponse>>();
         host.Services.GetRequiredService<IBroadcastChannelReader<ChannelMessageSubA>>();
-        BroadcastChannelReader<ChannelMessageSubA, ChannelResponse>  readerFromConcreteSource  = host.Services.GetRequiredService<BroadcastChannelReaderSource<ChannelMessageSubA, ChannelResponse>>();
-        IBroadcastChannelReader<ChannelMessageSubA, ChannelResponse> readerFromInterfaceSource = host.Services.GetRequiredService<IBroadcastChannelReaderSource<ChannelMessageSubA, ChannelResponse>>().ToReader();
-        var                                                          writer                    = host.Services.GetRequiredService<IBroadcastChannelWriter<ChannelMessageSubA, ChannelResponse>>();
+        using BroadcastChannelReader<ChannelMessageSubA, ChannelResponse>  readerFromConcreteSource  = host.Services.GetRequiredService<BroadcastChannelReaderSource<ChannelMessageSubA, ChannelResponse>>();
+        using IBroadcastChannelReader<ChannelMessageSubA, ChannelResponse> readerFromInterfaceSource = host.Services.GetRequiredService<IBroadcastChannelReaderSource<ChannelMessageSubA, ChannelResponse>>().ToReader();
+        var                                                                writer                    = host.Services.GetRequiredService<IBroadcastChannelWriter<ChannelMessageSubA, ChannelResponse>>();
         writer.Should().BeSameAs( host.Services.GetRequiredService<IBroadcastChannelWriter<ChannelMessageSubA, ChannelResponse>>() );
         writer.ReaderCount.Should().Be( 4 );
     }
@@ -130,8 +130,8 @@ public sealed class DependencyInjectionTests : TestBase<DependencyInjectionTests
                 services.AddBroadcastChannel<ChannelMessageSubA, ChannelResponse>();
                 services.AddBroadcastChannels();
             } ).Build();
-        var                                                writer = host.Services.GetRequiredService<IBroadcastChannelWriter<ChannelMessageSubA, ChannelResponse>>();
-        ChannelMux<ChannelMessageSubA, ChannelMessageSubB> mux    = host.Services.GetRequiredService<ChannelMux<ChannelMessageSubA, ChannelMessageSubB>>();
+        var                                                      writer = host.Services.GetRequiredService<IBroadcastChannelWriter<ChannelMessageSubA, ChannelResponse>>();
+        using ChannelMux<ChannelMessageSubA, ChannelMessageSubB> mux    = host.Services.GetRequiredService<ChannelMux<ChannelMessageSubA, ChannelMessageSubB>>();
         writer.ReaderCount.Should().Be( 1 );
         host.Services.GetRequiredService<IBroadcastChannelWriter<ChannelMessageSubB>>().ReaderCount.Should().Be( 1 );
     }

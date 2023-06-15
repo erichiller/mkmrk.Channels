@@ -38,7 +38,7 @@ jobs:
 #        # KILL
       - name: Test
         working-directory: ./test/mkmrk.Channels.Tests/
-        run: dotnet test --logger "console;verbosity=normal" --logger "html;logfilename=testResults.html" --logger:"trx;LogFilePrefix=testResults"--filter '(FullyQualifiedName!~Latency)&(FullyQualifiedName!~AddingAndRemovingReadersShouldNeverError)' --collect:"XPlat Code Coverage"
+        run: dotnet test --logger "console;verbosity=normal" --logger "html;logfilename=testResults.html" --logger:"trx;LogFilePrefix=testResults" --filter '(FullyQualifiedName!~Latency)&(FullyQualifiedName!~AddingAndRemovingReadersShouldNeverError)' --collect:"XPlat Code Coverage"
         #        run: dotnet test --logger "console;verbosity=normal" --logger "html;logfilename=testResults.html" --logger:"trx;LogFilePrefix=testResults" --filter 'FullyQualifiedName!~Latency'
         # dotnet test --logger "console;verbosity=detailed" --filter FullyQualifiedName\!~latency
 #        run: dotnet test --no-restore --logger "console;verbosity=detailed" --diag ./diagnostics.log --results-directory ./TestResults

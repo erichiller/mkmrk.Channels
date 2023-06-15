@@ -149,3 +149,20 @@ dotnet_naming_style.private_members_underscored_camel_case.required_prefix = _
 resharper_wrap_array_initializer_style = chop_always
 # dotnet_naming_style.private_members_underscored_camel_case.required_suffix      = 
 # dotnet_naming_style.private_members_underscored_camel_case.word_separator       = 
+
+
+## Rule specifics
+
+# CA1200: Avoid using cref tags with a prefix
+dotnet_diagnostic.CA1200.severity = none
+
+
+dotnet_diagnostic.CA1805.severity = none
+
+
+# CA1848: For improved performance, use the LoggerMessage delegates.
+# LoggerMessageDefineAnalyzer
+# https://github.com/dotnet/roslyn-analyzers/blob/main/src/NetAnalyzers/Microsoft.CodeAnalysis.NetAnalyzers.sarif#L2684
+# TODO: Increase this to warning later on?
+dotnet_diagnostic.CA1848.severity = suggestion
+

@@ -27,6 +27,14 @@
             <PrivateAssets>all</PrivateAssets>
         </PackageReference>
     </ItemGroup>
+    
+    <PropertyGroup>
+        <AnalysisLevel>latest-all</AnalysisLevel>
+<!--        <AnalysisLevel>latest</AnalysisLevel>-->
+<!--        <AnalysisMode>All</AnalysisMode>-->
+        <CodeAnalysisTreatWarningsAsErrors>false</CodeAnalysisTreatWarningsAsErrors>
+        <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    </PropertyGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\..\src\mkmrk.Channels\mkmrk.Channels.csproj" />

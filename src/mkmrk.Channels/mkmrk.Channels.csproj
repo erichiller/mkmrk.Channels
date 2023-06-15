@@ -51,6 +51,13 @@
         <Message Importance="high" Text="RepositoryUrl        = $(RepositoryUrl)"/>
     </Target>
 
+    <PropertyGroup>
+        <AnalysisLevel>latest-all</AnalysisLevel>
+<!--        <AnalysisLevel>preview-all</AnalysisLevel>-->
+<!--        <CodeAnalysisTreatWarningsAsErrors>true</CodeAnalysisTreatWarningsAsErrors>-->
+<!--        <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>-->
+    </PropertyGroup>
+
     <ItemGroup>
         <None Include="../../README.md" Pack="true" PackagePath="\"/>
     </ItemGroup>
