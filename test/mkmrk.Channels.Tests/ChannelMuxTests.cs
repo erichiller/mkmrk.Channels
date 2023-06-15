@@ -683,7 +683,7 @@ public class ChannelMuxTests : TestBase<ChannelMuxTests> {
     }
 
     [ Fact ]
-    public async Task CancellationToken_PreWaitToReadAsync_NewAfterException_Test( ) {
+    public async Task CancellationToken_PreWaitToReadAsync_NewAfterException_Test( ) { // URGENT: sporadic test failures ?? ;; June 15, 2023
         const int                        msgCountChannel1                 = 50_000, msgCountChannel2 = 1_000;
         const int                        cancelEveryCount                 = 25;
         const int                        throwExceptionCount              = 4;

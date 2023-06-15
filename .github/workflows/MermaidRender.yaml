@@ -1,6 +1,6 @@
 name: Render Mermaid Diagrams
 #run-name: '${{ github.action }} run #${{ github.run_number }} - ${{ github.event_name }}: ${{ github.event.head_commit.message }}'
-run-name: '${{ github.action }} run #${{ github.run_number }} - ${{ github.event_name }}: ${{ join( github.event.commits.*.message, "\n" }}'
+run-name: '${{ github.action }} run #${{ github.run_number }} - ${{ github.event_name }}: ${{ join( github.event.commits.*.message, "\\n" }}'
 on: [ push, workflow_dispatch ]
   #  push:
   # Sequence of patterns matched against refs/tags
