@@ -1,6 +1,7 @@
 name: Render Mermaid Diagrams
-#run-name: ${{ github.actor }} is learning GitHub Actions
-on: [push]
+#run-name: '${{ github.action }} run #${{ github.run_number }} - ${{ github.event_name }}: ${{ github.event.head_commit.message }}'
+run-name: '${{ github.action }} run #${{ github.run_number }} - ${{ github.event_name }}: ${{ join( github.event.commits.*.message, "\n" }}'
+on: [ push, workflow_dispatch ]
   #  push:
   # Sequence of patterns matched against refs/tags
   #tags:        
@@ -20,24 +21,42 @@ on: [push]
 concurrency:
   group: '${{ github.workflow }} @ ${{ github.event.pull_request.head.label || github.head_ref || github.ref }}'
   cancel-in-progress: true
+
+env:
+  README_FILENAME: README.md
+  README_INPUT_PATH: ./
+  README_OUTPUT_PATH: ./docs/rendered/
 #
 jobs:
   render-mermaid-diagrams:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-      - run: npm install -g @mermaid-js/mermaid-cli
 
-      - name: get changed files
+      - uses: actions/setup-node@v3
+
+      - name: Install mermaid-cli
+        run: npm install -g @mermaid-js/mermaid-cli
+
+      - name: Get Changed markdown files
         id: getfile
         run: |
           echo "::set-output name=files::$(git diff-tree --no-commit-id --name-only -r ${{ github.sha }} | grep -e '.*\.md$' | xargs)"
 
-      - run: 'echo -n Working Directory: && pwd && echo -n -e \nDirectory Listing: && ls -la && echo -e \nGITHUB_WORKSPACE:$GITHUB_WORKSPACE'
-      - run: mkdir -p ./docs/rendered
-      - run: mmdc --input README.md --output ./docs/rendered/README.md
-      #      - run: mmdc --input "./docs/Data Sources/Interactive Brokers/TWS/*"
+#      - run: 'echo -n Working Directory: && pwd && echo -n -e \nDirectory Listing: && ls -la && echo -e \nGITHUB_WORKSPACE:$GITHUB_WORKSPACE'
+
+      - name: Create docs rendered image directory
+        run: mkdir -p ./docs/rendered
+
+      - name: Generate SVGs and modified markdown with mermaid-cli
+        run: mmdc --input ${{ env.README_INPUT_PATH }}${{ env.$README_FILENAME }} --output ${{ env.README_OUTPUT_PATH }}${{ env.$README_FILENAME }}
+
+      - name: Make image links absolute URLs
+        shell: pwsh
+        run: |
+          $readmeTxt = Get-Content -Raw -Path "${{ env.README_FILENAME }}" ; `
+          [System.Text.RegularExpressions.Regex]::Replace($readmeTxt,'^(!\[[^\]]*\]\()(\.\/)','$1https://raw.githubusercontent.com/${{ github.repository }}/${{ github.ref_name }}/',[System.Text.RegularExpressions.RegexOptions]::Multiline) | Set-Content -Path "${{ env.README_FILENAME }}";
+        working-directory: ${{ env.README_OUTPUT_PATH }} 
       # ...
       # TODO: other jobs here?
       # ...
@@ -52,6 +71,6 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: Mermaid Render Results
-          path: 'docs/rendered/'
+          path: ${{ env.README_OUTPUT_PATH }}
         # Use always() to always run this step to publish test results when there are test failures
         if: ${{ always() }}

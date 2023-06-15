@@ -17,22 +17,6 @@ It is a generic type and each type parameter has a dedicated `TryRead(out T data
 Note that each `ChannelMuxInput` is a single input, single output where _single_ means both a single instance writing
 and a single instance reading, and thus can be optimized using `SingleProducerSingleConsumerQueue`.
 
-[//]: # (```mermaid)
-[//]: # (flowchart LR)
-[//]: # ()
-[//]: # (Producing_Object&#40;"Producing Object"&#41; --> BroadcastChannelWriter)
-[//]: # ()
-[//]: # (subgraph BroadcastChannel )
-[//]: # (    BroadcastChannelWriter --> BroadcastChannelReader1["BroadcastChannelReader"] & BroadcastChannelReader2["BroadcastChannelReader"] & BroadcastChannelReader3["BroadcastChannelReader"])
-[//]: # (end)
-[//]: # ()
-[//]: # (subgraph ChannelMux)
-[//]: # (    ChannelMuxInput --> ChannelMuxT["ChannelMux<T1,T2,...>"])
-[//]: # (end)
-[//]: # (BroadcastChannelWriter --> ChannelMuxInput)
-[//]: # (ChannelMuxT --> Consuming_Object&#40;"Consuming Object"&#41;)
-[//]: # ()
-[//]: # (```)
 ```mermaid
 flowchart LR
 
