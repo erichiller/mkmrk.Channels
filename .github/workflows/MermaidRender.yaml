@@ -50,7 +50,7 @@ jobs:
         run: mkdir -p ./docs/rendered
 
       - name: Generate SVGs and modified markdown with mermaid-cli
-        run: mmdc --input ${{ env.README_INPUT_PATH }}${{ env.$README_FILENAME }} --output ${{ env.README_OUTPUT_PATH }}${{ env.$README_FILENAME }}
+        run: mmdc --input ${{ env.README_INPUT_PATH }}${{ env.README_FILENAME }} --output ${{ env.README_OUTPUT_PATH }}${{ env.README_FILENAME }}
 
       - name: Make image links absolute URLs
         shell: pwsh
