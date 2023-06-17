@@ -35,7 +35,7 @@ public class BroadcastChannelReader<TData, TResponse> : ChannelReader<TData>, IB
     }
 
     /// <summary>
-    /// This is only for Dependency Injection purposes and should not be used by the user. Instead use <see cref="IBroadcastChannelWriter{TData,TResponse}.GetReader"/>
+    /// This is only for Dependency Injection purposes and should not be used by the user. Instead use <see cref="IBroadcastChannelWriter{TData,TResponse}.CreateReader"/>
     /// </summary>
     /// <param name="broadcastChannelWriter"></param>
     [ EditorBrowsable( EditorBrowsableState.Never ) ]

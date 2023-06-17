@@ -27,13 +27,13 @@ public interface IBroadcastChannel<TData, TResponse> : IBroadcastChannelAddReade
     /// <summary>
     /// Create a new <see cref="IBroadcastChannelReader{TData,TResponse}"/> and return it.
     /// </summary>
-    public IBroadcastChannelReader<TData, TResponse> GetReader( );
+    public IBroadcastChannelReader<TData, TResponse> CreateReader( );
 
     /// <summary>
-    /// Create a new <see cref="IBroadcastChannelReaderSource{TData,TResponse}"/> and return it;
+    /// Create a new <see cref="IBroadcastChannelReaderSource{TData,TResponse}"/> and return it.
     /// </summary>
     /// <returns></returns>
-    public IBroadcastChannelReaderSource<TData, TResponse> GetReaderSource( );
+    public IBroadcastChannelReaderSource<TData, TResponse> CreateReaderSource( );
 }
 
 /// <inheritdoc cref="IBroadcastChannel{TData,TResponse}" />
@@ -46,11 +46,11 @@ public interface IBroadcastChannel<TData> : IBroadcastChannelAddReaderProvider<T
     /// <summary>
     /// Create a new <see cref="IBroadcastChannelReader{TData}"/> and return it.
     /// </summary>
-    public IBroadcastChannelReader<TData> GetReader( );
+    public IBroadcastChannelReader<TData> CreateReader( );
 
     /// <summary>
-    /// Create a new <see cref="IBroadcastChannelReaderSource{TData}"/> and return it;
+    /// Create a new <see cref="IBroadcastChannelReaderSource{TData}"/> and return it.
     /// </summary>
     /// <returns></returns>
-    public IBroadcastChannelReaderSource<TData> GetReaderSource( );
+    public IBroadcastChannelReaderSource<TData> CreateReaderSource( );
 }

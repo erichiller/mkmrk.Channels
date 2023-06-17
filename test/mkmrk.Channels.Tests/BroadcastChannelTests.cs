@@ -130,7 +130,7 @@ public class BroadcastChannelTests : TestBase<BroadcastChannelTests> {
             intervals.Add( now - lastTime );
             lastTime = now;
             logger!.LogTrace( "[{MethodName}][{ReaderCount}] looping", nameof(addReaderTask), readerCount );
-            using ( var reader = broadcastChannel.GetReader() ) {
+            using ( var reader = broadcastChannel.CreateReader() ) {
                 logger?.LogTrace( "[{MethodName}][{ReaderCount}] Waiting to read", nameof(addReaderTask), readerCount );
                 await reader.WaitToReadAsync( ct ); // read at least one message
                 logger?.LogTrace( "[{MethodName}] Waiting to read...found {ReaderCount}", nameof(addReaderTask), readerCount );
@@ -174,7 +174,7 @@ public class BroadcastChannelTests : TestBase<BroadcastChannelTests> {
         List<Task<int>> readerTasks = new List<Task<int>>();
         // start {subscriberCount} readers that live the life of the test
         for ( int i = 0 ; i < subscriberCount ; i++ ) {
-            readerTasks.Add( readerTask( broadcastChannel.GetReader(), messageCount, $"readerTask{i}", cts.Token ) );
+            readerTasks.Add( readerTask( broadcastChannel.CreateReader(), messageCount, $"readerTask{i}", cts.Token ) );
         }
 
         // keep starting and stop readers ( within using { } blocks )
@@ -234,7 +234,7 @@ public class BroadcastChannelTests : TestBase<BroadcastChannelTests> {
 
         List<Task<int>> readerTasks = new List<Task<int>>();
         for ( int i = 0 ; i < subscriberCount ; i++ ) {
-            readerTasks.Add( readerTask( broadcastChannel.GetReader(), messageCount, $"readerTask{i}", cts.Token ) );
+            readerTasks.Add( readerTask( broadcastChannel.CreateReader(), messageCount, $"readerTask{i}", cts.Token ) );
         }
 
         List<Task> tasks = new List<Task>( readerTasks ) { writerTask( broadcastChannel.Writer, messageCount, cts.Token ) };
@@ -261,7 +261,7 @@ public class BroadcastChannelTests : TestBase<BroadcastChannelTests> {
 
         List<Task<int>> readerTasks = new List<Task<int>>();
         for ( int i = 0 ; i < subscriberCount ; i++ ) {
-            readerTasks.Add( readerTask( broadcastChannel.GetReader(), messageCount, $"readerTask{i}", cts.Token ) );
+            readerTasks.Add( readerTask( broadcastChannel.CreateReader(), messageCount, $"readerTask{i}", cts.Token ) );
         }
 
         List<Task> tasks = new List<Task>( readerTasks ) { writerTryWriteEnumerableTask( broadcastChannel.Writer, messageCount, cts.Token, logger: _logger ) };

@@ -41,7 +41,7 @@ public static class BroadcastChannelServiceCollectionExtensions {
             return broadcastChannelWriter;
         } );
         services.AddTransient<IBroadcastChannelReader<TData>>( sp => {
-            IBroadcastChannelReader<TData, TResponse> broadcastChannelReader = sp.GetRequiredService<IBroadcastChannelWriter<TData, TResponse>>().GetReader();
+            IBroadcastChannelReader<TData, TResponse> broadcastChannelReader = sp.GetRequiredService<IBroadcastChannelWriter<TData, TResponse>>().CreateReader();
             return broadcastChannelReader;
         } );
 

@@ -19,13 +19,13 @@ public class BroadcastChannelReaderSource<TData, TResponse>
     public BroadcastChannelReaderSource( IBroadcastChannelWriter<TData, TResponse> broadcastChannel )
         => _broadcastChannel = broadcastChannel;
 
-    /// <inheritdoc cref="BroadcastChannel{TData,TResponse}.GetReader" />
+    /// <inheritdoc cref="BroadcastChannel{TData,TResponse}.CreateReader" />
     /// <remarks>
     /// The reader returned will always be the same.
     /// Only one reader can be allocated from a single <see cref="BroadcastChannelReaderSource{TData,TResponse}"/>.
     /// </remarks>
     [ PublicAPI ]
-    internal IBroadcastChannelReader<TData, TResponse> GetReader( ) => _reader ??= _broadcastChannel.GetReader();
+    public IBroadcastChannelReader<TData, TResponse> CreateReader( ) => _reader ??= _broadcastChannel.CreateReader();
 
     // // TODO: FUTURE? GetResponseChannel doesn't exist yet.
     // public ChannelWriter<TResponse> GetResponseChannel( ) => _responseChannel ??= _broadcastChannel.GetResponseChannel();
@@ -33,17 +33,17 @@ public class BroadcastChannelReaderSource<TData, TResponse>
     /// <inheritdoc />
     RemoveWriterByHashCode IBroadcastChannelAddReaderProvider<TData>.AddReader( ChannelWriter<TData> reader ) => _broadcastChannel.AddReader( reader );
 
-    /// <inheritdoc />
-    public IBroadcastChannelReader<TData, TResponse> ToReader( ) => this.GetReader() as BroadcastChannelReader<TData, TResponse> ?? ThrowHelper.ThrowInvalidCastException<IBroadcastChannelReader<TData, TResponse>, BroadcastChannelReader<TData, TResponse>>( this.GetReader() );
+    // /// <inheritdoc />
+    // public IBroadcastChannelReader<TData, TResponse> CreateReader( ) => this.CreateReader() as BroadcastChannelReader<TData, TResponse> ?? ThrowHelper.ThrowInvalidCastException<IBroadcastChannelReader<TData, TResponse>, BroadcastChannelReader<TData, TResponse>>( this.CreateReader() );
 
     /// <inheritdoc />
-    IBroadcastChannelReader<TData> IBroadcastChannelReaderSource<TData>.ToReader( ) => this.GetReader();
+    IBroadcastChannelReader<TData> IBroadcastChannelReaderSource<TData>.CreateReader( ) => this.CreateReader();
 
     /// <summary>
     /// Enables easy use as <see cref="BroadcastChannelReader{TData,TResponse}"/>
     /// </summary>
     public static implicit operator BroadcastChannelReader<TData, TResponse>( BroadcastChannelReaderSource<TData, TResponse> src ) =>
-        src.GetReader() as BroadcastChannelReader<TData, TResponse> ?? ThrowHelper.ThrowInvalidCastException<IBroadcastChannelReader<TData, TResponse>, BroadcastChannelReader<TData, TResponse>>( src.GetReader() );
+        src.CreateReader() as BroadcastChannelReader<TData, TResponse> ?? ThrowHelper.ThrowInvalidCastException<IBroadcastChannelReader<TData, TResponse>, BroadcastChannelReader<TData, TResponse>>( src.CreateReader() );
 }
 
 /// <inheritdoc cref="IBroadcastChannelReaderSource{TData}"/>
@@ -57,11 +57,11 @@ public class BroadcastChannelReaderSource<TData>
 
 
     /// <inheritdoc />
-    IBroadcastChannelReader<TData> IBroadcastChannelReaderSource<TData>.ToReader( ) => this.GetReader();
+    IBroadcastChannelReader<TData> IBroadcastChannelReaderSource<TData>.CreateReader( ) => this.CreateReader();
 
     /// <summary>
     /// Enables easy use as <see cref="BroadcastChannelReader{TData,TResponse}"/>
     /// </summary>
     public static implicit operator BroadcastChannelReader<TData>( BroadcastChannelReaderSource<TData> src ) =>
-        src.GetReader() as BroadcastChannelReader<TData> ?? ThrowHelper.ThrowInvalidCastException<IBroadcastChannelReader<TData>, BroadcastChannelReader<TData>>( src.GetReader() );
+        src.CreateReader() as BroadcastChannelReader<TData> ?? ThrowHelper.ThrowInvalidCastException<IBroadcastChannelReader<TData>, BroadcastChannelReader<TData>>( src.CreateReader() );
 }

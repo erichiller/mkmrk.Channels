@@ -610,8 +610,8 @@ public class ChannelMuxBenchmarks {
     public async Task BroadcastChannelOnly( ) {
         BroadcastChannel<StructA?, IBroadcastChannelResponse> channel1       = new ();
         BroadcastChannel<ClassA>                              channel2       = new ();
-        var                                                   channelReader1 = channel1.GetReader(); // these must be setup BEFORE the producer begins
-        var                                                   channelReader2 = channel2.GetReader();
+        var                                                   channelReader1 = channel1.CreateReader(); // these must be setup BEFORE the producer begins
+        var                                                   channelReader2 = channel2.CreateReader();
         CancellationToken                                     ct             = CancellationToken.None;
         Task producer1 = Task.Run( ( ) => producerTask( channel1.Writer, MessageCount, i => new StructA {
                                                             Id   = i,

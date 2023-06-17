@@ -92,7 +92,7 @@ public class BroadcastChannelWriter<TData, TResponse> : ChannelWriter<TData>, IB
     /// <inheritdoc />
     ReaderConfiguration IBroadcastChannelWriter<TData, TResponse>.GetNewReaderConfiguration( ) => this.GetNewReaderConfiguration();
 
-    IBroadcastChannelReader<TData, TResponse> IBroadcastChannelWriter<TData, TResponse>.GetReader( ) {
+    IBroadcastChannelReader<TData, TResponse> IBroadcastChannelWriter<TData, TResponse>.CreateReader( ) {
         Channel<TData> dataChannel = Channel.CreateUnbounded<TData>( new UnboundedChannelOptions() {
                                                                          SingleReader = true,
                                                                          SingleWriter = true

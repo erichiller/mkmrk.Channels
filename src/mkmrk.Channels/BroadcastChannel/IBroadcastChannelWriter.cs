@@ -56,5 +56,5 @@ public interface IBroadcastChannelWriter<TData, TResponse> : IBroadcastChannelWr
     /// </summary>
     internal BroadcastChannelWriter<TData, TResponse>.ReaderConfiguration GetNewReaderConfiguration( );
 
-    internal IBroadcastChannelReader<TData, TResponse> GetReader( );
+    internal IBroadcastChannelReader<TData, TResponse> CreateReader( );
 }

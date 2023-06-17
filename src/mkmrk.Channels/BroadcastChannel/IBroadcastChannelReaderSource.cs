@@ -21,9 +21,9 @@ public interface IBroadcastChannelAddReaderProvider<TData> {
 /// <typeparam name="TData"></typeparam>
 public interface IBroadcastChannelReaderSource<TData> : IBroadcastChannelAddReaderProvider<TData> { 
     /// <summary>
-    /// Perform conversion to <see cref="IBroadcastChannelReaderSource{TData, TResponse}"/>
+    /// Create a new <see cref="IBroadcastChannelReader{TData}"/>
     /// </summary>
-    public IBroadcastChannelReader<TData> ToReader( );
+    public IBroadcastChannelReader<TData> CreateReader( );
 }
 
 /// <inheritdoc cref="IBroadcastChannelReaderSource{TData}"/>
@@ -36,8 +36,8 @@ public interface IBroadcastChannelReaderSource<TData, TResponse> :
     IBroadcastChannelReaderSource<TData>
     where TResponse : IBroadcastChannelResponse {
     /// <summary>
-    /// Perform conversion to <see cref="IBroadcastChannelReaderSource{TData, TResponse}"/>
+    /// Create a new <see cref="IBroadcastChannelReader{TData, TResponse}"/>
     /// </summary>
-    public new IBroadcastChannelReader<TData, TResponse> ToReader( );
+    public new IBroadcastChannelReader<TData, TResponse> CreateReader( );
 }
 #pragma warning restore CS1712

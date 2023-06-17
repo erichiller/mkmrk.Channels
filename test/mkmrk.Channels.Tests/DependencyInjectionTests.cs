@@ -102,7 +102,7 @@ public sealed class DependencyInjectionTests : TestBase<DependencyInjectionTests
         writer.ReaderCount.Should().Be( 2 );
         using BroadcastChannelReader<ChannelMessageSubA, ChannelResponse> readerFromConcreteSource = host.Services.GetRequiredService<BroadcastChannelReaderSource<ChannelMessageSubA, ChannelResponse>>();
         writer.ReaderCount.Should().Be( 3 );
-        using IBroadcastChannelReader<ChannelMessageSubA, ChannelResponse> _ = host.Services.GetRequiredService<IBroadcastChannelReaderSource<ChannelMessageSubA, ChannelResponse>>().ToReader();
+        using IBroadcastChannelReader<ChannelMessageSubA, ChannelResponse> _ = host.Services.GetRequiredService<IBroadcastChannelReaderSource<ChannelMessageSubA, ChannelResponse>>().CreateReader();
         writer.ReaderCount.Should().Be( 4 );
     }
 
@@ -116,7 +116,7 @@ public sealed class DependencyInjectionTests : TestBase<DependencyInjectionTests
         host.Services.GetRequiredService<IBroadcastChannelReader<ChannelMessageSubA, ChannelResponse>>();
         host.Services.GetRequiredService<IBroadcastChannelReader<ChannelMessageSubA>>();
         using BroadcastChannelReader<ChannelMessageSubA, ChannelResponse>  readerFromConcreteSource  = host.Services.GetRequiredService<BroadcastChannelReaderSource<ChannelMessageSubA, ChannelResponse>>();
-        using IBroadcastChannelReader<ChannelMessageSubA, ChannelResponse> readerFromInterfaceSource = host.Services.GetRequiredService<IBroadcastChannelReaderSource<ChannelMessageSubA, ChannelResponse>>().ToReader();
+        using IBroadcastChannelReader<ChannelMessageSubA, ChannelResponse> readerFromInterfaceSource = host.Services.GetRequiredService<IBroadcastChannelReaderSource<ChannelMessageSubA, ChannelResponse>>().CreateReader();
         var                                                                writer                    = host.Services.GetRequiredService<IBroadcastChannelWriter<ChannelMessageSubA, ChannelResponse>>();
         writer.Should().BeSameAs( host.Services.GetRequiredService<IBroadcastChannelWriter<ChannelMessageSubA, ChannelResponse>>() );
         writer.ReaderCount.Should().Be( 4 );
