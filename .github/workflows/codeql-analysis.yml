@@ -1,19 +1,26 @@
 # source:
 # https://learn.microsoft.com/en-us/dotnet/devops/dotnet-secure-github-action
 # 
+# CodeQL Action:
+# https://github.com/github/codeql-action
+# 
+# CodeQL:
+# https://codeql.github.com/
+# 
 name: "CodeQL"
 
 on:
   push:
     branches: [master]
     paths:
-    - '**.cs'
-    - '**.csproj'
+      - '**.cs'
+      - '**.csproj'
   pull_request:
     branches: [master]
     paths:
-    - '**.cs'
-    - '**.csproj'
+      - '**.cs'
+      - '**.csproj'
+  workflow_dispatch:
   schedule:
     - cron: '0 8 * * 4'
 
@@ -30,22 +37,22 @@ jobs:
         language: ['csharp']
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
-      with:
-        fetch-depth: 2
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-    - run: git checkout HEAD^2
-      if: ${{ github.event_name == 'pull_request' }}
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v2
+        with:
+          languages: ${{ matrix.language }}
 
-    - name: Initialize CodeQL
-      uses: github/codeql-action/init@v1
-      with:
-        languages: ${{ matrix.language }}
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v2
+      #
+      #    - name: Perform CodeQL Analysis
+      #      uses: github/codeql-action/analyze@v2
+      #
 
-    - name: Autobuild
-      uses: github/codeql-action/autobuild@v1
-
-    - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v1
-#
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v2
+        with:
+          category: "/language:${{matrix.language}}"
