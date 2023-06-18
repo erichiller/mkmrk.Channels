@@ -184,13 +184,13 @@ jobs:
         run: dotnet pack --configuration Release
 
       - name: Publish to GitHub Packages
-        run: dotnet nuget push */Bin/Release/ -s https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json
+        run: dotnet nuget push */bin/Release/ -s https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json
         # working-directory: ./src/mkmrk.Channels/
         env:
           NUGET_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Publish the package to nuget.org
-        run: dotnet nuget push */Bin/Release/ -s https://api.nuget.org/v3/index.json
+        run: dotnet nuget push */bin/Release/ -s https://api.nuget.org/v3/index.json
         if: ${{ inputs.release_to_nuget }}
         # TODO: check nupkg & snupkg both push
         env:
