@@ -62,7 +62,7 @@ jobs:
       - name: Build
         run: dotnet build --configuration Release --no-restore
       - name: Test
-        run: dotnet test --configuration Release --no-restore --logger "console;verbosity=detailed"
+        run: dotnet test --logger "console;verbosity=normal" --logger "html;logfilename=testResults.html" --logger:"trx;LogFilePrefix=testResults"--filter '(FullyQualifiedName!~Latency)&(FullyQualifiedName!~AddingAndRemovingReadersShouldNeverError)' --collect:"XPlat Code Coverage"
         working-directory: ./test/mkmrk.Channels.Tests/
       # 
       # https://github.com/marketplace/actions/publish-test-results#configuration
@@ -75,6 +75,21 @@ jobs:
             TestResults/**/*.xml
             TestResults/**/*.trx
             TestResults/**/*.json
+
+      - name: Show Changes
+        run: |
+          git status --short
+        if: ${{ always() }}
+
+      - name: Upload dotnet test results
+        uses: actions/upload-artifact@v3
+        with:
+          name: dotnet-test-results
+          path: |
+            ./test/mkmrk.Channels.Tests/TestResults/
+            ./test/mkmrk.Channels.Tests/diagnostics.*
+        # Use always() to always run this step to publish test results when there are test failures
+        if: ${{ always() }}
 
   # TODO: generate reports? ( upload in test, build in render-mermaid-diagrams ? )
   
@@ -112,7 +127,7 @@ jobs:
 
       - name: Show Changes
         run: |
-          git status
+          git status --short
 
       # https://github.com/actions/upload-artifact
       - name: Upload mermaid diagram render outputs
