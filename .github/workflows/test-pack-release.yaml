@@ -177,6 +177,9 @@ jobs:
         uses: actions/setup-dotnet@v3
         with:
           global-json-file: ./global.json
+      #
+      - name: Set TimeZone
+        run: timedatectl set-timezone America/Chicago
 
       - name: Install dependencies
         run: dotnet restore
