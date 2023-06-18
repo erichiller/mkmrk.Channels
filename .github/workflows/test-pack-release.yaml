@@ -72,9 +72,9 @@ jobs:
         with:
           comment_mode: off
           files: |
-            TestResults/**/*.xml
-            TestResults/**/*.trx
-            TestResults/**/*.json
+            ./test/mkmrk.Channels.Tests/TestResults/**/*.xml
+            ./test/mkmrk.Channels.Tests/TestResults/**/*.trx
+            ./test/mkmrk.Channels.Tests/TestResults/**/*.json
 
       - name: Show Changes
         run: |
