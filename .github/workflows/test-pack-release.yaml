@@ -187,7 +187,7 @@ jobs:
 
       - name: Publish to GitHub Packages
         #run: dotnet nuget push ./ -s https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json
-        run: dotnet nuget push ./ -s https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json --api-key ${{ secrets.GITHUB_TOKEN }}
+        run: dotnet nuget push *pkg -s https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json --api-key ${{ secrets.GITHUB_TOKEN }}
         working-directory: ./src/mkmrk.Channels/bin/Release
         #env:
         #  NUGET_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
