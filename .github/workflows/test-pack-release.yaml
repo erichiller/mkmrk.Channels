@@ -167,7 +167,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [test, render-mermaid-diagrams]
     permissions:
-      packages: admin
+      packages: write
     steps:
       # action checks-out your repository under $GITHUB_WORKSPACE, so your workflow can access it.
       # https://github.com/actions/checkout
