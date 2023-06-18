@@ -40,6 +40,8 @@ env:
   README_FILENAME: README.md
   README_INPUT_PATH: ./
   README_OUTPUT_PATH: ./docs/rendered/
+  TZ: America/Chicago
+
 
 jobs:
   test:
@@ -177,9 +179,9 @@ jobs:
         uses: actions/setup-dotnet@v3
         with:
           global-json-file: ./global.json
-      #
-      - name: Set TimeZone
-        run: timedatectl set-timezone America/Chicago
+      # TODO: FIX ;; USE IN OTHER ACTIONS
+      # - name: Set TimeZone
+      #  run: timedatectl set-timezone America/Chicago
 
       - name: Install dependencies
         run: dotnet restore
