@@ -63,13 +63,13 @@ jobs:
       # 
       # https://github.com/marketplace/actions/publish-test-results#configuration
       - name: Publish Test Results
-  uses: EnricoMi/publish-unit-test-result-action@v2
-    if: always()
-  with:
-    files: |
-      TestResults/**/*.xml
-      TestResults/**/*.trx
-      TestResults/**/*.json
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: always()
+        with:
+          files: |
+            TestResults/**/*.xml
+            TestResults/**/*.trx
+            TestResults/**/*.json
 
   # TODO: generate reports? ( upload in test, build in render-mermaid-diagrams ? )
   
@@ -115,7 +115,6 @@ jobs:
         with:
           name: Mermaid Render Results
           path: ${{ env.README_OUTPUT_PATH }}
-        # Use always() to always run this step to publish test results when there are test failures
         if: ${{ always() }}
 
       - uses: stefanzweifel/git-auto-commit-action@v4
