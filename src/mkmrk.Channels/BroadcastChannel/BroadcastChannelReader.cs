@@ -72,7 +72,7 @@ public class BroadcastChannelReader<TData, TResponse> : ChannelReader<TData>, IB
     public ValueTask WriteResponseAsync( TResponse response, CancellationToken cancellationToken = default ) => this._responseWriter.WriteAsync( response, cancellationToken );
 
 
-    /// <inheritdoc />
+    /// <inheritdoc cref="ChannelReader{T}.Completion"/>
     public override Task Completion => !this._isDisposed ? this._dataReader.Completion : ThrowHelper.ThrowObjectDisposedException<Task>( nameof(BroadcastChannelReader<TData, TResponse>) );
 
     /// <inheritdoc />

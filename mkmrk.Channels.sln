@@ -24,9 +24,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Workflows", "Workflows", "{AED8C6E6-7F85-4838-8EDE-01006ACD5DDE}"
 	ProjectSection(SolutionItems) = preProject
-		.github\workflows\mkmrk.Channels.Tests.yaml = .github\workflows\mkmrk.Channels.Tests.yaml
-		.github\workflows\CodeMetrics.yaml = .github\workflows\CodeMetrics.yaml
-		.github\workflows\MermaidRender.yaml = .github\workflows\MermaidRender.yaml
+		.github\workflows\test-pack-release.yaml = .github\workflows\test-pack-release.yaml
 	EndProjectSection
 EndProject
 Global

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Channels;
 
@@ -22,10 +23,14 @@ public interface IBroadcastChannelWriter<TData> : IBroadcastChannelAddReaderProv
     public int ReaderCount { get; }
 
     /// <inheritdoc cref="ChannelWriter{T}.Complete" />
+    [ SuppressMessage( "Naming", "CA1716:Identifiers should not match keywords",
+                       Justification = "Parameter name is meant to match System.Threading.Channels.ChannelWriter<T>" ) ]
     public void Complete( Exception? error = default );
 
 
     /// <inheritdoc cref="ChannelWriter{T}.TryComplete" />
+    [ SuppressMessage( "Naming", "CA1716:Identifiers should not match keywords",
+                       Justification = "Parameter name is meant to match System.Threading.Channels.ChannelWriter<T>" ) ]
     public bool TryComplete( Exception? error = default );
 
     /// <inheritdoc cref="ChannelWriter{T}.TryWrite" />
