@@ -25,6 +25,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Workflows", "Workflows", "{AED8C6E6-7F85-4838-8EDE-01006ACD5DDE}"
 	ProjectSection(SolutionItems) = preProject
 		.github\workflows\test-pack-release.yaml = .github\workflows\test-pack-release.yaml
+		.github\workflows\codeql.yml = .github\workflows\codeql.yml
+		.github\workflows\code-metrics.yaml = .github\workflows\code-metrics.yaml
 	EndProjectSection
 EndProject
 Global

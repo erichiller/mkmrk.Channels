@@ -44,6 +44,10 @@ env:
 jobs:
   test:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: read
+      checks: write
     steps:
       # action checks-out your repository under $GITHUB_WORKSPACE, so your workflow can access it.
       # https://github.com/actions/checkout
@@ -66,6 +70,7 @@ jobs:
         uses: EnricoMi/publish-unit-test-result-action@v2
         if: always()
         with:
+          comment_mode: off
           files: |
             TestResults/**/*.xml
             TestResults/**/*.trx
