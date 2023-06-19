@@ -18,10 +18,19 @@ on:
         type: boolean
       # URGENT: 🚨: need to change CSPROJ to use package_version if present
       # https://learn.microsoft.com/en-us/visualstudio/msbuild/how-to-use-environment-variables-in-a-build
-      package_version:
-        description: 'Override PackageVersion'
-        required: false
-        type: string
+#      release_version:
+#        description: 'Override PackageVersion'
+#        required: false
+#        type: string
+      release_type:
+        description: 'Use a Release PackageVersion'
+        required: true
+        default: 'beta'
+        type: choice
+        options:
+          - beta
+          - prerelease
+          - stable
       readme_render_mermaid:
         description: 'Render mermaid diagrams for nuget.org README'
         required: true
@@ -73,10 +82,11 @@ jobs:
         if: always()
         with:
           comment_mode: off
-          files: |
-            ./test/mkmrk.Channels.Tests/TestResults/**/*.xml
-            ./test/mkmrk.Channels.Tests/TestResults/**/*.trx
-            ./test/mkmrk.Channels.Tests/TestResults/**/*.json
+          files: ./test/mkmrk.Channels.Tests/TestResults/**/*.trx
+#          files: |
+#            ./test/mkmrk.Channels.Tests/TestResults/**/*.xml
+#            ./test/mkmrk.Channels.Tests/TestResults/**/*.trx
+#            ./test/mkmrk.Channels.Tests/TestResults/**/*.json
 
       - name: Show Changes
         run: |
@@ -110,13 +120,6 @@ jobs:
 
       - name: Install mermaid-cli
         run: npm install -g @mermaid-js/mermaid-cli
-
-      - name: Get Changed markdown files
-        id: getfile
-        run: |
-          echo "::set-output name=files::$(git diff-tree --no-commit-id --name-only -r ${{ github.sha }} | grep -e '.*\.md$' | xargs)"
-      
-      #      - run: 'echo -n Working Directory: && pwd && echo -n -e \nDirectory Listing: && ls -la && echo -e \nGITHUB_WORKSPACE:$GITHUB_WORKSPACE'
 
       - name: Create docs directory for rendered images
         run: mkdir -p ./docs/rendered
@@ -156,13 +159,13 @@ jobs:
         if: steps.auto-commit-action.outputs.changes_detected == 'false'
         run: echo "No Changes!"
           
-          # reports?
-          #   here or under the Test job?
-          # Coverage
-          # https://github.com/danielpalme/ReportGenerator-GitHub-Action
-          #
-          # Test results
-          # https://github.com/marketplace/actions/publish-test-results#github-actions-job-summary
+      # reports?
+      #   here or under the Test job?
+      # Coverage
+      # https://github.com/danielpalme/ReportGenerator-GitHub-Action
+      #
+      # Test results
+      # https://github.com/marketplace/actions/publish-test-results#github-actions-job-summary
   
   
   pack:
@@ -170,6 +173,9 @@ jobs:
     needs: [test, render-mermaid-diagrams]
     permissions:
       packages: write
+    env:
+      RELEASE_TO_NUGET: ${{ inputs.release_to_nuget }}
+      RELEASE_TYPE: ${{ inputs.release_type }}
     steps:
       # action checks-out your repository under $GITHUB_WORKSPACE, so your workflow can access it.
       # https://github.com/actions/checkout
@@ -179,9 +185,6 @@ jobs:
         uses: actions/setup-dotnet@v3
         with:
           global-json-file: ./global.json
-      # TODO: FIX ;; USE IN OTHER ACTIONS
-      # - name: Set TimeZone
-      #  run: timedatectl set-timezone America/Chicago
 
       - name: Install dependencies
         run: dotnet restore
@@ -191,22 +194,25 @@ jobs:
         run: dotnet pack --configuration Release
 
       - name: Publish to GitHub Packages
-        #run: dotnet nuget push ./ -s https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json
         run: dotnet nuget push *pkg -s https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json --api-key ${{ secrets.GITHUB_TOKEN }}
         working-directory: ./src/mkmrk.Channels/bin/Release
-        #env:
-        #  NUGET_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Publish the package to nuget.org
-        run: dotnet nuget push */bin/Release/ -s https://api.nuget.org/v3/index.json
+        run: dotnet nuget push *pkg -s https://api.nuget.org/v3/index.json --api-key $NUGET_AUTH_TOKEN
         if: ${{ inputs.release_to_nuget }}
+        working-directory: ./src/mkmrk.Channels/bin/Release
         # TODO: check nupkg & snupkg both push
         env:
           # https://docs.github.com/actions/reference/encrypted-secrets#using-encrypted-secrets-in-a-workflow
           # The NUGET_AUTH_TOKEN must exist in the repository as a secret
           NUGET_AUTH_TOKEN: ${{ secrets.NUGET_TOKEN }}
-      # 
-      # run: dotnet nuget push */bin/Release/*.nupkg -k $NUGET_AUTH_TOKEN -s https://api.nuget.org/v3/index.json
+
+      # https://github.com/actions/upload-artifact
+      - name: Upload package
+        uses: actions/upload-artifact@v3
+        with:
+          name: Package
+          path: ./src/mkmrk.Channels/bin/Release
 
 #
 #

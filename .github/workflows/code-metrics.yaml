@@ -12,6 +12,8 @@ on:
 #      # Ignore CODE_METRICS.md and README.md files
 #      - '**.md'
 
+env:
+  TZ: America/Chicago
 
 jobs:
   build:

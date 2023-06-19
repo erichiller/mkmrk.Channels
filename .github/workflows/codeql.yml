@@ -27,6 +27,9 @@ on:
   schedule:
     - cron: '24 23 * * 2'
 
+env:
+  TZ: America/Chicago
+
 jobs:
   analyze:
     name: Analyze
