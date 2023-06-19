@@ -1,8 +1,9 @@
 # https://learn.microsoft.com/en-us/dotnet/devops/dotnet-test-github-action
 # 
-name: mkmrk.Channel Build, Test, Pack, Push
+name: Test, Pack, Release
+run-name: '${{ join( github.event.commits.*.message ) }} // ${{ github.event.pull_request.head.label || github.head_ref || github.ref }}'
 
-run-name: '${{ github.workflow }} run #${{ github.run_number }} - ${{ github.event_name }}: ${{ join( github.event.commits.*.message ) }} // ${{ github.event.pull_request.head.label || github.head_ref || github.ref }}'
+#run-name: '${{ github.workflow }} run #${{ github.run_number }} - ${{ github.event_name }}: ${{ join( github.event.commits.*.message ) }} // ${{ github.event.pull_request.head.label || github.head_ref || github.ref }}'
 
 # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows
 on:
