@@ -98,7 +98,7 @@ jobs:
           reporttypes: Html_Light;JsonSummary;TextSummary;TextDeltaSummary;MarkdownSummaryGithub;PngChart;Badges
           sourcedirs: ./src/mkmrk.Channels/
 #          filefilters: -./src/mkmrk.Channels/ChannelMux/DotnetRuntimeSourced/*
-          filefilters: -AsyncOperation.cs;-ChannelUtilities.cs;-SingleProducerSingleConsumer.cs
+          filefilters: +*,-AsyncOperation.cs;-ChannelUtilities.cs;-SingleProducerSingleConsumer.cs
           # TODO: history requires that I commit this directory
           historydir: ./docs/coverage/history/
           verbosity: Verbose
