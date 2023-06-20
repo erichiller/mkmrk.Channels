@@ -76,7 +76,6 @@ jobs:
       - name: Test
         run: |
           dotnet test --logger "console;verbosity=normal" \
-                      --logger "html;logfilename=testResults.html" \
                       --logger:"trx;LogFilePrefix=testResults" \
                       --filter '(FullyQualifiedName!~Latency)&(FullyQualifiedName!~AddingAndRemovingReadersShouldNeverError)' \
                       --collect:"XPlat Code Coverage" \
@@ -87,7 +86,7 @@ jobs:
       # https://github.com/marketplace/actions/publish-test-results#configuration
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@v2
-        if: always()
+        if: ${{ always() }}
         with:
           comment_mode: off
           files: ./test/mkmrk.Channels.Tests/TestResults/**/*.trx
@@ -120,8 +119,7 @@ jobs:
           path: |
             ./test/mkmrk.Channels.Tests/TestResults/
             ./test/mkmrk.Channels.Tests/diagnostics.*
-        # Use always() to always run this step to publish test results when there are test failures
-        if: ${{ always() }}
+        if: ${{ failure() }}
         #
       - name: Upload coverage report
         uses: actions/upload-artifact@v3
@@ -129,8 +127,6 @@ jobs:
           name: coverage-report
           path: |
             ./docs/coverage/
-        # Use always() to always run this step to publish test results when there are test failures
-        if: ${{ always() }}
 
   # TODO: generate reports? ( upload in test, build in render-mermaid-diagrams ? )
   
