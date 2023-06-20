@@ -52,6 +52,8 @@ env:
   README_OUTPUT_PATH: ./docs/rendered/
   TZ: America/Chicago
 
+defaults:
+  timeout-minutes: 10
 
 jobs:
   test:
@@ -104,14 +106,16 @@ jobs:
           # TODO: history requires that I commit this directory
           historydir: ./docs/coverage/history/
           verbosity: Verbose
+          # TODO: may need to make this something static to keep from making commits even when nothing changes
           tag: '${{ github.sha }}_${{ github.run_number }}'
           title: '${{ github.repository }} coverage'
       #
       - name: Print coverage summary to Workflow Summary
         shell: pwsh
+        #      Add-Content -NoNewline -Path $env:GITHUB_STEP_SUMMARY -Value $_ ;
         run: |
           Get-Content -Path ./docs/coverage/SummaryGithub.md | ForEach-Object {
-              Add-Content -NoNewline -Path $env:GITHUB_STEP_SUMMARY -Value $_ ;
+              Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value $_ ;
           }
       #
       - name: Show Changes
@@ -132,8 +136,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: coverage-report
-          path: |
-            ./docs/coverage/
+          path: ./docs/coverage/
 
   # TODO: generate reports? ( upload in test, build in render-mermaid-diagrams ? )
   
@@ -165,6 +168,12 @@ jobs:
           $readmeTxt = Get-Content -Raw -Path "${{ env.README_FILENAME }}" ; `
           [System.Text.RegularExpressions.Regex]::Replace($readmeTxt,'^(!\[[^\]]*\]\()(\.\/)','$1https://raw.githubusercontent.com/${{ github.repository }}/${{ github.ref_name }}/${{ inputs.README_OUTPUT_PATH }}/',[System.Text.RegularExpressions.RegexOptions]::Multiline) | Set-Content -Path "${{ env.README_FILENAME }}";
         working-directory: ${{ env.README_OUTPUT_PATH }}
+
+      - name: Download test coverage report
+        uses: actions/download-artifact@v3
+        with:
+          name: coverage-report
+          path: ./docs/coverage/
 
       - name: Show Changes
         run: |
