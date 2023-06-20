@@ -18,3 +18,6 @@ Note that each `ChannelMuxInput` is a single input, single output where _single_
 and a single instance reading, and thus can be optimized using `SingleProducerSingleConsumerQueue`.
 
 ![diagram](https://raw.githubusercontent.com/erichiller/mkmrk.Channels/master/README-1.svg)
+
+
+![diagram](https://raw.githubusercontent.com/erichiller/mkmrk.Channels/master/docs/rendered/README-1.svg)

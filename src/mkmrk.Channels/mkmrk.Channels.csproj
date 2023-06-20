@@ -15,7 +15,6 @@
             `ChannelMux` is used to aggregate multiple `BroadcastChannel` of multiple outputs into a single, awaitable object.
         </Description>
         <PackageReadmeFile>README.md</PackageReadmeFile>
-        <PackageReadmeFile Condition="Exists('../../docs/rendered/README.md')">./docs/rendered/README.md</PackageReadmeFile>
         <!-- TODO: Check that the TOP level Directory.Build.props carry over here. -->
     </PropertyGroup>
 
@@ -41,9 +40,9 @@
             <!-- BETA -->
             <PackageVersion Condition=" '$(RELEASE_TYPE)' == 'beta' ">1.0.0-beta.$([System.DateTime]::Now.ToString("yyyy-MM-dd.Hmm"))+$(SourceRevisionId)</PackageVersion>
             <!-- PRE-RELEASE -->
-             <PackageVersion Condition=" '$(RELEASE_TYPE)' == 'prerelease' ">1.0.0-$([System.DateTime]::Now.ToString("yyyy-MM-dd.Hmm"))+$(SourceRevisionId)</PackageVersion> 
+            <PackageVersion Condition=" '$(RELEASE_TYPE)' == 'prerelease' ">1.0.0-$([System.DateTime]::Now.ToString("yyyy-MM-dd.Hmm"))+$(SourceRevisionId)</PackageVersion>
             <!-- STABLE RELEASE -->
-             <PackageVersion Condition=" '$(RELEASE_TYPE)' == 'stable' ">1.0.0+$([System.DateTime]::Now.ToString("yyyy-MM-dd.Hmm")).$(SourceRevisionId)</PackageVersion> 
+            <PackageVersion Condition=" '$(RELEASE_TYPE)' == 'stable' ">1.0.0+$([System.DateTime]::Now.ToString("yyyy-MM-dd.Hmm")).$(SourceRevisionId)</PackageVersion>
         </PropertyGroup>
         <Message Importance="high" Text="Project File Name    = $(MSBuildProjectFile)" />
         <Message Importance="high" Text="Project Extension    = $(MSBuildProjectExtension)" />
@@ -55,13 +54,18 @@
 
     <PropertyGroup>
         <AnalysisLevel>latest-all</AnalysisLevel>
-<!--        <AnalysisLevel>preview-all</AnalysisLevel>-->
-<!--        <CodeAnalysisTreatWarningsAsErrors>true</CodeAnalysisTreatWarningsAsErrors>-->
-<!--        <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>-->
+        <!--        <AnalysisLevel>preview-all</AnalysisLevel>-->
+        <!--        <CodeAnalysisTreatWarningsAsErrors>true</CodeAnalysisTreatWarningsAsErrors>-->
+        <!--        <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>-->
     </PropertyGroup>
 
-    <ItemGroup>
-        <None Include="../../README.md" Pack="true" PackagePath="\" />
+    <PropertyGroup>
+
+        <ReadmeFilePath>../../README.md</ReadmeFilePath>
+        <ReadmeFilePath Condition="Exists('../../docs/rendered/README.md')">../../docs/rendered/README.md</ReadmeFilePath>
+    </PropertyGroup>
+    <ItemGroup >
+        <None Include="$(ReadmeFilePath)" Pack="true" PackagePath="\" />
     </ItemGroup>
 
     <ItemGroup Condition=" '$(TargetFramework)' == 'net8.0' ">
