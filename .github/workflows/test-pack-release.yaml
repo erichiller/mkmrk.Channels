@@ -107,7 +107,6 @@ jobs:
       #
       - name: Print coverage summary to Workflow Summary
         shell: pwsh
-        #      Add-Content -NoNewline -Path $env:GITHUB_STEP_SUMMARY -Value $_ ;
         run: |
           Get-Content -Path ./docs/coverage/SummaryGithub.md | ForEach-Object {
               Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value $_ ;
