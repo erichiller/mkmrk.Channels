@@ -74,7 +74,14 @@ jobs:
       - name: Build
         run: dotnet build --configuration Release --no-restore
       - name: Test
-        run: dotnet test --logger "console;verbosity=normal" --logger "html;logfilename=testResults.html" --logger:"trx;LogFilePrefix=testResults" --filter '(FullyQualifiedName!~Latency)&(FullyQualifiedName!~AddingAndRemovingReadersShouldNeverError)' --collect:"XPlat Code Coverage"
+        run: |
+          dotnet test --logger "console;verbosity=normal" \
+                      --logger "html;logfilename=testResults.html" \
+                      --logger:"trx;LogFilePrefix=testResults" \
+                      --filter '(FullyQualifiedName!~Latency)&(FullyQualifiedName!~AddingAndRemovingReadersShouldNeverError)' \
+                      --collect:"XPlat Code Coverage" \
+                      -- \
+                      DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.ExcludeByFile=**/DotnetRuntimeSourced/**
         working-directory: ./test/mkmrk.Channels.Tests/
       # 
       # https://github.com/marketplace/actions/publish-test-results#configuration
@@ -98,7 +105,7 @@ jobs:
           reporttypes: Html_Light;JsonSummary;TextSummary;TextDeltaSummary;MarkdownSummaryGithub;PngChart;Badges
           sourcedirs: ./src/mkmrk.Channels/
 #          filefilters: -./src/mkmrk.Channels/ChannelMux/DotnetRuntimeSourced/*
-          filefilters: +*,-AsyncOperation.cs;-ChannelUtilities.cs;-SingleProducerSingleConsumer.cs
+#          filefilters: +*,-AsyncOperation.cs;-ChannelUtilities.cs;-SingleProducerSingleConsumer.cs
           # TODO: history requires that I commit this directory
           historydir: ./docs/coverage/history/
           verbosity: Verbose
