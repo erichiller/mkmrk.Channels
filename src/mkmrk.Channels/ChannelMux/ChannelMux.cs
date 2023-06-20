@@ -55,6 +55,7 @@ public abstract class ChannelMux {
     /// <param name="muxInput"></param>
     /// <typeparam name="TData"></typeparam>
     protected void resetOneChannel<TData>( ChannelMuxInput<TData> muxInput ) {
+        ArgumentNullException.ThrowIfNull( muxInput );
         if ( muxInput.IsClosed ) {
             Interlocked.Decrement( ref _closedChannels );
         }
@@ -219,7 +220,7 @@ public abstract class ChannelMux {
         /// <remarks>
         /// Any waiting readers will only be exited if the queue is empty.
         /// </remarks>
-        public override bool TryComplete( Exception? exception = null ) {
+        public override bool TryComplete( Exception? error = null ) {
             AsyncOperation<bool>? waitingReader = null;
 
             // If we're already marked as complete, there's nothing more to do.
@@ -228,11 +229,11 @@ public abstract class ChannelMux {
             }
 
             // allow the user to ignore or modify the Exception
-            exception = _parent.OnChannelComplete?.Invoke( typeof(TData), exception );
-            exception?.Data.Add( nameof(ChannelMux) + " Type", typeof(TData) );
-            if ( exception is { } ) {
+            error = _parent.OnChannelComplete?.Invoke( typeof(TData), error );
+            error?.Data.Add( nameof(ChannelMux) + " Type", typeof(TData) );
+            if ( error is { } ) {
                 _parent._hasException = true;
-                Interlocked.Exchange( ref _parent._completeException, exception );
+                Interlocked.Exchange( ref _parent._completeException, error );
                 Interlocked.Exchange( ref _parent._completeExceptionChannelDataType, typeof(TData) );
             }
 
@@ -247,7 +248,7 @@ public abstract class ChannelMux {
                 _isClosed = true;
             }
             // if all channels are closed, or if this complete was reported with an exception, close everything so long as the _queue IsEmpty
-            if ( ( _parent._closedChannels >= _parent._totalChannels || exception is { } ) ) {
+            if ( ( _parent._closedChannels >= _parent._totalChannels || error is { } ) ) {
                 // If we have no more items remaining, then the channel needs to be marked as completed
                 // and readers need to be informed they'll never get another item.  All of that needs
                 // to happen outside of the lock to avoid invoking continuations under the lock.
@@ -258,11 +259,11 @@ public abstract class ChannelMux {
                         _parent._isReaderWaiting = false;
                     }
                 }
-                ChannelUtilities.Complete( _parent._completion, exception );
+                ChannelUtilities.Complete( _parent._completion, error );
                 // Complete a waiting reader if there is one (this is only encountered when _queue.IsEmpty is true
                 if ( waitingReader != null ) {
-                    if ( exception != null ) {
-                        waitingReader.TrySetException( exception );
+                    if ( error != null ) {
+                        waitingReader.TrySetException( error );
                     } else {
                         waitingReader.TrySetResult( item: false );
                     }

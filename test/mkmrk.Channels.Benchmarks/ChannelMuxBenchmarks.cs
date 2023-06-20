@@ -43,11 +43,11 @@ public class ChannelMuxBenchmarks {
     [ Benchmark ]
     [ SuppressMessage( "ReSharper", "NotAccessedOutParameterVariable" ) ]
     public async Task AsyncWaitLoopOnly_2Producer( bool withCancellationToken ) {
-        BroadcastChannel<StructA, IBroadcastChannelResponse> channel1 = new ();
-        BroadcastChannel<ClassA>                             channel2 = new ();
-        ChannelMux<StructA, ClassA>                          mux      = new (channel1.Writer, channel2.Writer); // { EnableLogging = false };
-        using CancellationTokenSource                        cts      = new CancellationTokenSource();
-        CancellationToken                                    ct       = CancellationToken.None;
+        using BroadcastChannel<StructA, IBroadcastChannelResponse> channel1 = new ();
+        using BroadcastChannel<ClassA>                             channel2 = new ();
+        using ChannelMux<StructA, ClassA>                          mux      = new (channel1.Writer, channel2.Writer); // { EnableLogging = false };
+        using CancellationTokenSource                              cts      = new CancellationTokenSource();
+        CancellationToken                                          ct       = CancellationToken.None;
         if ( withCancellationToken ) {
             ct = cts.Token;
             if ( !ct.CanBeCanceled ) {
@@ -86,11 +86,11 @@ public class ChannelMuxBenchmarks {
     [ Arguments( false ) ]
     [ Benchmark ]
     public async Task LoopTryRead_2Producer( bool withCancellationToken ) {
-        BroadcastChannel<StructA?, IBroadcastChannelResponse> channel1 = new ();
-        BroadcastChannel<ClassA>                              channel2 = new ();
-        ChannelMux<StructA?, ClassA>                          mux      = new (channel1.Writer, channel2.Writer);
-        using CancellationTokenSource                         cts      = new CancellationTokenSource();
-        CancellationToken                                     ct       = CancellationToken.None;
+        using BroadcastChannel<StructA?, IBroadcastChannelResponse> channel1 = new ();
+        using BroadcastChannel<ClassA>                              channel2 = new ();
+        using ChannelMux<StructA?, ClassA>                          mux      = new (channel1.Writer, channel2.Writer);
+        using CancellationTokenSource                               cts      = new CancellationTokenSource();
+        CancellationToken                                           ct       = CancellationToken.None;
         if ( withCancellationToken ) {
             ct = cts.Token;
             if ( !ct.CanBeCanceled ) {
@@ -130,11 +130,11 @@ public class ChannelMuxBenchmarks {
     [ Arguments( false ) ]
     [ Benchmark ]
     public async Task LoopTryRead2_2Producer( bool withCancellationToken ) {
-        BroadcastChannel<StructA?, IBroadcastChannelResponse> channel1 = new ();
-        BroadcastChannel<ClassA>                              channel2 = new ();
-        ChannelMux<StructA?, ClassA>                          mux      = new (channel1.Writer, channel2.Writer);
-        using CancellationTokenSource                         cts      = new CancellationTokenSource();
-        CancellationToken                                     ct       = CancellationToken.None;
+        using BroadcastChannel<StructA?, IBroadcastChannelResponse> channel1 = new ();
+        using BroadcastChannel<ClassA>                              channel2 = new ();
+        using ChannelMux<StructA?, ClassA>                          mux      = new (channel1.Writer, channel2.Writer);
+        using CancellationTokenSource                               cts      = new CancellationTokenSource();
+        CancellationToken                                           ct       = CancellationToken.None;
         if ( withCancellationToken ) {
             ct = cts.Token;
             if ( !ct.CanBeCanceled ) {
@@ -170,11 +170,11 @@ public class ChannelMuxBenchmarks {
 
     [ Benchmark ]
     public async Task LoopTryRead2_3Producer( ) {
-        BroadcastChannel<StructA?, IBroadcastChannelResponse> channel1 = new ();
-        BroadcastChannel<ClassA>                              channel2 = new ();
-        BroadcastChannel<ClassB>                              channel3 = new ();
-        ChannelMux<StructA?, ClassA, ClassB>                  mux      = new (channel1.Writer, channel2.Writer, channel3.Writer);
-        CancellationToken                                     ct       = CancellationToken.None;
+        using BroadcastChannel<StructA?, IBroadcastChannelResponse> channel1 = new ();
+        using BroadcastChannel<ClassA>                              channel2 = new ();
+        using BroadcastChannel<ClassB>                              channel3 = new ();
+        using ChannelMux<StructA?, ClassA, ClassB>                  mux      = new (channel1.Writer, channel2.Writer, channel3.Writer);
+        CancellationToken                                           ct       = CancellationToken.None;
         Task producer1 = Task.Run( ( ) => producerTask( channel1.Writer, MessageCount, i => new StructA {
                                                             Id   = i,
                                                             Name = @"some_text"
@@ -220,12 +220,12 @@ public class ChannelMuxBenchmarks {
 
     [ Benchmark ]
     public async Task LoopTryRead2_4Producer_4Tasks_1ValueType_3ReferenceTypes( ) {
-        BroadcastChannel<StructA?, IBroadcastChannelResponse> channel1 = new ();
-        BroadcastChannel<ClassA>                              channel2 = new ();
-        BroadcastChannel<ClassB>                              channel3 = new ();
-        BroadcastChannel<ClassC>                              channel4 = new ();
-        ChannelMux<StructA?, ClassA, ClassB, ClassC>          mux      = new (channel1.Writer, channel2.Writer, channel3.Writer, channel4.Writer);
-        CancellationToken                                     ct       = CancellationToken.None;
+        using BroadcastChannel<StructA?, IBroadcastChannelResponse> channel1 = new ();
+        using BroadcastChannel<ClassA>                              channel2 = new ();
+        using BroadcastChannel<ClassB>                              channel3 = new ();
+        using BroadcastChannel<ClassC>                              channel4 = new ();
+        using ChannelMux<StructA?, ClassA, ClassB, ClassC>          mux      = new (channel1.Writer, channel2.Writer, channel3.Writer, channel4.Writer);
+        CancellationToken                                           ct       = CancellationToken.None;
         Task producer1 = Task.Run( ( ) => producerTask( channel1.Writer, MessageCount, i => new StructA {
                                                             Id   = i,
                                                             Name = @"some_text"
@@ -282,12 +282,12 @@ public class ChannelMuxBenchmarks {
 
     [ Benchmark ]
     public async Task LoopTryRead2_4Producer_4Tasks_4ReferenceTypes( ) {
-        BroadcastChannel<ClassA>                   channel1 = new ();
-        BroadcastChannel<ClassB>                   channel2 = new ();
-        BroadcastChannel<ClassC>                   channel3 = new ();
-        BroadcastChannel<ClassD>                   channel4 = new ();
-        ChannelMux<ClassA, ClassB, ClassC, ClassD> mux      = new (channel1.Writer, channel2.Writer, channel3.Writer, channel4.Writer);
-        CancellationToken                          ct       = CancellationToken.None;
+        using BroadcastChannel<ClassA>                   channel1 = new ();
+        using BroadcastChannel<ClassB>                   channel2 = new ();
+        using BroadcastChannel<ClassC>                   channel3 = new ();
+        using BroadcastChannel<ClassD>                   channel4 = new ();
+        using ChannelMux<ClassA, ClassB, ClassC, ClassD> mux      = new (channel1.Writer, channel2.Writer, channel3.Writer, channel4.Writer);
+        CancellationToken                                ct       = CancellationToken.None;
         Task producer1 = Task.Run( ( ) => producerTask( channel1.Writer, MessageCount, i => new ClassA {
                                                             Id   = i,
                                                             Name = @"some_text"
@@ -344,13 +344,13 @@ public class ChannelMuxBenchmarks {
 
     [ Benchmark ]
     public async Task LoopTryRead2_4Producer_1Task_1ValueType_3ReferenceTypes( ) {
-        BroadcastChannel<StructA?, IBroadcastChannelResponse> channel1 = new ();
-        BroadcastChannel<ClassA>                              channel2 = new ();
-        BroadcastChannel<ClassB>                              channel3 = new ();
-        BroadcastChannel<ClassC>                              channel4 = new ();
-        ChannelMux<StructA?, ClassA, ClassB, ClassC>          mux      = new (channel1.Writer, channel2.Writer, channel3.Writer, channel4.Writer);
-        CancellationToken                                     ct       = CancellationToken.None;
-        Task                                                  producer = Task.Run( producerTaskMultiChannel, ct );
+        using BroadcastChannel<StructA?, IBroadcastChannelResponse> channel1 = new ();
+        using BroadcastChannel<ClassA>                              channel2 = new ();
+        using BroadcastChannel<ClassB>                              channel3 = new ();
+        using BroadcastChannel<ClassC>                              channel4 = new ();
+        using ChannelMux<StructA?, ClassA, ClassB, ClassC>          mux      = new (channel1.Writer, channel2.Writer, channel3.Writer, channel4.Writer);
+        CancellationToken                                           ct       = CancellationToken.None;
+        Task                                                        producer = Task.Run( producerTaskMultiChannel, ct );
 
         void producerTaskMultiChannel( ) {
             int i = 0;
@@ -415,13 +415,13 @@ public class ChannelMuxBenchmarks {
 
     [ Benchmark ]
     public async Task LoopTryRead2_4Producer_1Task_1ValueType_3ReferenceTypes_WriteAsync( ) {
-        BroadcastChannel<StructA?, IBroadcastChannelResponse> channel1 = new ();
-        BroadcastChannel<ClassA>                              channel2 = new ();
-        BroadcastChannel<ClassB>                              channel3 = new ();
-        BroadcastChannel<ClassC>                              channel4 = new ();
-        ChannelMux<StructA?, ClassA, ClassB, ClassC>          mux      = new (channel1.Writer, channel2.Writer, channel3.Writer, channel4.Writer);
-        CancellationToken                                     ct       = CancellationToken.None;
-        Task                                                  producer = Task.Run( producerTaskMultiChannel, ct );
+        using      BroadcastChannel<StructA?, IBroadcastChannelResponse> channel1 = new ();
+        using       BroadcastChannel<ClassA>                             channel2 = new ();
+        using        BroadcastChannel<ClassB>                            channel3 = new ();
+        using       BroadcastChannel<ClassC>                             channel4 = new ();
+        using    ChannelMux<StructA?, ClassA, ClassB, ClassC>            mux      = new (channel1.Writer, channel2.Writer, channel3.Writer, channel4.Writer);
+        CancellationToken                                                ct       = CancellationToken.None;
+        Task                                                             producer = Task.Run( producerTaskMultiChannel, ct );
 
         async Task producerTaskMultiChannel( ) {
             int i = 0;
@@ -489,15 +489,15 @@ public class ChannelMuxBenchmarks {
     [ Arguments( false ) ]
     [ Benchmark ]
     public async Task LoopTryRead2_8Producer_8Tasks( bool withCancellationToken ) {
-        BroadcastChannel<ClassA> channel1 = new ();
-        BroadcastChannel<ClassB> channel2 = new ();
-        BroadcastChannel<ClassC> channel3 = new ();
-        BroadcastChannel<ClassD> channel4 = new ();
-        BroadcastChannel<ClassE> channel5 = new ();
-        BroadcastChannel<ClassF> channel6 = new ();
-        BroadcastChannel<ClassG> channel7 = new ();
-        BroadcastChannel<ClassH> channel8 = new ();
-        ChannelMux<ClassA, ClassB, ClassC, ClassD, ClassE, ClassF, ClassG, ClassH> mux = new (
+        using      BroadcastChannel<ClassA> channel1 = new ();
+        using BroadcastChannel<ClassB>      channel2 = new ();
+        using BroadcastChannel<ClassC>      channel3 = new ();
+        using BroadcastChannel<ClassD>      channel4 = new ();
+        using BroadcastChannel<ClassE>      channel5 = new ();
+        using BroadcastChannel<ClassF>      channel6 = new ();
+        using BroadcastChannel<ClassG>      channel7 = new ();
+        using BroadcastChannel<ClassH>      channel8 = new ();
+        using      ChannelMux<ClassA, ClassB, ClassC, ClassD, ClassE, ClassF, ClassG, ClassH> mux = new (
             channel1.Writer, channel2.Writer, channel3.Writer, channel4.Writer,
             channel5.Writer, channel6.Writer, channel7.Writer, channel8.Writer);
         using CancellationTokenSource cts = new CancellationTokenSource();
@@ -608,8 +608,8 @@ public class ChannelMuxBenchmarks {
 
     [ Benchmark ]
     public async Task BroadcastChannelOnly( ) {
-        BroadcastChannel<StructA?, IBroadcastChannelResponse> channel1       = new ();
-        BroadcastChannel<ClassA>                              channel2       = new ();
+        using      BroadcastChannel<StructA?, IBroadcastChannelResponse> channel1       = new ();
+        using       BroadcastChannel<ClassA>                  channel2       = new ();
         var                                                   channelReader1 = channel1.CreateReader(); // these must be setup BEFORE the producer begins
         var                                                   channelReader2 = channel2.CreateReader();
         CancellationToken                                     ct             = CancellationToken.None;

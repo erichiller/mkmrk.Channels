@@ -32,7 +32,7 @@
         <AnalysisLevel>latest-all</AnalysisLevel>
 <!--        <AnalysisLevel>latest</AnalysisLevel>-->
 <!--        <AnalysisMode>All</AnalysisMode>-->
-        <CodeAnalysisTreatWarningsAsErrors>false</CodeAnalysisTreatWarningsAsErrors>
+<!--        <CodeAnalysisTreatWarningsAsErrors>false</CodeAnalysisTreatWarningsAsErrors>-->
         <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
     </PropertyGroup>
 

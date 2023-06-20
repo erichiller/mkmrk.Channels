@@ -166,3 +166,25 @@ dotnet_diagnostic.CA1805.severity = none
 # TODO: Increase this to warning later on?
 dotnet_diagnostic.CA1848.severity = suggestion
 
+
+dotnet_diagnostic.CA2000.severity = error
+
+
+
+[test/mkmrk.Channels.Tests/**.cs]
+
+# don't worry about underscores in test method names
+dotnet_diagnostic.CA1707.severity = none
+# for xunit, don't add ConfigureAwait(false)
+dotnet_diagnostic.CA2007.severity = none
+
+
+
+# This code is a near direct copy of dotnet/runtime - leave as is.
+[src/mkmrk.Channels/ChannelMux/DotnetRuntimeSourced/**.cs]
+dotnet_diagnostic.CA1050.severity = none
+dotnet_diagnostic.CA1068.severity = none
+dotnet_diagnostic.CA1508.severity = none
+dotnet_diagnostic.CA1711.severity = none
+dotnet_diagnostic.CA1812.severity = none
+dotnet_diagnostic.CA2201.severity = none

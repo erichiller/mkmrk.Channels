@@ -14,13 +14,13 @@ public static partial class Program {
     internal static async Task SimpleTest( int count = 100, int messageCount = 100_000 ) {
         for ( int i = 0 ; i < count ; i++ ) {
             Console.WriteLine( $"========================================\n## {nameof(SimpleTest)} #{i}\n========================================\n" );
-            Stopwatch                                            stopwatch      = Stopwatch.StartNew();
-            long                                                 testStartTicks = stopwatch.ElapsedTicks;
-            long                                                 testStartMs    = stopwatch.ElapsedMilliseconds;
-            BroadcastChannel<StructA, IBroadcastChannelResponse> channel1       = new ();
-            BroadcastChannel<ClassA>                             channel2       = new ();
-            using ChannelMux<StructA, ClassA>                    mux            = new (channel1.Writer, channel2.Writer);
-            using CancellationTokenSource                        cts            = new CancellationTokenSource();
+            Stopwatch                                                        stopwatch      = Stopwatch.StartNew();
+            long                                                             testStartTicks = stopwatch.ElapsedTicks;
+            long                                                             testStartMs    = stopwatch.ElapsedMilliseconds;
+            using       BroadcastChannel<StructA, IBroadcastChannelResponse> channel1       = new ();
+            using       BroadcastChannel<ClassA>                             channel2       = new ();
+            using ChannelMux<StructA, ClassA>                                mux            = new (channel1.Writer, channel2.Writer);
+            using CancellationTokenSource                                    cts            = new CancellationTokenSource();
             cts.CancelAfter( 8_000 );
             CancellationToken ct = cts.Token;
             // ct = CancellationToken.None;
@@ -103,12 +103,12 @@ public static partial class Program {
         Stopwatch stopwatch    = Stopwatch.StartNew();
         const int messageCount = 10_000;
         for ( int i = 0 ; i < 10_000 ; i++ ) {
-            long                                                  testStartTicks = stopwatch.ElapsedTicks;
-            long                                                  testStartMs    = stopwatch.ElapsedMilliseconds;
-            BroadcastChannel<StructA?, IBroadcastChannelResponse> channel1       = new ();
-            BroadcastChannel<ClassA>                              channel2       = new ();
-            using ChannelMux<StructA?, ClassA>                    mux            = new (channel1.Writer, channel2.Writer);
-            CancellationToken                                     ct             = CancellationToken.None;
+            long                                                         testStartTicks = stopwatch.ElapsedTicks;
+            long                                                         testStartMs    = stopwatch.ElapsedMilliseconds;
+            using  BroadcastChannel<StructA?, IBroadcastChannelResponse> channel1       = new ();
+            using    BroadcastChannel<ClassA>                            channel2       = new ();
+            using ChannelMux<StructA?, ClassA>                           mux            = new (channel1.Writer, channel2.Writer);
+            CancellationToken                                            ct             = CancellationToken.None;
             // using CancellationTokenSource cts = new CancellationTokenSource();
             // CancellationToken             ct  = cts.Token;
 
@@ -195,8 +195,8 @@ public static partial class Program {
         Stopwatch                              stopwatch      = Stopwatch.StartNew();
         long                                   testStartTicks = stopwatch.ElapsedTicks;
         long                                   testStartMs    = stopwatch.ElapsedMilliseconds;
-        BroadcastChannel<BaseClass>            channel1       = new ();
-        BroadcastChannel<SubClassA>            channel2       = new ();
+        using      BroadcastChannel<BaseClass> channel1       = new ();
+        using     BroadcastChannel<SubClassA>  channel2       = new ();
         using ChannelMux<BaseClass, SubClassA> mux            = new (channel1.Writer, channel2.Writer);
         using CancellationTokenSource          cts            = new CancellationTokenSource();
         const int                              messageCount   = 100;
@@ -276,8 +276,8 @@ public static partial class Program {
         Stopwatch                              stopwatch      = Stopwatch.StartNew();
         long                                   testStartTicks = stopwatch.ElapsedTicks;
         long                                   testStartMs    = stopwatch.ElapsedMilliseconds;
-        BroadcastChannel<SubClassB>            channel1       = new ();
-        BroadcastChannel<SubClassA>            channel2       = new ();
+        using   BroadcastChannel<SubClassB>    channel1       = new ();
+        using      BroadcastChannel<SubClassA> channel2       = new ();
         using ChannelMux<SubClassB, SubClassA> mux            = new (channel1.Writer, channel2.Writer);
         using CancellationTokenSource          cts            = new CancellationTokenSource();
         const int                              messageCount   = 100;
@@ -444,10 +444,10 @@ public static partial class Program {
     }
 
     internal static async Task LatencyTest( ) {
-        BroadcastChannel<StructB?>     channel1 = new ();
-        BroadcastChannel<StructC?>     channel2 = new ();
-        ChannelMux<StructB?, StructC?> mux      = new (channel1.Writer, channel2.Writer);
-        CancellationToken              ct       = CancellationToken.None;
+        using    BroadcastChannel<StructB?>    channel1 = new ();
+        using     BroadcastChannel<StructC?>   channel2 = new ();
+        using   ChannelMux<StructB?, StructC?> mux      = new (channel1.Writer, channel2.Writer);
+        CancellationToken                      ct       = CancellationToken.None;
         // int                            MessageCount = 10_000_000;
         const int messageCount = 1_000_000;
         Stopwatch stopwatch    = Stopwatch.StartNew();

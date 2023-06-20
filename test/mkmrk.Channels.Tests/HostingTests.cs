@@ -19,7 +19,7 @@ namespace mkmrk.Channels.Tests;
 
 public sealed class HostingTests : TestBase<HostingTests>, IDisposable {
     private readonly IHost                   _host;
-    private readonly CancellationTokenSource _cts      = new CancellationTokenSource();
+    private readonly CancellationTokenSource _cts       = new CancellationTokenSource();
     private const    int                     _maxTestMs = 1_000;
 
     public HostingTests( ITestOutputHelper testOutputHelper ) : base( testOutputHelper, logLevel: LogEventLevel.Information ) {
@@ -77,9 +77,9 @@ public sealed class HostingTests : TestBase<HostingTests>, IDisposable {
 
     [ Fact ]
     public async Task RequestBroadcastChannelReaderSource( ) {
-        var readerSourceA = _host.Services.GetRequiredService<IBroadcastChannelReaderSource<ChannelMessageSubA>>(); // I need to ALWAYS FULLY DEFINE 
-        var readerSourceB = _host.Services.GetRequiredService<IBroadcastChannelReaderSource<ChannelMessageSubB>>();
-        var mux           = new ChannelMux<ChannelMessageSubA, ChannelMessageSubB>( readerSourceA, readerSourceB );
+        var       readerSourceA = _host.Services.GetRequiredService<IBroadcastChannelReaderSource<ChannelMessageSubA>>(); // I need to ALWAYS FULLY DEFINE 
+        var       readerSourceB = _host.Services.GetRequiredService<IBroadcastChannelReaderSource<ChannelMessageSubB>>();
+        using var mux           = new ChannelMux<ChannelMessageSubA, ChannelMessageSubB>( readerSourceA, readerSourceB );
         await _host.StartAsync( _cts.Token );
         int                 receivedCountA = 0;
         int                 receivedCountB = 0;
