@@ -161,7 +161,6 @@ jobs:
         shell: pwsh
         run: |
           $readmeTxt = Get-Content -Raw -Path "${{ env.README_FILENAME }}" ; `
-          https://raw.githubusercontent.com/erichiller/mkmrk.Channels/master/docs/rendered/README-1.svg
           [System.Text.RegularExpressions.Regex]::Replace($readmeTxt,'^(!\[[^\]]*\]\()(\.\/)','$1https://raw.githubusercontent.com/${{ github.repository }}/${{ github.ref_name }}/${{ env.README_OUTPUT_PATH }}',[System.Text.RegularExpressions.RegexOptions]::Multiline) | Set-Content -Path "${{ env.README_FILENAME }}";
         working-directory: ${{ env.README_OUTPUT_PATH }}
 
