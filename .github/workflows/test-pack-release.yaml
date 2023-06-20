@@ -96,6 +96,7 @@ jobs:
           targetdir: ./docs/coverage/
           reporttypes: Html_Light;JsonSummary;TextSummary;TextDeltaSummary;MarkdownSummaryGithub;PngChart;Badges
           sourcedirs: ./src/mkmrk.Channels/
+          filefilters: -./src/mkmrk.Channels/ChannelMux/DotnetRuntimeSourced/
           historydir: ./docs/coverage/history/
           verbosity: Verbose
           tag: '${{ github.run_number }}_${{ github.run_id }}'
