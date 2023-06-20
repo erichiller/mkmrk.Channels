@@ -107,6 +107,13 @@ jobs:
           tag: '${{ github.sha }}_${{ github.run_number }}'
           title: '${{ github.repository }} coverage'
       #
+      - name: Print coverage summary to Workflow Summary
+        shell: pwsh
+        run: |
+          Get-Content -Path ./docs/coverage/SummaryGithub.md | ForEach-Object {
+              Add-Content -NoNewline -Path $env:GITHUB_STEP_SUMMARY -Value $_ ;
+          }
+      #
       - name: Show Changes
         run: |
           git status --short
