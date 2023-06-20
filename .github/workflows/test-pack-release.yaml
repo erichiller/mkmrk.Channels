@@ -49,7 +49,7 @@ concurrency:
 env:
   README_FILENAME: README.md
   README_INPUT_PATH: ./
-  README_OUTPUT_PATH: ./docs/rendered/
+  README_OUTPUT_PATH: docs/rendered/
   TZ: America/Chicago
 
 jobs:
@@ -161,7 +161,8 @@ jobs:
         shell: pwsh
         run: |
           $readmeTxt = Get-Content -Raw -Path "${{ env.README_FILENAME }}" ; `
-          [System.Text.RegularExpressions.Regex]::Replace($readmeTxt,'^(!\[[^\]]*\]\()(\.\/)','$1https://raw.githubusercontent.com/${{ github.repository }}/${{ github.ref_name }}/${{ inputs.README_OUTPUT_PATH }}/',[System.Text.RegularExpressions.RegexOptions]::Multiline) | Set-Content -Path "${{ env.README_FILENAME }}";
+          https://raw.githubusercontent.com/erichiller/mkmrk.Channels/master/docs/rendered/README-1.svg
+          [System.Text.RegularExpressions.Regex]::Replace($readmeTxt,'^(!\[[^\]]*\]\()(\.\/)','$1https://raw.githubusercontent.com/${{ github.repository }}/${{ github.ref_name }}/${{ env.README_OUTPUT_PATH }}',[System.Text.RegularExpressions.RegexOptions]::Multiline) | Set-Content -Path "${{ env.README_FILENAME }}";
         working-directory: ${{ env.README_OUTPUT_PATH }}
 
       - name: Download test coverage report
