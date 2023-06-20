@@ -15,7 +15,7 @@
             `ChannelMux` is used to aggregate multiple `BroadcastChannel` of multiple outputs into a single, awaitable object.
         </Description>
         <PackageReadmeFile>README.md</PackageReadmeFile>
-        <PackageReadmeFile Condition="Exists('../../docs/rendered/README.md')">../../docs/rendered/README.md</PackageReadmeFile>
+        <PackageReadmeFile Condition="Exists('../../docs/rendered/README.md')">./docs/rendered/README.md</PackageReadmeFile>
         <!-- TODO: Check that the TOP level Directory.Build.props carry over here. -->
     </PropertyGroup>
 
