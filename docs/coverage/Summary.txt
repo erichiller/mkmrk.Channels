@@ -1,6 +1,6 @@
 Summary - erichiller/mkmrk.Channels coverage
-  Generated on: 06/20/2023 - 11:57:25
-  Coverage date: 06/20/2023 - 11:57:16
+  Generated on: 06/20/2023 - 12:14:13
+  Coverage date: 06/20/2023 - 12:14:07
   Parser: MultiReport (2x Cobertura)
   Assemblies: 1
   Classes: 24
@@ -16,7 +16,7 @@ Summary - erichiller/mkmrk.Channels coverage
   Method coverage: 53% (79 of 149)
   Covered methods: 79
   Total methods: 149
-  Tag: 050daad73276fc4b11c05a98e4b4068fca4695e2_35
+  Tag: 2e4ab4afe7d88596a0159379ecbf5906e69fd529_38
 
 mkmrk.Channels                                                                           68.2%
   Microsoft.Extensions.DependencyInjection.BroadcastChannelServiceCollectionExtensions   86.3%
