@@ -1,15 +1,15 @@
 Delta Summary - erichiller/mkmrk.Channels coverage
-  Generated on: 06/20/2023 - 12:14
+  Generated on: 06/24/2023 - 07:20
   Description                      Previous              Current      Delta
-  Coverage date:         06/20/2023 - 11:57   06/20/2023 - 12:14
-  Tag:                 050daad73276fc4b11c05a98e4b4068fca4695e2_35 2e4ab4afe7d88596a0159379ecbf5906e69fd529_38
+  Coverage date:         06/20/2023 - 12:14   06/24/2023 - 07:20
+  Tag:                 2e4ab4afe7d88596a0159379ecbf5906e69fd529_38 00f5287c3bc6f2bc8048a7d6b9a6aae726690555_40
   Line coverage:                      68.2%                68.2%       0.0%
-  Covered lines:                        484                  484          0
-  Coverable lines:                      709                  709          0
-  Total lines:                         5361                 5361          0
-  Branch coverage:                    60.9%                60.9%       0.0%
-  Covered branches:                     167                  167          0
-  Total branches:                       274                  274          0
+  Covered lines:                        484                  482         -2
+  Coverable lines:                      709                  706         -3
+  Total lines:                         5361                 5387         26
+  Branch coverage:                    60.9%                61.1%       0.2%
+  Covered branches:                     167                  164         -3
+  Total branches:                       274                  268         -6
   Method coverage:                      53%                  53%         0%
-  Covered methods:                       79                   79          0
-  Total methods:                        149                  149          0
+  Covered methods:                       79                   78         -1
+  Total methods:                        149                  147         -2

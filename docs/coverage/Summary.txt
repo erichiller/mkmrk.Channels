@@ -1,22 +1,22 @@
 Summary - erichiller/mkmrk.Channels coverage
-  Generated on: 06/20/2023 - 12:14:13
-  Coverage date: 06/20/2023 - 12:14:07
+  Generated on: 06/24/2023 - 07:20:56
+  Coverage date: 06/24/2023 - 07:20:50
   Parser: MultiReport (2x Cobertura)
   Assemblies: 1
   Classes: 24
   Files: 13
   Line coverage: 68.2%
-  Covered lines: 484
-  Uncovered lines: 225
-  Coverable lines: 709
-  Total lines: 1786
-  Branch coverage: 60.9% (167 of 274)
-  Covered branches: 167
-  Total branches: 274
-  Method coverage: 53% (79 of 149)
-  Covered methods: 79
-  Total methods: 149
-  Tag: 2e4ab4afe7d88596a0159379ecbf5906e69fd529_38
+  Covered lines: 482
+  Uncovered lines: 224
+  Coverable lines: 706
+  Total lines: 1799
+  Branch coverage: 61.1% (164 of 268)
+  Covered branches: 164
+  Total branches: 268
+  Method coverage: 53% (78 of 147)
+  Covered methods: 78
+  Total methods: 147
+  Tag: 00f5287c3bc6f2bc8048a7d6b9a6aae726690555_40
 
 mkmrk.Channels                                                                           68.2%
   Microsoft.Extensions.DependencyInjection.BroadcastChannelServiceCollectionExtensions   86.3%
@@ -24,8 +24,8 @@ mkmrk.Channels                                                                  
   mkmrk.Channels.BroadcastChannel<T1, T2>                                                76.0%
   mkmrk.Channels.BroadcastChannelReader<T>                                              100.0%
   mkmrk.Channels.BroadcastChannelReader<T1, T2>                                          83.7%
-  mkmrk.Channels.BroadcastChannelReaderSource<T>                                         50.0%
-  mkmrk.Channels.BroadcastChannelReaderSource<T1, T2>                                    85.7%
+  mkmrk.Channels.BroadcastChannelReaderSource<T>                                         66.6%
+  mkmrk.Channels.BroadcastChannelReaderSource<T1, T2>                                    80.0%
   mkmrk.Channels.BroadcastChannelResponse                                                 0.0%
   mkmrk.Channels.BroadcastChannelWriter<T>                                              100.0%
   mkmrk.Channels.BroadcastChannelWriter<T1, T2>                                          93.7%
