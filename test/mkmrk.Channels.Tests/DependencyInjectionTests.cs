@@ -17,7 +17,7 @@ public sealed class DependencyInjectionTests : TestBase<DependencyInjectionTests
     /// <inheritdoc />
     public DependencyInjectionTests( ITestOutputHelper? output, ILogger? logger = null, LogEventLevel logLevel = LogEventLevel.Verbose ) : base( output, logger, logLevel ) { }
 
-    private IHostBuilder getHost( ) => Host.CreateDefaultBuilder( Array.Empty<string>() )
+    private static IHostBuilder getHost( ) => Host.CreateDefaultBuilder( Array.Empty<string>() )
                                            .ConfigureServices( ( _, services ) => {
                                                services.AddLogging( logBuilder =>
                                                                         logBuilder
@@ -100,7 +100,7 @@ public sealed class DependencyInjectionTests : TestBase<DependencyInjectionTests
         writer.ReaderCount.Should().Be( 1 );
         host.Services.GetRequiredService<IBroadcastChannelReader<ChannelMessageSubA>>();
         writer.ReaderCount.Should().Be( 2 );
-        using BroadcastChannelReader<ChannelMessageSubA, ChannelResponse> readerFromConcreteSource = host.Services.GetRequiredService<BroadcastChannelReaderSource<ChannelMessageSubA, ChannelResponse>>();
+        using IBroadcastChannelReader<ChannelMessageSubA, ChannelResponse> readerFromConcreteSource = host.Services.GetRequiredService<BroadcastChannelReaderSource<ChannelMessageSubA, ChannelResponse>>().CreateReader();
         writer.ReaderCount.Should().Be( 3 );
         using IBroadcastChannelReader<ChannelMessageSubA, ChannelResponse> _ = host.Services.GetRequiredService<IBroadcastChannelReaderSource<ChannelMessageSubA, ChannelResponse>>().CreateReader();
         writer.ReaderCount.Should().Be( 4 );
@@ -115,7 +115,7 @@ public sealed class DependencyInjectionTests : TestBase<DependencyInjectionTests
             } ).Build();
         host.Services.GetRequiredService<IBroadcastChannelReader<ChannelMessageSubA, ChannelResponse>>();
         host.Services.GetRequiredService<IBroadcastChannelReader<ChannelMessageSubA>>();
-        using BroadcastChannelReader<ChannelMessageSubA, ChannelResponse>  readerFromConcreteSource  = host.Services.GetRequiredService<BroadcastChannelReaderSource<ChannelMessageSubA, ChannelResponse>>();
+        using IBroadcastChannelReader<ChannelMessageSubA, ChannelResponse> readerFromConcreteSource  = host.Services.GetRequiredService<BroadcastChannelReaderSource<ChannelMessageSubA, ChannelResponse>>().CreateReader();
         using IBroadcastChannelReader<ChannelMessageSubA, ChannelResponse> readerFromInterfaceSource = host.Services.GetRequiredService<IBroadcastChannelReaderSource<ChannelMessageSubA, ChannelResponse>>().CreateReader();
         var                                                                writer                    = host.Services.GetRequiredService<IBroadcastChannelWriter<ChannelMessageSubA, ChannelResponse>>();
         writer.Should().BeSameAs( host.Services.GetRequiredService<IBroadcastChannelWriter<ChannelMessageSubA, ChannelResponse>>() );

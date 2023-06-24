@@ -16,7 +16,7 @@ public interface IBroadcastChannelAddReaderProvider<TData> {
 }
 
 /// <summary>
-/// Meant for use as a one time resource allocator of Reader resources for <see cref="BroadcastChannel{TData,TResponse}"/>
+/// A portable allocator of <see cref="IBroadcastChannelReader{TData}"/> instances for <see cref="BroadcastChannel{TData,TResponse}"/>.
 /// </summary>
 /// <typeparam name="TData"></typeparam>
 public interface IBroadcastChannelReaderSource<TData> : IBroadcastChannelAddReaderProvider<TData> { 
@@ -36,7 +36,7 @@ public interface IBroadcastChannelReaderSource<TData, TResponse> :
     IBroadcastChannelReaderSource<TData>
     where TResponse : IBroadcastChannelResponse {
     /// <summary>
-    /// Create a new <see cref="IBroadcastChannelReader{TData, TResponse}"/>
+    /// Create a new <see cref="IBroadcastChannelReader{TData, TResponse}"/>.
     /// </summary>
     public new IBroadcastChannelReader<TData, TResponse> CreateReader( );
 }

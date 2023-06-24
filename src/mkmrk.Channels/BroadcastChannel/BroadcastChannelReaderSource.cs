@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Channels;
 
 using JetBrains.Annotations;
@@ -10,8 +11,14 @@ namespace mkmrk.Channels;
 public class BroadcastChannelReaderSource<TData, TResponse>
     : IBroadcastChannelReaderSource<TData, TResponse>
     where TResponse : IBroadcastChannelResponse {
-    private readonly IBroadcastChannelWriter<TData, TResponse>  _broadcastChannel;
-    private          IBroadcastChannelReader<TData, TResponse>? _reader = null;
+    
+    // KILL
+    // /// <summary>
+    // /// Reader saved for use when this is being used as an implicit conversion to a reader.
+    // /// </summary>
+    // [ SuppressMessage( "Design", "CA1051:Do not declare visible instance fields" ) ]
+    // protected IBroadcastChannelReader<TData, TResponse>? _reader = null;
+    private readonly IBroadcastChannelWriter<TData, TResponse> _broadcastChannel;
 
     /// <inheritdoc cref="BroadcastChannelReaderSource{TData,TResponse}" />
     // Ideally, only internal code would be able to construct, but a public constructor is needed for dependency injection.
@@ -25,25 +32,27 @@ public class BroadcastChannelReaderSource<TData, TResponse>
     /// Only one reader can be allocated from a single <see cref="BroadcastChannelReaderSource{TData,TResponse}"/>.
     /// </remarks>
     [ PublicAPI ]
-    public IBroadcastChannelReader<TData, TResponse> CreateReader( ) => _reader ??= _broadcastChannel.CreateReader();
+    public IBroadcastChannelReader<TData, TResponse> CreateReader( ) => _broadcastChannel.CreateReader();
 
     // // TODO: FUTURE? GetResponseChannel doesn't exist yet.
     // public ChannelWriter<TResponse> GetResponseChannel( ) => _responseChannel ??= _broadcastChannel.GetResponseChannel();
 
     /// <inheritdoc />
+    [ SuppressMessage( "Design", "CA1033:Interface methods should be callable by child types", Justification = "Only being callable as an interface is intended." ) ]
     RemoveWriterByHashCode IBroadcastChannelAddReaderProvider<TData>.AddReader( ChannelWriter<TData> reader ) => _broadcastChannel.AddReader( reader );
-
-    // /// <inheritdoc />
-    // public IBroadcastChannelReader<TData, TResponse> CreateReader( ) => this.CreateReader() as BroadcastChannelReader<TData, TResponse> ?? ThrowHelper.ThrowInvalidCastException<IBroadcastChannelReader<TData, TResponse>, BroadcastChannelReader<TData, TResponse>>( this.CreateReader() );
 
     /// <inheritdoc />
     IBroadcastChannelReader<TData> IBroadcastChannelReaderSource<TData>.CreateReader( ) => this.CreateReader();
 
-    /// <summary>
-    /// Enables easy use as <see cref="BroadcastChannelReader{TData,TResponse}"/>
-    /// </summary>
-    public static implicit operator BroadcastChannelReader<TData, TResponse>( BroadcastChannelReaderSource<TData, TResponse> src ) =>
-        src.CreateReader() as BroadcastChannelReader<TData, TResponse> ?? ThrowHelper.ThrowInvalidCastException<IBroadcastChannelReader<TData, TResponse>, BroadcastChannelReader<TData, TResponse>>( src.CreateReader() );
+    // KILL
+    // /// <summary>
+    // /// Enables easy use as <see cref="BroadcastChannelReader{TData,TResponse}"/>
+    // /// </summary>
+    // [ SuppressMessage( "Usage", "CA2225:Operator overloads have named alternates" ) ]
+    // public static implicit operator BroadcastChannelReader<TData, TResponse>( BroadcastChannelReaderSource<TData, TResponse> src ) {
+    //     ArgumentNullException.ThrowIfNull( src );
+    //     return ( src._reader ??= src.CreateReader() ) as BroadcastChannelReader<TData, TResponse> ?? ThrowHelper.ThrowInvalidCastException<IBroadcastChannelReader<TData, TResponse>, BroadcastChannelReader<TData, TResponse>>( src.CreateReader() );
+    // }
 }
 
 /// <inheritdoc cref="IBroadcastChannelReaderSource{TData}"/>
@@ -59,9 +68,13 @@ public class BroadcastChannelReaderSource<TData>
     /// <inheritdoc />
     IBroadcastChannelReader<TData> IBroadcastChannelReaderSource<TData>.CreateReader( ) => this.CreateReader();
 
-    /// <summary>
-    /// Enables easy use as <see cref="BroadcastChannelReader{TData,TResponse}"/>
-    /// </summary>
-    public static implicit operator BroadcastChannelReader<TData>( BroadcastChannelReaderSource<TData> src ) =>
-        src.CreateReader() as BroadcastChannelReader<TData> ?? ThrowHelper.ThrowInvalidCastException<IBroadcastChannelReader<TData>, BroadcastChannelReader<TData>>( src.CreateReader() );
+    // KILL
+    // /// <summary>
+    // /// Enables easy use as <see cref="BroadcastChannelReader{TData,TResponse}"/>
+    // /// </summary>
+    // [ SuppressMessage( "Usage", "CA2225:Operator overloads have named alternates" ) ]
+    // public static implicit operator BroadcastChannelReader<TData>( BroadcastChannelReaderSource<TData> src ) {
+    //     ArgumentNullException.ThrowIfNull( src );
+    //     return ( src._reader ??= src.CreateReader() ) as BroadcastChannelReader<TData> ?? ThrowHelper.ThrowInvalidCastException<IBroadcastChannelReader<TData>, BroadcastChannelReader<TData>>( src.CreateReader() );
+    // }
 }
