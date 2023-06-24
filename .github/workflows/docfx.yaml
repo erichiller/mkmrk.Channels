@@ -1,0 +1,75 @@
+name: 'DocFX'
+
+on:
+#  workflow_dispatch:
+  workflow_call:
+#    inputs:
+#      TEST_PROJECT:
+#        required: true
+#        type: string
+
+env:
+  TZ: America/Chicago
+
+jobs:
+  publish-docs:
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        
+      - name: Retrieve Rendered Content
+        uses: actions/download-artifact@v3
+        with:
+          name: Mermaid Render Results
+          path: ${{ env.README_OUTPUT_PATH }}
+        
+      - name: Retrieve Generated Content
+        uses: actions/download-artifact@v3
+        with:
+          name: test-generated-content
+          path: ./docs/
+    
+      - name: Setup .NET Core SDK
+        uses: actions/setup-dotnet@v3
+        with:
+          global-json-file: ./global.json
+      - name: Install dependencies
+        run: dotnet restore
+      
+      # Build
+      - name: Build
+        working-directory: ./src/mkmrk.Channels/
+        run: |
+          dotnet build \
+            --no-restore \
+            --configuration Release \
+            -consoleloggerparameters:"Summary;Verbosity=normal"
+
+      # http://www.hiller.pro/mkmrk.Channels/
+      # https://dotnet.github.io/docfx/index.html
+      - run: dotnet tool update -g docfx
+      - run: docfx ./docfx.json
+        working-directory: ./docs/
+      #
+      # https://github.com/actions/upload-pages-artifact
+      - name: Upload GH Pages Artifact
+        uses: actions/upload-pages-artifact@v1.0.9
+        with:
+          path: docs/_site
+      #
+      # https://github.com/actions/deploy-pages
+      - name: Deploy to GitHub Pages
+        #if: ${{ false }}
+        id: deployment
+        uses: actions/deploy-pages@v2 # or the latest "vX.X.X" version tag for this action
+
+      - name: Write URL
+        #if: ${{ false }}
+        run: echo ${{ steps.deployment.outputs.page_url }}

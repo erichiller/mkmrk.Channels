@@ -15,7 +15,6 @@ using Serilog.Events;
 
 using Xunit;
 using Xunit.Abstractions;
-using Xunit.Sdk;
 
 namespace mkmrk.Channels.Tests;
 
@@ -115,7 +114,7 @@ public class BroadcastChannelTests : TestBase<BroadcastChannelTests> {
             }
         }
 
-        await bqReader.WriteResponseAsync( new ChannelResponse( -1, taskName, new EmptyException( "Incomplete sequence" ) ), ct );
+        await bqReader.WriteResponseAsync( new ChannelResponse( -1, taskName, new ChannelWriteException( "Incomplete sequence" ) ), ct );
         return -1;
     }
 

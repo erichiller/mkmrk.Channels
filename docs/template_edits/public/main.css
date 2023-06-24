@@ -1,0 +1,13 @@
+/*
+ * https://dotnet.github.io/docfx/docs/template.html?tabs=modern#custom-template
+ */
+footer {
+    font-size: 0.7em;
+    text-align: center;
+}
+body>footer, body[data-layout=landing]>footer {
+    height: revert;
+}
+.navbar-brand {
+    margin-right: 60px;
+}

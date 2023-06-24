@@ -39,7 +39,7 @@ public class BroadcastChannelWriter<TData, TResponse> : ChannelWriter<TData>, IB
     /// <param name="RemoveOutputWriterCallback">Deregister / Dispose callback</param>
     /// <param name="ResponseChannelWriter"><see cref="ChannelWriter{T}"/> for <c>TResponse</c> messages</param>
     /// <param name="Logger"><see cref="BroadcastChannelReader{TData,TResponse}"/> specific Logger</param>
-    internal record ReaderConfiguration(
+    internal sealed record ReaderConfiguration(
         ChannelReader<TData>                              DataChannelReader,
         int                                               WriterHash,
         RemoveWriterByHashCode                            RemoveOutputWriterCallback,

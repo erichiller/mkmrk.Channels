@@ -1,0 +1,13 @@
+#- name: Articles
+#  href: articles/
+- name: Overview
+  href: index.md
+- name: API Documentation
+  href: api/toc.yml
+  expanded: true
+#  homepage: api/index.md
+- name: Coverage
+  href: coverage/index.html
+#  homepage: coverage/index.html
+- name: Statistics
+  href: stats/README.md

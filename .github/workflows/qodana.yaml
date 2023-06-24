@@ -1,0 +1,38 @@
+name: 'Qodana'
+
+on:
+  workflow_dispatch:
+
+env:
+  TZ: America/Chicago
+
+jobs:
+  qodana:
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Create Qodana config
+        shell: pwsh
+        run: |
+          Set-Content -Path "./qodana.yaml" -Value (
+            "exclude:" + "`n" +
+            "  - name: All" + "`n" +
+            "    paths:" + "`n" +
+            "    - docs" + "`n" +
+            "    - src/mkmrk.Channels/ChannelMux/DotnetRuntimeSourced"  + "`n" +
+            "#    - benchmarks" + "`n"
+          );
+          Get-Content -Path "./qodana.yaml"
+      #
+      - name: 'Qodana Scan'
+        uses: JetBrains/qodana-action@v2023.1.0
+                        
+      #
+# 
+# https://www.jetbrains.com/help/qodana/github.html
+# https://www.jetbrains.com/help/qodana/qodana-yaml.html
+# https://github.com/JetBrains/qodana-cli
+# 

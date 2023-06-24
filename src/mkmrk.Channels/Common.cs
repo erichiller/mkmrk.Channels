@@ -4,13 +4,12 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace mkmrk.Channels; 
+namespace mkmrk.Channels;
 
 /// <summary>
 /// Extensions for <see cref="IEnumerable{T}"/> and similar, mostly for <see cref="System.Linq"/> type applications
 /// </summary>
 internal static class Extensions {
-    
     /// <summary>
     /// Display a more concise Generic Type representation
     /// </summary>
@@ -21,11 +20,11 @@ internal static class Extensions {
             _                         => type.Name
         };
 
-    
+
     /// <summary>
     /// Create <paramref name="joinString"/> separated string of elements
     /// </summary>
-    [ return: NotNullIfNotNull("list")]
+    [ return: NotNullIfNotNull( "list" ) ]
     private static string? toXSeparatedString( this System.Collections.IEnumerable? list, int? maxElementsToPrint, string joinString ) {
         if ( list is null ) {
             return null;
@@ -60,6 +59,8 @@ internal static class ValueTaskExtensions {
     /// 
     /// </summary>
     /// <remarks>This runs faster than using <c>Task.WhenAll( ...Select( ...AsTask ) )</c></remarks>
+    [ SuppressMessage( "Design", "CA1031:Do not catch general exception types", Justification = "Required in order to combine exceptions for AggregateException" ) ]
+    [ SuppressMessage( "Maintainability", "CA1508:Avoid dead conditional code" ) ]
     internal static async ValueTask WhenAll( this ValueTask[] tasks ) {
         // We don't allocate the list if no task throws
         List<Exception>? exceptions = null;
@@ -74,9 +75,6 @@ internal static class ValueTaskExtensions {
                 exceptions ??= new List<Exception>( tasks.Length );
                 exceptions.Add( ex );
             }
-
-        // return exceptions is null
-        // ? results
         if ( exceptions is not null ) {
             throw new AggregateException( exceptions );
         }

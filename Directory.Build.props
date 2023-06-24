@@ -10,7 +10,7 @@
         <!--<PackageIcon>channels-icon.png</PackageIcon>-->
         <!-- TODO: SET RELEASE NOTES TO COMMIT PAGE IN GITHUB AS A TEMP SOLUTION -->
         <!--<PackageReleaseNotes></PackageReleaseNotes>-->
-        <PackageProjectUrl>https://github.com/erichiller/mkmrk.Channels</PackageProjectUrl>
+        <PackageProjectUrl>https://www.hiller.pro/mkmrk.Channels/</PackageProjectUrl>
         <RepositoryUrl>https://github.com/erichiller/mkmrk.Channels</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PublishRepositoryUrl>true</PublishRepositoryUrl>

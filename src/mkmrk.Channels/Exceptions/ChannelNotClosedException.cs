@@ -10,6 +10,12 @@ namespace mkmrk.Channels;
 /// </summary>
 public class ChannelNotClosedException : Exception {
     /// <inheritdoc cref="ChannelNotClosedException" />
+    private ChannelNotClosedException( ) { }
+
+    /// <inheritdoc cref="ChannelNotClosedException" />
+    private ChannelNotClosedException( string message, Exception innerException ) : base( message, innerException ) { }
+
+    /// <inheritdoc cref="ChannelNotClosedException" />
     private ChannelNotClosedException( string? msg = null ) : base( msg ?? "Channel is not closed, mutate actions not available." ) { }
 
     /// <inheritdoc cref="ChannelNotClosedException" />

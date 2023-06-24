@@ -6,6 +6,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Channels;
@@ -91,7 +92,7 @@ public abstract class ChannelMux {
     public ChannelCompleteHandler? OnChannelComplete { get; init; }
 
     /// <inheritdoc cref="ChannelMux" />
-    protected ChannelMux( int totalChannels, bool runContinuationsAsynchronously = default ) {
+    protected ChannelMux( int totalChannels, bool runContinuationsAsynchronously = true ) {
         _runContinuationsAsynchronously = runContinuationsAsynchronously;
         _completion                     = createCompletionTask();
         _waiterSingleton                = new AsyncOperation<bool>( runContinuationsAsynchronously, pooled: true );
@@ -233,7 +234,7 @@ public abstract class ChannelMux {
             error?.Data.Add( nameof(ChannelMux) + " Type", typeof(TData) );
             if ( error is { } ) {
                 _parent._hasException = true;
-                Interlocked.Exchange( ref _parent._completeException, error );
+                Interlocked.Exchange( ref this._parent._completeException, error );
                 Interlocked.Exchange( ref _parent._completeExceptionChannelDataType, typeof(TData) );
             }
 

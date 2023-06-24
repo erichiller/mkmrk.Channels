@@ -60,7 +60,6 @@
     </PropertyGroup>
 
     <PropertyGroup>
-
         <ReadmeFilePath>../../README.md</ReadmeFilePath>
         <ReadmeFilePath Condition="Exists('../../docs/rendered/README.md')">../../docs/rendered/README.md</ReadmeFilePath>
     </PropertyGroup>
