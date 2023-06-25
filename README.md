@@ -1,5 +1,7 @@
 # `BroadcastChannel` and `ChannelMux`
 
+[![Tests](https://github.com/erichiller/mkmrk.Channels/actions/workflows/test-pack-release.yaml/badge.svg)]
+(https://github.com/erichiller/mkmrk.Channels/actions/workflows/test-pack-release.yaml)
 
 ## `BroadcastChannel`
 

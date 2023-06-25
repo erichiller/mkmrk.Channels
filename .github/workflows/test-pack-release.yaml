@@ -89,7 +89,33 @@ jobs:
         with:
           comment_mode: off
           files: ./test/mkmrk.Channels.Tests/TestResults/**/*.trx
-
+      # 
+      # Badge
+      - name: Set badge color
+        shell: bash
+        run: |
+          case ${{ fromJSON( steps.report-test-results.outputs.json ).conclusion }} in
+            success)
+              echo "BADGE_COLOR=31c653" >> $GITHUB_ENV
+              ;;
+            failure)
+              echo "BADGE_COLOR=800000" >> $GITHUB_ENV
+              ;;
+            neutral)
+              echo "BADGE_COLOR=696969" >> $GITHUB_ENV
+              ;;
+          esac
+      #
+      - name: Create badge
+        uses: emibcn/badge-action@d6f51ff11b5c3382b3b88689ae2d6db22d9737d1
+        with:
+          label: Tests
+          status: '${{ fromJSON( steps.report-test-results.outputs.json ).formatted.stats.tests }} tests, ${{ fromJSON( steps.report-test-results.outputs.json ).formatted.stats.runs }} runs: ${{ fromJSON( steps.report-test-results.outputs.json ).conclusion }}'
+          color: ${{ env.BADGE_COLOR }}
+          # TODO: Add this to the README
+          path: ./docs/tests/test-result-badge.svg
+      #
+      #
       # https://github.com/danielpalme/ReportGenerator-GitHub-Action
       - name: Coverage Report Generator
         uses: danielpalme/ReportGenerator-GitHub-Action@5.1.22
@@ -98,7 +124,7 @@ jobs:
           targetdir: ./docs/coverage/
           reporttypes: Html_Light;JsonSummary;TextSummary;TextDeltaSummary;MarkdownSummaryGithub;PngChart;Badges
           sourcedirs: ./src/mkmrk.Channels/
-          # TODO: history requires that I commit this directory
+          # history requires that I commit this directory
           historydir: ./docs/coverage/history/
           verbosity: Verbose
           # TODO: may need to make this something static to keep from making commits even when nothing changes
@@ -130,7 +156,9 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: coverage-report
-          path: ./docs/coverage/
+          path: |
+            ./docs/coverage/
+            ./docs/tests
 
   # TODO: generate reports? ( upload in test, build in render-mermaid-diagrams ? )
   
