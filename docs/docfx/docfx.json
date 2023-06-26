@@ -4,8 +4,9 @@
       "src": [
         {
           "files": [
-            "src/**/*.cs"
-          ]
+            "src/mkmrk.Channels/bin/Release/**.dll"
+          ],
+          "src": "../../"
         }
       ],
       "dest": "api",
@@ -25,20 +26,25 @@
           "api/**.yml",
           "api/index.md"
         ]
-//      },
-//      {
-//        "files": [
-//          "docs/**/*.md"
-//        ]
+      },
+      {
+        "files": [
+          "coverage/**.md",
+          "**.md"
+        ],
+        "exclude": "docfx/**",
+        "src": "../"
       }
     ],
-//    "resource": [
-//      {
-//        "files": [
-//          "docs/**/*"
-//        ]
-//      }
-//    ],
+    "resource": [
+      {
+        "files": [
+          "images/**",
+          "rendered/**.{svg,png}"
+        ],
+        "src": "../"
+      }
+    ],
     "output": "_site",
     "globalMetadataFiles": [],
     "fileMetadataFiles": [],
