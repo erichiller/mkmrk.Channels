@@ -16,11 +16,12 @@
       "noRestore": false,
       "namespaceLayout": "flattened",
       "memberLayout": "samePage",
-      "allowCompilationErrors": false
+      "allowCompilationErrors": false,
+      /* shouldSkipMarkup prevents XML Doc comments from being read as markdown. TODO: should I keep this? */
+      "shouldSkipMarkup": true
     }
   ],
   "build": {
-    
     "content": [
       {
         "files": [
@@ -35,16 +36,11 @@
       {
         "files": [
           "coverage/**.md",
+//          "coverage/**.html",
           "**.md"
         ],
         "exclude": "docfx/**",
         "src": "../"
-      },
-      {
-        "files": [
-          "*.md"
-        ],
-        "src": "../../"
       }
     ],
     "resource": [
@@ -61,8 +57,24 @@
     "fileMetadataFiles": [],
     "template": [
       "default",
-      "modern"
+      "modern",
+      "template_edits"
     ],
+    "globalMetadata": {
+      // A string append to every page title.
+      "_appTitle": "mkmrk.Channels",
+      // The name of the site displayed after logo.
+      "_appName": "mkmrk.Channels",
+      "_appFooter": "mkmrk.Channels - Eric D. Hiller © 2023",
+      /*
+      // TODO:
+      _appLogoPath	string	Path to the app logo.
+      _appLogoUrl	string	URL for the app logo.
+      _appFaviconPath	string	Favicon URL path.
+      */
+      "_disableContribution": true,
+      "_disableNextArticle": true
+    },
     "postProcessors": [],
     "keepFileLink": false,
     "disableGitFeatures": false
