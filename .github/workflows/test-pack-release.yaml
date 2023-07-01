@@ -76,6 +76,7 @@ jobs:
         run: |
           dotnet test --logger "console;verbosity=normal" \
                       --logger:"trx;LogFilePrefix=testResults" \
+                      --blame-hang-timeout 5m \
                       --filter '(FullyQualifiedName!~Latency)&(FullyQualifiedName!~AddingAndRemovingReadersShouldNeverError)' \
                       --collect:"XPlat Code Coverage" \
                       -- \
@@ -122,7 +123,7 @@ jobs:
         with:
           reports: ./test/mkmrk.Channels.Tests/TestResults/**/coverage.cobertura.xml
           targetdir: ./docs/coverage/
-          reporttypes: Html_Light;JsonSummary;TextSummary;TextDeltaSummary;MarkdownSummaryGithub;PngChart;Badges
+          reporttypes: MarkdownSummaryGithub;Badges #Html_Light;JsonSummary;TextSummary;TextDeltaSummary;MarkdownSummaryGithub;PngChart;Badges
           sourcedirs: ./src/mkmrk.Channels/
           # history requires that I commit this directory
           historydir: ./docs/coverage/history/
@@ -134,6 +135,7 @@ jobs:
       - name: Print coverage summary to Workflow Summary
         shell: pwsh
         run: |
+          Remove-Item -Path ./docs/coverage/* -Include *.svg -Exclude badge_shieldsio_linecoverage_blue.svg
           Get-Content -Path ./docs/coverage/SummaryGithub.md | ForEach-Object {
               Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value $_ ;
           }
