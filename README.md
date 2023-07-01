@@ -1,14 +1,11 @@
 # `BroadcastChannel` and `ChannelMux`
 
-<span>
 [![Test & Pack Workflow](https://github.com/erichiller/mkmrk.Channels/actions/workflows/test-pack-release.yaml/badge.svg)](https://github.com/erichiller/mkmrk.Channels/actions/workflows/test-pack-release.yaml)
-</span>
-<span>
 ![Test Results](https://raw.githubusercontent.com/erichiller/mkmrk.Channels/master/docs/tests/test-result-badge.svg)
-</span>
-<span>
 ![Line Coverage](https://raw.githubusercontent.com/erichiller/mkmrk.Channels/master/docs/coverage/badge_shieldsio_linecoverage_blue.svg)
-</span>
+
+
+# `BroadcastChannel` and `ChannelMux`
 
 This library offers APIs similar to `Channel<T>` for scenarios where multiple readers need to receive all data being sent by a single writer. For example, a service which writes to a channel and multiple readers that each perform some task, such as data processing, analysis, or streaming over the network to a client. Additionally, with `ChannelMux`, multiple channels can be input to a single `await`able output.
 
