@@ -102,14 +102,13 @@ public interface IBroadcastChannelResponse {
 For more complex response types, use `BroadcastChannel<TData,TResponse>` directly.
 
 <details>
+
 <summary>Notes on examples</summary>
+
 In this documentation `BroadcastChannel<T>` is used as a placeholder for both `BroadcastChannel<T>` and `BroadcastChannel<TData,TResponse>`, as the behavior is the identical between them. The same applies to `BroadcastChannelWriter<T>` and `BroadcastChannelReader<T>`.
+
 </details>
 
-
-<div style="color: people;">
-Hello
-</div>
 
 
 ## Usage
