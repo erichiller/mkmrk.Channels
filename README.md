@@ -17,7 +17,7 @@ Available on [Nuget]()
 
 This library offers APIs similar to `Channel<T>` for scenarios where multiple readers need to receive all data being sent by a single writer. For example, a service which writes to a channel and multiple readers that each perform some task, such as data processing, analysis, or streaming over the network to a client. Additionally, with `ChannelMux`, multiple channels can be input to a single `await`able output.
 
-In addition to standalone, direct instantiation, `BroadcastChannel` and `ChannelMux` are particularly well suited to be used with Generic Host based Dependency Injection.
+In addition to standalone, direct instantiation, `BroadcastChannel` and `ChannelMux` are designed to work well with Generic Host based Dependency Injection.
 
 
 ## `BroadcastChannel`
@@ -31,11 +31,11 @@ single output.
 
 `ChannelMux` is meant to aggregate multiple `BroadcastChannel` into a single, awaitable object. 
 It is a generic type and each type parameter has a dedicated `TryRead(out T data)` method.
-`ChannelMuxInput` acts presents as a writer to `BroadcastChannelWriter` and each has a
+`ChannelMuxInput` acts as a writer to `BroadcastChannelWriter` and each has a
 `SingleProducerSingleConsumerQueue`.
 
 Note that each `ChannelMuxInput` is a single input, single output where _single_ means both a single instance writing
-and a single instance reading, and thus can be optimized using `SingleProducerSingleConsumerQueue`.
+and a single instance reading, and thus can be optimized using `SingleProducerSingleConsumerQueue`. `ChannelMux` is not meant to be shared across threads.
 
 ```mermaid
 flowchart LR
@@ -85,7 +85,7 @@ flowchart LR
 
 ## Response Channels
 
-`BroadcastChannel<T>` is a subclass of `BroadcastChannel<TData,TResponse>` where `TResponse` is a default implementor of the generic `IBroadcastChannelResponse` which provides the ability to pass an exception back to the writer (see [Response Channels](#response-channels)).
+`BroadcastChannel<T>` is a subclass of `BroadcastChannel<TData,TResponse>` where `TResponse` is a default implementation of the generic `IBroadcastChannelResponse` which provides the ability to pass an exception back to the writer (see [Response Channels](#response-channels)).
 
 ```cs
 /// <summary>
@@ -98,10 +98,13 @@ public interface IBroadcastChannelResponse {
     public System.Exception? Exception { get; init; }
 }
 ```
+
 For more complex response types, use `BroadcastChannel<TData,TResponse>` directly.
 
+<div style="color: orange; border: 1px solid red;">
+xxxx Orange
+<\div>
 <div style="color: orange;">
-<b>TESTING</b>
 In this documentation `BroadcastChannel<T>` is used as a placeholder for both `BroadcastChannel<T>` and `BroadcastChannel<TData,TResponse>`, as the behavior is the identical between them. The same applies to `BroadcastChannelWriter<T>` and `BroadcastChannelReader<T>`.
 <\div>
 
@@ -114,6 +117,10 @@ In this documentation `BroadcastChannel<T>` is used as a placeholder for both `B
 ### `BroadcastChannel`
 
 Much like `Channel<T>`, create a `BroadcastChannel` and use it to retrieve the writer as well as create new readers. `BroadcastChannel<T>.Writer` returns the single `BroadcastChannelWriter<T>` for the `BroadcastChannel<T>` and any amount of calls to a  `BroadcastChannel<T>`'s `.Writer` property will always return the same instance.
+
+Are created with
+
+broadcastChannel.CreateReader()
 
 
 #### Response Channels
@@ -217,7 +224,7 @@ while ( await mux.WaitToReadAsync( _cts.Token ) ) {
 
 ## Dependency Injection Configuration
 
-For any type of Channel with a non-specified (default `IBroadcastChannelResponse`) response type.
+Use `AddBroadcastChannels()` to automatically create a Broadcast Channel for any Data Type without any further configuration (with a non-specified (default `IBroadcastChannelResponse`) response type): 
 
 ```cs
 Host.CreateDefaultBuilder( Array.Empty<string>() ).ConfigureServices( 
@@ -228,8 +235,7 @@ Host.CreateDefaultBuilder( Array.Empty<string>() ).ConfigureServices(
 var channel = host.Services.GetRequiredService<IBroadcastChannel<ChannelMessageSubA, ChannelResponse>>();
 ```
 
-
-For a specific Channel Data and Response type:
+For a specific Channel Data and Response type use `AddBroadcastChannel<TData,TResponse>()` which must be run for each type pair desired:
 
 ```cs
 Host.CreateDefaultBuilder( Array.Empty<string>() ).ConfigureServices( 
@@ -243,7 +249,7 @@ var channel = host.Services.GetRequiredService<IBroadcastChannel<ChannelMessageS
 
 When a specific Channel Data and Response type are added to the service collection, the default is mapped to it as well.
 
-In the example below, both `channelWithReponse` and `defaultResponseTypeChannel` will be on the same channel (and receive the same data).
+In the example below, both `channelWithReponse` and `defaultResponseTypeChannel` will be on the same channel (and receive the same data). Also note that `AddBroadcastChannels()` and `AddBroadcastChannel<TData,TResponse>()` can be used together.
 
 ```cs
 Host.CreateDefaultBuilder( Array.Empty<string>() ).ConfigureServices( 
