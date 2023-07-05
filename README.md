@@ -5,17 +5,19 @@
 ![Line Coverage](https://raw.githubusercontent.com/erichiller/mkmrk.Channels/master/docs/coverage/badge_shieldsio_linecoverage_blue.svg)
 
 
-# `BroadcastChannel` and `ChannelMux`
+- [ ] ==TODO: ADD NUGET PACKAGE LINK==
+
+Available on [Nuget]()
+
+- [ ] ==TODO: ADD API docs (via DocFX)?==
+
+
+
+# `BroadcastChannel` and `ChannelMux`[^doc-terms]
 
 This library offers APIs similar to `Channel<T>` for scenarios where multiple readers need to receive all data being sent by a single writer. For example, a service which writes to a channel and multiple readers that each perform some task, such as data processing, analysis, or streaming over the network to a client. Additionally, with `ChannelMux`, multiple channels can be input to a single `await`able output.
 
 In addition to standalone, direct instantiation, `BroadcastChannel` and `ChannelMux` are particularly well suited to be used with Generic Host based Dependency Injection.
-
-
-==TODO: ADD NUGET PACKAGE LINK==
-Available on [Nuget]()
-
-==TODO: Add build status (workflow badge)==
 
 
 ## `BroadcastChannel`
@@ -23,6 +25,7 @@ Available on [Nuget]()
 Is a single input, multi output type where each output is guaranteed to receive all the data from the input. 
 This is in contrast to `System.Threading.Channels.Channel` or a _Queue_ type where each input is only ever read by a 
 single output.
+
 
 ## `ChannelMux`
 
@@ -33,7 +36,6 @@ It is a generic type and each type parameter has a dedicated `TryRead(out T data
 
 Note that each `ChannelMuxInput` is a single input, single output where _single_ means both a single instance writing
 and a single instance reading, and thus can be optimized using `SingleProducerSingleConsumerQueue`.
-
 
 ```mermaid
 flowchart LR
@@ -80,20 +82,31 @@ flowchart LR
 
 ```
 
+
 ## Response Channels
 
-`BroadcastChannel<T>` is a subclass of `BroadcastChannel<TData,TResponse>` where `TResponse` is a generic `IBroadcastChannelResponse` which provides the ability to pass an exception back to the writer.
+`BroadcastChannel<T>` is a subclass of `BroadcastChannel<TData,TResponse>` where `TResponse` is a default implementor of the generic `IBroadcastChannelResponse` which provides the ability to pass an exception back to the writer (see [Response Channels](#response-channels)).
 
 ```cs
-public System.Exception? Exception { get; init; }
+/// <summary>
+/// Response message container
+/// </summary>
+public interface IBroadcastChannelResponse {
+    /// <summary>
+    /// Set to a <see cref="System.Exception"/> if one has occurred, else leave <c>null</c>
+    /// </summary>
+    public System.Exception? Exception { get; init; }
+}
 ```
 For more complex response types, use `BroadcastChannel<TData,TResponse>` directly.
 
+<div style="color: orange;">
+<b>TESTING</b>
+In this documentation `BroadcastChannel<T>` is used as a placeholder for both `BroadcastChannel<T>` and `BroadcastChannel<TData,TResponse>`, as the behavior is the identical between them. The same applies to `BroadcastChannelWriter<T>` and `BroadcastChannelReader<T>`.
+<\div>
 
-==TODO: HOW TO HAVE A NOTIFICATION SECTION? RAW HTML? SOME SPECIAL THING GITHUB SUPPORTS?==
-:note
-In this documentation `BroadcastChannel<T>` is used as a placeholder for both `BroadcastChannel<T>` and `BroadcastChannel<TData,TResponse>`, as the behavior is the identical between them. The same goes for `BroadcastChannelWriter<T>` and `BroadcastChannelReader<T>`.
 
+[^doc-terms]: In this documentation `BroadcastChannel<T>` is used as a placeholder for both `BroadcastChannel<T>` and `BroadcastChannel<TData,TResponse>`, as the behavior is the identical between them. The same applies to `BroadcastChannelWriter<T>` and `BroadcastChannelReader<T>`.
 
 
 ## Usage
@@ -102,9 +115,10 @@ In this documentation `BroadcastChannel<T>` is used as a placeholder for both `B
 
 Much like `Channel<T>`, create a `BroadcastChannel` and use it to retrieve the writer as well as create new readers. `BroadcastChannel<T>.Writer` returns the single `BroadcastChannelWriter<T>` for the `BroadcastChannel<T>` and any amount of calls to a  `BroadcastChannel<T>`'s `.Writer` property will always return the same instance.
 
+
 #### Response Channels
 
-==TODO: DESCRIPTION==
+The response channel on a `BroadcastChannel` allows `BroadcastChannel` to return arbitrary data to the writer, such as status, errors, etc.
 
 **Example**
 
@@ -131,35 +145,10 @@ BroadcastChannel<DataTypeB>      channel2         = new ();
 ChannelMux<DataTypeA, DataTypeB> mux              = new (channel1.Writer, channel2.Writer);
 ```
 
-==TODO==
-**or any type that implements `XXXXXXX`**
-
-```cs
-
-```
-
-#### Read
-
-**Then loop and read**
-
-```cs
-while ( await mux.WaitToReadAsync( _cts.Token ) ) {
-    if ( mux.TryRead( out ChannelMessageSubA? msgA ) ) {
-        msgA.Id.Should().Be( receivedCountA );
-        lastMsgA = msgA;
-        receivedCountA++;
-    }
-    if ( mux.TryRead( out ChannelMessageSubB? msgB ) ) {
-        msgB.Id.Should().Be( receivedCountB );
-        lastMsgB = msgB;
-        receivedCountB++;
-    }
-}
-```
 
 #### Dependency Injection
 
-`ChannelMux` can be retrieved from Dependency Injection.
+`ChannelMux` can be injected using a Dependency Injection container. The below examples use `Microsoft.Extensions.DependencyInjection`.
 
 ```cs
 var mux = _host.Services.GetRequiredService<ChannelMux<ChannelMessageSubA, ChannelMessageSubB, ChannelMessageSubC>>();
@@ -173,7 +162,7 @@ var readerSourceB = _host.Services.GetRequiredService<IBroadcastChannelReaderSou
 var mux           = new ChannelMux<ChannelMessageSubA, ChannelMessageSubB>( readerSourceA, readerSourceB );
 ```
 
-**Of course, ChannelMux can be injected into Dependency Injection constructed objects.**
+**An example of `ChannelMux` used with constructor based Dependency Injection.**
 
 ```cs
 class ChannelMuxConsumer {
@@ -197,6 +186,27 @@ public void DoWork(){
 }
 ```
 
+
+#### Read
+
+**Then loop and read**
+
+```cs
+while ( await mux.WaitToReadAsync( _cts.Token ) ) {
+    if ( mux.TryRead( out ChannelMessageSubA? msgA ) ) {
+        msgA.Id.Should().Be( receivedCountA );
+        lastMsgA = msgA;
+        receivedCountA++;
+    }
+    if ( mux.TryRead( out ChannelMessageSubB? msgB ) ) {
+        msgB.Id.Should().Be( receivedCountB );
+        lastMsgB = msgB;
+        receivedCountB++;
+    }
+}
+```
+
+
 #### Replacing Channels
 
 
@@ -206,7 +216,6 @@ public void DoWork(){
 
 
 ## Dependency Injection Configuration
-
 
 For any type of Channel with a non-specified (default `IBroadcastChannelResponse`) response type.
 
@@ -220,8 +229,7 @@ var channel = host.Services.GetRequiredService<IBroadcastChannel<ChannelMessageS
 ```
 
 
-
-For a specific Channel Data and Response type
+For a specific Channel Data and Response type:
 
 ```cs
 Host.CreateDefaultBuilder( Array.Empty<string>() ).ConfigureServices( 
@@ -233,11 +241,9 @@ Host.CreateDefaultBuilder( Array.Empty<string>() ).ConfigureServices(
 var channel = host.Services.GetRequiredService<IBroadcastChannel<ChannelMessageSubA, ChannelResponse>>();
 ```
 
-////
+When a specific Channel Data and Response type are added to the service collection, the default is mapped to it as well.
 
-INCOMPLETE
-WARNING ⚠️
-Both
+In the example below, both `channelWithReponse` and `defaultResponseTypeChannel` will be on the same channel (and receive the same data).
 
 ```cs
 Host.CreateDefaultBuilder( Array.Empty<string>() ).ConfigureServices( 
@@ -248,9 +254,8 @@ Host.CreateDefaultBuilder( Array.Empty<string>() ).ConfigureServices(
 
 var channelWithReponse = host.Services.GetRequiredService<IBroadcastChannel<ChannelMessageSubA, ChannelResponse>>();
 
-var channel = host.Services.GetRequiredService<IBroadcastChannel<ChannelMessageSubA>>();
+var defaultResponseTypeChannel = host.Services.GetRequiredService<IBroadcastChannel<ChannelMessageSubA>>();
 ```
-
 
 
 ## Things to keep in mind
@@ -279,30 +284,21 @@ bool result = reader.TryRead( out int? data );
 // data is null
 ```
 
+
 ### Data types in `ChannelMux` must be unique
 
 `ChannelMux<T1,T2>` has sub types (`ChannelMux<T1,T2>`, `ChannelMux<T1,T2,T3>`, etc.) with 2+ type parameters and these type parameters identify the type of a specific channel's data. The data types are used to differentiate the `TryRead<T>( out T )` methods. Unspecified execution will occur if the same type is a generic type argument more than once.
+
 
 ## Future
 
 - [ ] Allow responses via `BroadcastChannelReaderSource`
 
+
 ## Additional Information
 
 - [Unit Tests](https://github.com/erichiller/mkmrk.Channels/tree/master/test/mkmrk.Channels.Tests)
 - [Sample Console Program](https://github.com/erichiller/mkmrk.Channels/tree/master/test/mkmrk.Channels.Tests.Console)
-
-
-==TODO: make these hidden Jetbrains Rider markdown Todos / comments ??==
-
-==TODO: ADD BENCHMARKS ?==
-
-==TODO: ADD CodeMetrics ?==
-
-==TODO: ADD Unit test coverage ?==
-
-==TODO: ADD API docs (via DocFX)?==
-
 
 
 ## Contributions
@@ -311,20 +307,3 @@ Contributions and PRs are welcome.
 
 
 ****
-
-
- [x] - Start with a clear and concise description: Start your README with a brief overview of what your package is and does, also what problem it solves.
-
-Explain how to use it: Provide clear and concise getting started instructions for using your package, including any necessary steps.
-
-Give examples: Provide concrete examples of how your package can be used to help users quickly understand its capabilities.
-
-[x] Provide links to more resources: List links such as detailed documentation, tutorial videos, blog posts, or any other relevant documentation to help users get the most out of your package.
-
-[x] Include screenshots or visuals: Enhance your README by including screenshots, diagrams, or other visual aids that help users better understand how to use your package.
-
-Write down any limitations: Mention any limitations or known issues with your package and provide workarounds, if available.
-
-Provide sample code: Provide sample code snippets to help users understand how to implement your package in their projects.
-
-Make it visually appealing: Use clear headings, code blocks, etc. to make your README appealing and easy to navigate.
