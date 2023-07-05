@@ -13,7 +13,7 @@ Available on [Nuget]()
 
 
 
-# `BroadcastChannel` and `ChannelMux`[^doc-terms]
+# `BroadcastChannel` and `ChannelMux`
 
 This library offers APIs similar to `Channel<T>` for scenarios where multiple readers need to receive all data being sent by a single writer. For example, a service which writes to a channel and multiple readers that each perform some task, such as data processing, analysis, or streaming over the network to a client. Additionally, with `ChannelMux`, multiple channels can be input to a single `await`able output.
 
@@ -101,15 +101,10 @@ public interface IBroadcastChannelResponse {
 
 For more complex response types, use `BroadcastChannel<TData,TResponse>` directly.
 
-<div style="color: orange; border: 1px solid red;">
-xxxx Orange
-<\div>
-<div style="color: orange;">
+<details>
+<summary>Notes on examples</summary>
 In this documentation `BroadcastChannel<T>` is used as a placeholder for both `BroadcastChannel<T>` and `BroadcastChannel<TData,TResponse>`, as the behavior is the identical between them. The same applies to `BroadcastChannelWriter<T>` and `BroadcastChannelReader<T>`.
-<\div>
-
-
-[^doc-terms]: In this documentation `BroadcastChannel<T>` is used as a placeholder for both `BroadcastChannel<T>` and `BroadcastChannel<TData,TResponse>`, as the behavior is the identical between them. The same applies to `BroadcastChannelWriter<T>` and `BroadcastChannelReader<T>`.
+<\details>
 
 
 ## Usage
@@ -118,9 +113,21 @@ In this documentation `BroadcastChannel<T>` is used as a placeholder for both `B
 
 Much like `Channel<T>`, create a `BroadcastChannel` and use it to retrieve the writer as well as create new readers. `BroadcastChannel<T>.Writer` returns the single `BroadcastChannelWriter<T>` for the `BroadcastChannel<T>` and any amount of calls to a  `BroadcastChannel<T>`'s `.Writer` property will always return the same instance.
 
-Are created with
+```cs
+using var broadcastChannel = new BroadcastChannel<ChannelMessage, ChannelResponse>();
+using BroadcastChannel<ChannelMessage, ChannelResponse> writer1 = broadcastChannel.Writer;
+using BroadcastChannel<ChannelMessage, ChannelResponse> writer2 = broadcastChannel.Writer;
+Object.ReferenceEquals( writer1, writer2 ); // true
+```
 
-broadcastChannel.CreateReader()
+`BroadcastChannelReader<T>`s are created with `BroadcastChannel<T>.CreateReader<T>()` which will always return a new `BroadcastChannelReader<T>` which will immediately begin receiving any data written by the associated `BroadcastChannelWriter<T>`.
+
+```cs
+using var broadcastChannel = new BroadcastChannel<ChannelMessage, ChannelResponse>();
+using IBroadcastChannelReader<ChannelMessage, ChannelResponse> reader1 = broadcastChannel.CreateReader();
+using IBroadcastChannelReader<ChannelMessage, ChannelResponse> reader2 = broadcastChannel.CreateReader();
+Object.ReferenceEquals( reader1, reader2 ); // false
+```
 
 
 #### Response Channels
@@ -216,10 +223,26 @@ while ( await mux.WaitToReadAsync( _cts.Token ) ) {
 
 #### Replacing Channels
 
+Individual channels can be replaced on a live `ChannelMux`. This is useful when the channels on a mux have different lifetimes. For example, most of the channels are long lived, but one channel is for smaller requests that return some data and then complete. By replacing a completed channel with a new one, the same mux can be used regardless of the lifetime of individual component channels.
 
 
+```cs
 
+using BroadcastChannel<DataTypeA> channel1            = new ();
+using BroadcastChannel<DataTypeB> channel2            = new (); // this will be closed
 
+using BroadcastChannel<DataTypeB> channelReplacement1 = new ();
+
+using ChannelMux<DataTypeA, DataTypeB> mux = new (channel1.Writer, channel2.Writer);
+
+// replacing an active channel will throw ChannelNotClosedException
+mux.ReplaceChannel( channelReplacement1.Writer ); // throws
+
+// to replace an active channel, use:
+mux.ReplaceChannel( channelReplacement1.Writer, force: true );
+// channelReplacement1 is now writing data into the mux
+ 
+```
 
 
 ## Dependency Injection Configuration
