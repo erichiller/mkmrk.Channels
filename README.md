@@ -22,7 +22,7 @@ In addition to standalone, direct instantiation, `BroadcastChannel` and `Channel
 
 ## `BroadcastChannel`
 
-Is a single input, multi output type where each output is guaranteed to receive all the data from the input. 
+Has a single input source/writer which writes to any number of readers, all of which are guaranteed to receive all written data.
 This is in contrast to `System.Threading.Channels.Channel` or a _Queue_ type where each input is only ever read by a 
 single output.
 
@@ -297,7 +297,7 @@ var defaultResponseTypeChannel = host.Services.GetRequiredService<IBroadcastChan
   _There is no reason an unbounded channel must be used. The ability to specify a limit and options for the action to perform when that limit if reached (such as with `BoundedChannel`) could be a added in the future._
 
 - Most, if not all types implement `IAsyncDisposable` or `IDisposable` and as such, if they are directly instantiated, they must be disposed of.
-  **If the objects were constructed from Dependency Injection, the service container takes care of disposal and the programmer should not Dispose themselves.**
+  **If the objects were acquired by Dependency Injection, the service container takes care of disposal and the programmer should not `.Dispose()` manually.**
 
 
 ### Readers must exist before their received data
@@ -320,7 +320,7 @@ bool result = reader.TryRead( out int? data );
 
 ### Data types in `ChannelMux` must be unique
 
-`ChannelMux<T1,T2>` has sub types (`ChannelMux<T1,T2>`, `ChannelMux<T1,T2,T3>`, etc.) with 2+ type parameters and these type parameters identify the type of a specific channel's data. The data types are used to differentiate the `TryRead<T>( out T )` methods. Unspecified execution will occur if the same type is a generic type argument more than once.
+`ChannelMux<T1,T2>` has sub types (`ChannelMux<T1,T2>`, `ChannelMux<T1,T2,T3>`, etc.) with 2+ type parameters and these type parameters identify the type of a specific channel's data. The data types are used to differentiate the `TryRead<T>( out T )` methods. Unspecified mayhem may occur if the same type is passed in as a generic type argument for more than one type parameter.
 
 
 ## Future
