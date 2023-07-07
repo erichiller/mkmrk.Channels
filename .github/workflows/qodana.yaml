@@ -18,12 +18,12 @@ jobs:
         shell: pwsh
         run: |
           Set-Content -Path "./qodana.yaml" -Value (
-            'exclude:' + '`n' +
-            '  - name: All' + '`n' +
-            '    paths:' + '`n' +
-            '    - docs' + '`n' +
-            '#    - asm/Visitor.java'  + '`n' +
-            '#    - benchmarks' + '`n'
+            "exclude:" + "`n" +
+            "  - name: All" + "`n" +
+            "    paths:" + "`n" +
+            "    - docs" + "`n" +
+            "    - src/mkmrk.Channels/ChannelMux/DotnetRuntimeSourced"  + "`n" +
+            "#    - benchmarks" + "`n"
           );
           Get-Content -Path "./qodana.yaml"
       #
@@ -33,5 +33,6 @@ jobs:
       #
 # 
 # https://www.jetbrains.com/help/qodana/github.html
+# https://www.jetbrains.com/help/qodana/qodana-yaml.html
 # https://github.com/JetBrains/qodana-cli
 # 
