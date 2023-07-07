@@ -78,7 +78,7 @@ jobs:
                       --logger:"trx;LogFilePrefix=testResults" \
                       --blame-hang-timeout 5m \
                       --filter '(FullyQualifiedName!~Latency)&(FullyQualifiedName!~AddingAndRemovingReadersShouldNeverError)' \
-                      --collect:"XPlat Code Coverage" \
+                      --collect:"Code Coverage" \
                       -- \
                       DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.ExcludeByFile=**/DotnetRuntimeSourced/**
         working-directory: ./test/mkmrk.Channels.Tests/
@@ -123,7 +123,7 @@ jobs:
         with:
           reports: ./test/mkmrk.Channels.Tests/TestResults/**/coverage.cobertura.xml
           targetdir: ./docs/coverage/
-          reporttypes: MarkdownSummaryGithub;Badges #Html_Light;JsonSummary;TextSummary;TextDeltaSummary;MarkdownSummaryGithub;PngChart;Badges
+          reporttypes: MarkdownSummaryGithub;Badges;HtmlInline #Html_Light;JsonSummary;TextSummary;TextDeltaSummary;MarkdownSummaryGithub;PngChart;Badges
           sourcedirs: ./src/mkmrk.Channels/
           # history requires that I commit this directory
           historydir: ./docs/coverage/history/
