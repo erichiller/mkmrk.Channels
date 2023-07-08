@@ -78,7 +78,7 @@ jobs:
                       --logger:"trx;LogFilePrefix=testResults" \
                       --blame-hang-timeout 5m \
                       --filter '(FullyQualifiedName!~Latency)&(FullyQualifiedName!~AddingAndRemovingReadersShouldNeverError)' \
-                      --collect:"Code Coverage" \
+                      --collect:"Code Coverage;Format=Cobertura" \
                       -- \
                       DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.ExcludeByFile=**/DotnetRuntimeSourced/**
         working-directory: ./test/mkmrk.Channels.Tests/
