@@ -127,7 +127,7 @@ jobs:
       - name: Coverage Report Generator
         uses: danielpalme/ReportGenerator-GitHub-Action@5.1.22
         with:
-          reports: ./test/mkmrk.Channels.Tests/TestResults/**/cobertura.xml
+          reports: ./test/mkmrk.Channels.Tests/TestResults/**/*.cobertura.xml
           targetdir: ./docs/coverage/
           reporttypes: MarkdownSummaryGithub;Badges;HtmlInline #Html_Light;JsonSummary;TextSummary;TextDeltaSummary;MarkdownSummaryGithub;PngChart;Badges
           sourcedirs: ./src/mkmrk.Channels/
