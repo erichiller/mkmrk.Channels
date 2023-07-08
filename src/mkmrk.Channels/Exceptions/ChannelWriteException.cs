@@ -8,13 +8,13 @@ namespace mkmrk.Channels;
 public class ChannelWriteException : System.Exception {
     
     /// <inheritdoc cref="ChannelWriteException" />
-    private ChannelWriteException( ) : this( "Error occurred when writing to Channel" ) { }
+    public ChannelWriteException( ) : this( "Error occurred when writing to Channel" ) { }
 
     /// <inheritdoc cref="ChannelWriteException" />
-    private ChannelWriteException( string message ) : base( message ) { }
+    public ChannelWriteException( string message ) : base( message ) { }
 
     /// <inheritdoc cref="ChannelWriteException" />
-    private ChannelWriteException( string message, System.Exception innerException ) : base( message, innerException ) { }
+    public ChannelWriteException( string message, System.Exception innerException ) : base( message, innerException ) { }
 
     /// <inheritdoc cref="ChannelWriteException" />
     [ DoesNotReturn ]
