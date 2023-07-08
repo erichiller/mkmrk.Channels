@@ -108,6 +108,11 @@ jobs:
               ;;
           esac
       #
+      - name: Create directory structure
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Path ./docs/tests -ErrorAction Continue
+      #
       - name: Create badge
         uses: emibcn/badge-action@d6f51ff11b5c3382b3b88689ae2d6db22d9737d1
         with:
