@@ -134,7 +134,7 @@ jobs:
           # history requires that I commit this directory
           historydir: ./docs/coverage/history/
           verbosity: Verbose
-          classfilters: '+*;-SingleProducerSingleConsumerQueue*;-System.Threading.Channels*'
+          classfilters: '+*;-System.Collections.Concurrent*;-System.Threading.Channels*'
           assemblyfilters: '+mkmrk.Channels'
           # TODO: may need to make this something static to keep from making commits even when nothing changes
           tag: '${{ github.sha }}_${{ github.run_number }}'
