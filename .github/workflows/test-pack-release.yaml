@@ -80,7 +80,7 @@ jobs:
                       --filter '(FullyQualifiedName!~Latency)&(FullyQualifiedName!~AddingAndRemovingReadersShouldNeverError)' \
                       --collect:"Code Coverage;Format=Cobertura" \
                       -- \
-                      DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.ExcludeByFile=**/DotnetRuntimeSourced/**
+                      DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.ExcludeByFile=**/DotnetRuntimeSourced/*
         working-directory: ./test/mkmrk.Channels.Tests/
       # 
       # https://github.com/marketplace/actions/publish-test-results#configuration
