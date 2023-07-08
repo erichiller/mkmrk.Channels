@@ -70,11 +70,25 @@ jobs:
           global-json-file: ./global.json
       - name: Install dependencies
         run: dotnet restore
+      
+      # Build
       - name: Build
-        run: dotnet build --configuration Release --no-restore
+        working-directory: ./src/mkmrk.Channels/
+        run: |
+          dotnet build \
+            --no-restore \
+            --configuration Release \
+            -consoleloggerparameters:"Summary;Verbosity=normal" \
+            -m \
+            -t:"clean,build" \
+            -fl1 "/flp1:logFile=build.log;warningsonly" \
+            -p:"WarnLevel=5"
+          mv build.log ../../docs
+      #
       - name: Test
         run: |
-          dotnet test --logger "console;verbosity=normal" \
+          dotnet test --no-restore \
+                      --logger "console;verbosity=normal" \
                       --logger:"trx;LogFilePrefix=testResults" \
                       --blame-hang-timeout 5m \
                       --filter '(FullyQualifiedName!~Latency)&(FullyQualifiedName!~AddingAndRemovingReadersShouldNeverError)' \
@@ -169,6 +183,7 @@ jobs:
           path: |
             ./docs/coverage/
             ./docs/tests
+            ./docs/build.log
 
   # TODO: generate reports? ( upload in test, build in render-mermaid-diagrams ? )
   
