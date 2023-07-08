@@ -206,7 +206,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: coverage-report
-          path: ./docs/coverage/
+          path: ./docs/
 
       - name: Show Changes
         run: |
