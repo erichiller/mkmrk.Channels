@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<coverage version="1.0" date="2023-07-08_10-31-03" tag="e43468814f0f4d5a72bed02dc67dd733921bd3dd_54">
+  <assembly name="mkmrk.Channels">
+    <class name="Microsoft.Extensions.DependencyInjection.BroadcastChannelServiceCollectionExtensions" coveredlines="38" coverablelines="44" totallines="106" coveredbranches="7" totalbranches="8" coveredcodeelements="2" totalcodeelements="3" />
+    <class name="Microsoft.Extensions.DependencyInjection.BroadcastChannelServiceCollectionExtensions&lt;TData, TResponse&gt;" coveredlines="38" coverablelines="44" totallines="106" coveredbranches="7" totalbranches="8" coveredcodeelements="2" totalcodeelements="3" />
+    <class name="mkmrk.Channels.BroadcastChannel&lt;TData, TResponse&gt;" coveredlines="19" coverablelines="25" totallines="88" coveredbranches="7" totalbranches="8" coveredcodeelements="6" totalcodeelements="12" />
+    <class name="mkmrk.Channels.BroadcastChannel&lt;TData&gt;" coveredlines="1" coverablelines="3" totallines="88" coveredbranches="0" totalbranches="2" coveredcodeelements="1" totalcodeelements="2" />
+    <class name="mkmrk.Channels.BroadcastChannelReader&lt;TData, TResponse&gt;" coveredlines="36" coverablelines="43" totallines="142" coveredbranches="7" totalbranches="24" coveredcodeelements="8" totalcodeelements="14" />
+    <class name="mkmrk.Channels.BroadcastChannelReader&lt;TData&gt;" coveredlines="2" coverablelines="2" totallines="142" coveredbranches="1" totalbranches="2" coveredcodeelements="1" totalcodeelements="1" />
+    <class name="mkmrk.Channels.BroadcastChannelReaderSource&lt;TData, TResponse&gt;" coveredlines="4" coverablelines="5" totallines="80" coveredbranches="0" totalbranches="0" coveredcodeelements="3" totalcodeelements="4" />
+    <class name="mkmrk.Channels.BroadcastChannelReaderSource&lt;TData&gt;" coveredlines="2" coverablelines="3" totallines="80" coveredbranches="1" totalbranches="2" coveredcodeelements="1" totalcodeelements="2" />
+    <class name="mkmrk.Channels.BroadcastChannelResponse" coveredlines="0" coverablelines="2" totallines="17" coveredbranches="0" totalbranches="0" coveredcodeelements="0" totalcodeelements="3" />
+    <class name="mkmrk.Channels.BroadcastChannelWriter.&lt;&gt;c&lt;TData, TResponse&gt;" coveredlines="1" coverablelines="1" totallines="296" coveredbranches="0" totalbranches="0" coveredcodeelements="0" totalcodeelements="0" />
+    <class name="mkmrk.Channels.BroadcastChannelWriter.ReaderConfiguration&lt;TData, TResponse&gt;" coveredlines="7" coverablelines="7" totallines="296" coveredbranches="0" totalbranches="0" coveredcodeelements="11" totalcodeelements="11" />
+    <class name="mkmrk.Channels.BroadcastChannelWriter&lt;TData, TResponse&gt;" coveredlines="149" coverablelines="159" totallines="296" coveredbranches="43" totalbranches="50" coveredcodeelements="27" totalcodeelements="33" />
+    <class name="mkmrk.Channels.BroadcastChannelWriter&lt;TData, TResponse&gt;" coveredlines="8" coverablelines="9" totallines="296" coveredbranches="0" totalbranches="0" coveredcodeelements="11" totalcodeelements="11" />
+    <class name="mkmrk.Channels.BroadcastChannelWriter&lt;TData&gt;" coveredlines="1" coverablelines="1" totallines="296" coveredbranches="0" totalbranches="0" coveredcodeelements="1" totalcodeelements="1" />
+    <class name="mkmrk.Channels.ChannelMux" coveredlines="156" coverablelines="176" totallines="359" coveredbranches="72" totalbranches="88" coveredcodeelements="17" totalcodeelements="20" />
+    <class name="mkmrk.Channels.ChannelMux.ChannelMuxInput&lt;TData&gt;" coveredlines="102" coverablelines="115" totallines="359" coveredbranches="47" totalbranches="56" coveredcodeelements="9" totalcodeelements="12" />
+    <class name="mkmrk.Channels.ChannelMux&lt;T1, T2, T3, T4, T5, T6, T7, T8&gt;" coveredlines="0" coverablelines="25" totallines="483" coveredbranches="0" totalbranches="8" coveredcodeelements="0" totalcodeelements="5" />
+    <class name="mkmrk.Channels.ChannelMux&lt;T1, T2, T3, T4, T5, T6, T7&gt;" coveredlines="0" coverablelines="25" totallines="483" coveredbranches="0" totalbranches="8" coveredcodeelements="0" totalcodeelements="5" />
+    <class name="mkmrk.Channels.ChannelMux&lt;T1, T2, T3, T4, T5, T6&gt;" coveredlines="0" coverablelines="25" totallines="483" coveredbranches="0" totalbranches="8" coveredcodeelements="0" totalcodeelements="5" />
+    <class name="mkmrk.Channels.ChannelMux&lt;T1, T2, T3, T4, T5&gt;" coveredlines="0" coverablelines="25" totallines="483" coveredbranches="0" totalbranches="8" coveredcodeelements="0" totalcodeelements="5" />
+    <class name="mkmrk.Channels.ChannelMux&lt;T1, T2, T3, T4&gt;" coveredlines="0" coverablelines="25" totallines="483" coveredbranches="0" totalbranches="8" coveredcodeelements="0" totalcodeelements="5" />
+    <class name="mkmrk.Channels.ChannelMux&lt;T1, T2, T3&gt;" coveredlines="16" coverablelines="25" totallines="483" coveredbranches="4" totalbranches="8" coveredcodeelements="4" totalcodeelements="5" />
+    <class name="mkmrk.Channels.ChannelMux&lt;T1, T2&gt;" coveredlines="40" coverablelines="41" totallines="483" coveredbranches="10" totalbranches="12" coveredcodeelements="8" totalcodeelements="8" />
+    <class name="mkmrk.Channels.ChannelNotClosedException" coveredlines="3" coverablelines="5" totallines="28" coveredbranches="2" totalbranches="2" coveredcodeelements="2" totalcodeelements="3" />
+    <class name="mkmrk.Channels.ChannelReadException" coveredlines="0" coverablelines="6" totallines="30" coveredbranches="0" totalbranches="0" coveredcodeelements="0" totalcodeelements="6" />
+    <class name="mkmrk.Channels.ChannelWriteException" coveredlines="0" coverablelines="6" totallines="30" coveredbranches="0" totalbranches="0" coveredcodeelements="0" totalcodeelements="6" />
+    <class name="mkmrk.Channels.Extensions" coveredlines="15" coverablelines="19" totallines="84" coveredbranches="8" totalbranches="14" coveredcodeelements="3" totalcodeelements="3" />
+    <class name="mkmrk.Channels.ThrowHelper" coveredlines="0" coverablelines="4" totallines="57" coveredbranches="0" totalbranches="0" coveredcodeelements="0" totalcodeelements="4" />
+    <class name="mkmrk.Channels.ValueTaskExtensions" coveredlines="0" coverablelines="12" totallines="84" coveredbranches="0" totalbranches="6" coveredcodeelements="0" totalcodeelements="1" />
+  </assembly>
+</coverage>
