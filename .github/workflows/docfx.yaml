@@ -9,7 +9,10 @@ env:
 jobs:
   publish-docs:
     permissions:
-      contents: write
+      #contents: write
+      contents: read
+      pages: write
+      id-token: write
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}
     runs-on: ubuntu-latest
@@ -47,3 +50,7 @@ jobs:
         uses: actions/upload-pages-artifact@v1.0.9
         with:
           path: docs/docfx/_site
+      
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v2 # or the latest "vX.X.X" version tag for this action
