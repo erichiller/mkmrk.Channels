@@ -44,6 +44,6 @@ jobs:
 #          github_token: ${{ secrets.GITHUB_TOKEN }}
 #          publish_dir: docs/docfx/_site
       - name: Upload GH Pages Artifact
-        uses: actions/upload-pages-artifact
+        uses: actions/upload-pages-artifact@v1.0.9
         with:
           path: docs/docfx/_site
