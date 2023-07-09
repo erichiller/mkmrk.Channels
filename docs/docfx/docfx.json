@@ -35,8 +35,9 @@
       },
       {
         "files": [
-          "coverage/**.md",
-//          "coverage/**.html",
+          // "coverage/**.md",
+          "coverage/**.html",
+          "coverage/toc.yml",
           "**.md"
         ],
         "exclude": "docfx/**",
