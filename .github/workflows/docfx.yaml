@@ -33,6 +33,7 @@ jobs:
             --configuration Release \
             -consoleloggerparameters:"Summary;Verbosity=normal"
 
+      # https://www.erichiller.github.io/mkmrk.Channels
       - run: dotnet tool update -g docfx
       - run: docfx docs/docfx/docfx.json
 
