@@ -39,7 +39,9 @@ jobs:
       # https://www.erichiller.github.io/mkmrk.Channels
       # https://dotnet.github.io/docfx/index.html
       - run: dotnet tool update -g docfx
-      - run: docfx docs/docfx/docfx.json
+      #- run: docfx docs/docfx/docfx.json
+      - run: docfx ./docfx.json
+        working-directory: ./docs/docfx/
 
 #      - name: Deploy
 #        uses: peaceiris/actions-gh-pages@v3
