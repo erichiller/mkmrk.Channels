@@ -34,11 +34,16 @@ jobs:
             -consoleloggerparameters:"Summary;Verbosity=normal"
 
       # https://www.erichiller.github.io/mkmrk.Channels
+      # https://dotnet.github.io/docfx/index.html
       - run: dotnet tool update -g docfx
       - run: docfx docs/docfx/docfx.json
 
-      - name: Deploy
-        uses: peaceiris/actions-gh-pages@v3
+#      - name: Deploy
+#        uses: peaceiris/actions-gh-pages@v3
+#        with:
+#          github_token: ${{ secrets.GITHUB_TOKEN }}
+#          publish_dir: docs/docfx/_site
+      - name: Upload GH Pages Artifact
+        uses: actions/upload-pages-artifact
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: docs/docfx/_site
+          path: docs/docfx/_site
