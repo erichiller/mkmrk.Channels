@@ -57,5 +57,5 @@ jobs:
         id: deployment
         uses: actions/deploy-pages@v2 # or the latest "vX.X.X" version tag for this action
 
-      - name: Write URL
-        run: echo 'Published URL: ${{ steps.deployment.outputs.page_url }}'
+#      - name: Write URL
+#        run: echo 'Published URL: ${{ steps.deployment.outputs.page_url }}'
