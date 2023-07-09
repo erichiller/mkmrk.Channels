@@ -31,12 +31,7 @@ jobs:
           dotnet build \
             --no-restore \
             --configuration Release \
-            -consoleloggerparameters:"Summary;Verbosity=normal" \
-            -m \
-            -t:"clean,build" \
-            -fl1 "/flp1:logFile=build.log;warningsonly" \
-            -p:"WarnLevel=5"
-          mv build.log ../../docs
+            -consoleloggerparameters:"Summary;Verbosity=normal"
 
       - run: dotnet tool update -g docfx
       - run: docfx docs/docfx/docfx.json
