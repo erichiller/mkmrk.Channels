@@ -8,6 +8,10 @@ env:
 
 jobs:
   publish-docs:
+    permissions:
+      contents: write
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
