@@ -1,7 +1,7 @@
 #- name: Articles
 #  href: articles/
 - name: API Documentation
-  href: api/
+  href: api/toc.yml
   expanded: true
 #  homepage: api/index.md
 - name: Coverage
