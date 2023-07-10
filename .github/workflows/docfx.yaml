@@ -1,6 +1,11 @@
 name: 'DocFX'
 
 on:
+  push:
+    paths:
+      - '**.cs'
+      - '**.md'
+      - '**.html'
   workflow_dispatch:
 
 env:
