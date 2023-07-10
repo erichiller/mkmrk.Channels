@@ -1,6 +1,5 @@
 # `BroadcastChannel` and `ChannelMux`
 
-[![Test & Pack Workflow](https://github.com/erichiller/mkmrk.Channels/actions/workflows/test-pack-release.yaml/badge.svg)](https://github.com/erichiller/mkmrk.Channels/actions/workflows/test-pack-release.yaml)
 ![Test Results](https://raw.githubusercontent.com/erichiller/mkmrk.Channels/master/docs/tests/test-result-badge.svg)
 [![Line Coverage](https://raw.githubusercontent.com/erichiller/mkmrk.Channels/master/docs/coverage/badge_shieldsio_linecoverage_blue.svg)](https://www.hiller.pro/mkmrk.Channels/coverage/index.html)
 
