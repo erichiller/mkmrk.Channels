@@ -6,7 +6,7 @@
           "files": [
             "src/mkmrk.Channels/bin/Release/**.dll"
           ],
-          "src": "../../"
+          "src": "../"
         }
       ],
       "dest": "api",
@@ -32,16 +32,6 @@
           "_site/**",
           "_api/**"
         ]
-      },
-      {
-        "files": [
-          // "coverage/**.md",
-          //"coverage/*.html",
-          //"coverage/toc.yml",
-          "**.md"
-        ],
-        "exclude": "docfx/**",
-        "src": "../"
       }
     ],
     "resource": [
@@ -50,8 +40,8 @@
           "images/**",
           "rendered/**.{svg,png}",
           "coverage/*.html",
-        ],
-        "src": "../"
+        ]
+        //"src": "../"
       }
     ],
     "output": "_site",
