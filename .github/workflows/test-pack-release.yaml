@@ -213,7 +213,7 @@ jobs:
       - name: temporary move
         shell: pwsh
         run: |
-          Move-Item ./docs/docfx/* ./docs
+          Move-Item ./docs/docfx/.gitignore ./docs
       #
       - name: Make image links absolute URLs
         shell: pwsh
