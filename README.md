@@ -4,8 +4,6 @@
 ![Test Results](https://raw.githubusercontent.com/erichiller/mkmrk.Channels/master/docs/tests/test-result-badge.svg)
 [![Line Coverage](https://raw.githubusercontent.com/erichiller/mkmrk.Channels/master/docs/coverage/badge_shieldsio_linecoverage_blue.svg)](https://www.hiller.pro/mkmrk.Channels/coverage/index.html)
 
-- [API Docs](https://www.hiller.pro/mkmrk.Channels/)
-
 - [ ] ==TODO: ADD NUGET PACKAGE LINK==
 
 Available on [Nuget]()
@@ -330,6 +328,7 @@ bool result = reader.TryRead( out int? data );
 
 ## Additional Information
 
+- [API Docs](https://www.hiller.pro/mkmrk.Channels/)
 - [Unit Tests](https://github.com/erichiller/mkmrk.Channels/tree/master/test/mkmrk.Channels.Tests)
 - [Sample Console Program](https://github.com/erichiller/mkmrk.Channels/tree/master/test/mkmrk.Channels.Tests.Console)
 
