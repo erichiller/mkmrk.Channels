@@ -2,6 +2,7 @@
 #  href: articles/
 - name: Api Documentation
   href: api/
+  expanded: true
 #  homepage: api/index.md
 - name: Coverage
   href: coverage/index.html
