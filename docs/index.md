@@ -1,1 +1,1 @@
-[!INCLUDE [my-markdown-block](../../README.md)]
+[!INCLUDE [README](../README.md)]
