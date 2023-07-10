@@ -323,7 +323,7 @@ bool result = reader.TryRead( out int? data );
 
 ## Future
 
-- [ ] Allow responses via `BroadcastChannelReaderSource`
+- Allow responses via `BroadcastChannelReaderSource`
 
 
 ## Additional Information
