@@ -1,6 +1,6 @@
 # https://learn.microsoft.com/en-us/dotnet/devops/dotnet-test-github-action
 # 
-name: Test, Pack, Release
+name: 'Test & Build'
 #run-name: '${{ join( github.event.commits.*.message ) }} // ${{ github.event.pull_request.head.label || github.head_ref || github.ref }}'
 
 #run-name: '${{ github.workflow }} run #${{ github.run_number }} - ${{ github.event_name }}: ${{ join( github.event.commits.*.message ) }} // ${{ github.event.pull_request.head.label || github.head_ref || github.ref }}'
