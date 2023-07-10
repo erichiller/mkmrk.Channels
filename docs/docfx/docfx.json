@@ -79,6 +79,9 @@
     },
     "postProcessors": [],
     "keepFileLink": false,
-    "disableGitFeatures": false
+    "disableGitFeatures": false,
+    "sitemap": {
+      "baseUrl": "https://www.hiller.pro/mkmrk.Channels/"
+    }
   }
 }
