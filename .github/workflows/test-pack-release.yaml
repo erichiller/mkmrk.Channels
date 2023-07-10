@@ -151,7 +151,7 @@ jobs:
           classfilters: '+*;-System.Collections.Concurrent*;-System.Threading.Channels*'
           assemblyfilters: '+mkmrk.Channels'
           # TODO: may need to make this something static to keep from making commits even when nothing changes
-          tag: '${{ github.sha }}_${{ github.run_number }}'
+          #tag: '${{ github.sha }}_${{ github.run_number }}'
           title: '${{ github.repository }} coverage'
       #
       - name: Print coverage summary to Workflow Summary
@@ -210,11 +210,6 @@ jobs:
       - name: Generate SVGs and modified markdown with mermaid-cli
         run: mmdc --input ${{ env.README_INPUT_PATH }}${{ env.README_FILENAME }} --output ${{ env.README_OUTPUT_PATH }}${{ env.README_FILENAME }} -b transparent
 
-      - name: temporary move
-        shell: pwsh
-        run: |
-          Move-Item ./docs/docfx/.gitignore ./docs
-      #
       - name: Make image links absolute URLs
         shell: pwsh
         run: |
