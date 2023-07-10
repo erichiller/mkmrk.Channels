@@ -1,5 +1,7 @@
 #- name: Articles
 #  href: articles/
+- name: Home
+  href: ./index.md
 - name: API Documentation
   href: api/toc.yml
   expanded: true
