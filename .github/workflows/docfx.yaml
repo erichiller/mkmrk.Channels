@@ -39,15 +39,14 @@ jobs:
       # http://www.hiller.pro/mkmrk.Channels/
       # https://dotnet.github.io/docfx/index.html
       - run: dotnet tool update -g docfx
-      #- run: docfx docs/docfx/docfx.json
       - run: docfx ./docfx.json
-        working-directory: ./docs/docfx/
+        working-directory: ./docs/
       #
       # https://github.com/actions/upload-pages-artifact
       - name: Upload GH Pages Artifact
         uses: actions/upload-pages-artifact@v1.0.9
         with:
-          path: docs/docfx/_site
+          path: docs/_site
       #
       # https://github.com/actions/deploy-pages
       - name: Deploy to GitHub Pages
