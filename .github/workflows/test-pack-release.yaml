@@ -17,6 +17,17 @@ on:
         description: 'Pack and release to nuget.org'
         required: true
         type: boolean
+        default: false
+      release_to_github:
+        description: 'Pack and release to GitHub Package Manager'
+        required: true
+        type: boolean
+        default: false
+      build_pages:
+        description: 'Build DoxFX and refresh GitHub Pages'
+        required: true
+        type: boolean
+        default: false
       # URGENT: 🚨: need to change CSPROJ to use package_version if present
       # https://learn.microsoft.com/en-us/visualstudio/msbuild/how-to-use-environment-variables-in-a-build
 #      release_version:
@@ -185,7 +196,13 @@ jobs:
             ./docs/tests
             ./docs/build.log
 
-  # TODO: generate reports? ( upload in test, build in render-mermaid-diagrams ? )
+  docfx:
+    if: ${{ inputs.release_to_github || inputs.release_to_nuget || inputs.build_pages }}
+    uses: erichiller/mkmrk.Channels/.github/workflows/docfx.yaml@master
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
   
   render-mermaid-diagrams:
     runs-on: ubuntu-latest
@@ -260,6 +277,7 @@ jobs:
   
   pack:
     runs-on: ubuntu-latest
+    if: ${{ inputs.release_to_github || inputs.release_to_nuget }}
     needs: [test, render-mermaid-diagrams]
     permissions:
       packages: write
@@ -284,6 +302,7 @@ jobs:
         run: dotnet pack --configuration Release
 
       - name: Publish to GitHub Packages
+        if: ${{ inputs.release_to_github }}
         run: dotnet nuget push *pkg -s https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json --api-key ${{ secrets.GITHUB_TOKEN }}
         working-directory: ./src/mkmrk.Channels/bin/Release
 

@@ -2,6 +2,11 @@ name: 'DocFX'
 
 on:
   workflow_dispatch:
+  workflow_call:
+#    inputs:
+#      TEST_PROJECT:
+#        required: true
+#        type: string
 
 env:
   TZ: America/Chicago
