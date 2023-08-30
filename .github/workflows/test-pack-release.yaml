@@ -92,7 +92,13 @@ jobs:
           echo "::error title=BUILD_FAILED=${{ env.BUILD_FAILED }}::Build failed, will not continue with coverage or unit test reports."
           exit 1
       - name: force error exit
-        run: exit 1
+        run: |
+          echo $BUILD_FAILED
+          echo ${{ env.BUILD_FAILED == false }}
+          echo ${{ env.BUILD_FAILED == true }}
+          echo ${{ env.BUILD_FAILED == ${{ true }} }}
+          echo ${{ env.BUILD_FAILED == ${{ false }} }}
+          exit 1
       # action checks-out your repository under $GITHUB_WORKSPACE, so your workflow can access it.
       # https://github.com/actions/checkout
       - uses: actions/checkout@v3
