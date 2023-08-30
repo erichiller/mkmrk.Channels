@@ -40,10 +40,13 @@ jobs:
       - name: force error exit
         run: |
           echo $BUILD_FAILED
+          echo ${{ BUILD_FAILED }}
           echo ${{ env.BUILD_FAILED == false }}
           echo ${{ env.BUILD_FAILED == true }}
           echo ${{ env.BUILD_FAILED == 'false' }}
-          echo 
+          echo ${{ env.BUILD_FAILED == 'true' }}
+          echo $GITHUB_ENV
+          cat $GITHUB_ENV
           exit 1
       #
       #
