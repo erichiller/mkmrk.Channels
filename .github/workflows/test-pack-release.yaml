@@ -242,7 +242,9 @@ jobs:
 
   docfx:
     if: ${{ inputs.release_to_github || inputs.release_to_nuget || inputs.build_pages }}
-    needs: [test, render-mermaid-diagrams]
+    # TODO: I don't think I actually need mermaid for this
+    # needs: [test, render-mermaid-diagrams]
+    needs: [test]
     uses: erichiller/mkmrk.Channels/.github/workflows/docfx.yaml@master
     permissions:
       contents: read
