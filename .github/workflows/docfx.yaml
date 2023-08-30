@@ -21,7 +21,15 @@ jobs:
       group: ${{ github.workflow }}-${{ github.ref }}
     timeout-minutes: 5
     runs-on: ubuntu-latest
-    steps:
+    steps: 
+      # KILL ↓
+      - name: Test if BUILD_FAILED is set
+        if: ${{ env.BUILD_FAILED }}
+        run: echo "::error title=BUILD_FAILED::Build failed, will not continue with coverage or unit test reports."
+      #
+      - name: KILL
+        run: exit 1
+      #
       - name: Checkout
         uses: actions/checkout@v3
         
