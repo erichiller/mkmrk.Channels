@@ -103,6 +103,8 @@ jobs:
             -fl1 "/flp1:logFile=mkmrk-channels-build.log;warningsonly" \
             -p:"WarnLevel=5"
           mv *-build.log ../../docs/build-logs
+          exit 1
+          # ↑ # KILL
       #
       - name: Mark Build Failed
         if: ${{ failure() }}
