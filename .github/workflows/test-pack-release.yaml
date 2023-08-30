@@ -102,16 +102,15 @@ jobs:
             -t:"clean,build" \
             -fl1 "/flp1:logFile=mkmrk-channels-build.log;warningsonly" \
             -p:"WarnLevel=5"
-          mv *-build.log ../../docs/build-logs
-          exit 1
-          # ↑ # KILL
+      - name: Move build logs
+        if: ${{ always() }}
+        run: mv *-build.log ../../docs/build-logs
       #
       - name: Mark Build Failed
         if: ${{ failure() }}
         run: |
           echo "BUILD_FAILED=${{ true }}" >> "$GITHUB_ENV"
-      # KILL ↓
-      - name: Test if BUILD_FAILED is set
+      - name: 'BUILD_FAILED is set... ERROR'
         if: ${{ env.BUILD_FAILED == 'true' }}
         run: |
           echo ${{ env.BUILD_FAILED }}
