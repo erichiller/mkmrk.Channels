@@ -77,15 +77,15 @@ jobs:
         #if: ${{ failure() }}
         run: |
           echo "BUILD_FAILED=${{ true }}" >> "$GITHUB_ENV"
-      - name: 'BUILD_FAILED is set... ERROR'
-        if: ${{ env.BUILD_FAILED == true }}
+      - name: 'BUILD_FAILED is set... ERROR bool'
+        if: env.BUILD_FAILED == true
         run: |
           echo ${{ env.BUILD_FAILED }}
           echo $BUILD_FAILED
           echo "::error title=BUILD_FAILED=${{ env.BUILD_FAILED }}::Build failed, will not continue with coverage or unit test reports."
           exit 1
-      - name: 'BUILD_FAILED is set... ERROR'
-        if: ${{ env.BUILD_FAILED == false }}
+      - name: 'BUILD_FAILED is set... ERROR str'
+        if: ${{ env.BUILD_FAILED == 'true' }}
         run: |
           echo ${{ env.BUILD_FAILED }}
           echo $BUILD_FAILED
@@ -97,7 +97,7 @@ jobs:
           echo ${{ env.BUILD_FAILED == false }}
           echo ${{ env.BUILD_FAILED == true }}
           echo ${{ env.BUILD_FAILED == 'false' }}
-          echo ${{ env.BUILD_FAILED == 'true' }}
+          echo 
           exit 1
       # action checks-out your repository under $GITHUB_WORKSPACE, so your workflow can access it.
       # https://github.com/actions/checkout
