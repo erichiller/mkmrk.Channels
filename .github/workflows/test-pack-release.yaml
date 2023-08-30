@@ -74,7 +74,7 @@ jobs:
     steps:
       # KILL ↓
       - name: Mark Build Failed
-        if: ${{ failure() }}
+        #if: ${{ failure() }}
         run: |
           echo "BUILD_FAILED=${{ true }}" >> "$GITHUB_ENV"
       - name: 'BUILD_FAILED is set... ERROR'
@@ -268,7 +268,7 @@ jobs:
 
   docfx:
     # KILL ↓
-    if: ${{ always() }}
+    # if: ${{ always() }}
     #if: ${{ inputs.release_to_github || inputs.release_to_nuget || inputs.build_pages }}
     # TODO: I don't think I actually need mermaid for this
     # needs: [test, render-mermaid-diagrams]
