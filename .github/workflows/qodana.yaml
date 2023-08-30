@@ -32,7 +32,7 @@ jobs:
         uses: JetBrains/qodana-action@v2023.2.1
           with:
             upload-result: true
-            args:
+            args: --print-problems
         
         
         # --linter jetbrains/qodana-dotnet
