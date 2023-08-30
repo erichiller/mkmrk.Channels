@@ -57,7 +57,6 @@ jobs:
           export -p
           echo '----'
           exit 1
-          exit 1
       #
       #
       - name: Checkout
