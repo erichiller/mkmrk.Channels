@@ -30,9 +30,9 @@ jobs:
       #
       - name: 'Qodana Scan'
         uses: JetBrains/qodana-action@v2023.2.1
-          with:
-            upload-result: true
-            args: --print-problems
+        with:
+          upload-result: true
+          args: --print-problems
         
         
         # --linter jetbrains/qodana-dotnet
