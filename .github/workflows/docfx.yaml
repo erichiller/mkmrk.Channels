@@ -19,6 +19,7 @@ jobs:
       id-token: write
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}
+    timeout-minutes: 5
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
