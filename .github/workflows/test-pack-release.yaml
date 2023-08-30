@@ -62,6 +62,7 @@ env:
   README_INPUT_PATH: ./
   README_OUTPUT_PATH: docs/rendered/
   TZ: America/Chicago
+  BUILD_FAILED: false
 
 jobs:
   test:
@@ -90,6 +91,7 @@ jobs:
       #
       # Build
       - name: Build
+        id: build
         working-directory: ./src/mkmrk.Channels/
         run: |
           dotnet build \
@@ -101,6 +103,15 @@ jobs:
             -fl1 "/flp1:logFile=mkmrk-channels-build.log;warningsonly" \
             -p:"WarnLevel=5"
           mv *-build.log ../../docs/build-logs
+      #
+      - name: Mark Build Failed
+        if: ${{ failure() }}
+        run: |
+          echo "BUILD_FAILED=true" >> "$GITHUB_ENV"
+      # KILL ↓
+      - name: Test if BUILD_FAILED is set
+        if: ${{ env.BUILD_FAILED }}
+        run: echo "::error title=BUILD_FAILED::Build failed, will not continue with coverage or unit test reports."
       #
       - name: Test
         run: |
