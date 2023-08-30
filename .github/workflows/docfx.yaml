@@ -46,15 +46,15 @@ jobs:
           echo ${{ env.BUILD_FAILED == 'false' }}
           echo ${{ env.BUILD_FAILED == 'true' }}
           echo '----'
-          echo $GITHUB_ENV
-          echo '----'
-          cat $GITHUB_ENV
-          echo '----'
           (set -o posix ; set)
           echo '----'
           env | sort
           echo '----'
           export -p
+          echo '----'
+          echo $GITHUB_ENV
+          echo '----'
+          cat $GITHUB_ENV
           echo '----'
           exit 1
       #
