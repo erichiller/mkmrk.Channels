@@ -94,7 +94,7 @@ jobs:
       - name: force error exit
         run: |
           echo $BUILD_FAILED
-          echo ${{ varsBUILD_FAILED }}
+          echo ${{ vars.BUILD_FAILED }}
           echo ${{ env.BUILD_FAILED == false }}
           echo ${{ env.BUILD_FAILED == true }}
           echo ${{ env.BUILD_FAILED == 'false' }}
