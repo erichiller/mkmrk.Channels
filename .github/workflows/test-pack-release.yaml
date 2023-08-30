@@ -72,6 +72,27 @@ jobs:
       issues: read
       checks: write
     steps:
+      # KILL ↓
+      - name: Mark Build Failed
+        if: ${{ failure() }}
+        run: |
+          echo "BUILD_FAILED=${{ true }}" >> "$GITHUB_ENV"
+      - name: 'BUILD_FAILED is set... ERROR'
+        if: ${{ env.BUILD_FAILED == true }}
+        run: |
+          echo ${{ env.BUILD_FAILED }}
+          echo $BUILD_FAILED
+          echo "::error title=BUILD_FAILED=${{ env.BUILD_FAILED }}::Build failed, will not continue with coverage or unit test reports."
+          exit 1
+      - name: 'BUILD_FAILED is set... ERROR'
+        if: ${{ env.BUILD_FAILED == false }}
+        run: |
+          echo ${{ env.BUILD_FAILED }}
+          echo $BUILD_FAILED
+          echo "::error title=BUILD_FAILED=${{ env.BUILD_FAILED }}::Build failed, will not continue with coverage or unit test reports."
+          exit 1
+      - name: force error exit
+        run: exit 1
       # action checks-out your repository under $GITHUB_WORKSPACE, so your workflow can access it.
       # https://github.com/actions/checkout
       - uses: actions/checkout@v3
@@ -111,7 +132,7 @@ jobs:
         run: |
           echo "BUILD_FAILED=${{ true }}" >> "$GITHUB_ENV"
       - name: 'BUILD_FAILED is set... ERROR'
-        if: ${{ env.BUILD_FAILED == 'true' }}
+        if: ${{ env.BUILD_FAILED == true }}
         run: |
           echo ${{ env.BUILD_FAILED }}
           echo $BUILD_FAILED
