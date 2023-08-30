@@ -15,7 +15,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: Create Qodana config
-        if: ${{ ! always() }}
+        #if: ${{ ! always() }}
         shell: pwsh
         run: |
           Set-Content -Path "./qodana.yaml" -Value (
@@ -28,6 +28,8 @@ jobs:
           );
           Get-Content -Path "./qodana.yaml"
       #
+      # https://www.jetbrains.com/help/qodana/github.html
+      # https://github.com/marketplace/actions/qodana-scan
       - name: 'Qodana Scan'
         uses: JetBrains/qodana-action@v2023.2.1
         with:
@@ -49,6 +51,12 @@ jobs:
         # qodana scan --save-report
                         
       #
+      # For GitHub Code quality checks:
+      # https://www.jetbrains.com/help/qodana/github.html#GitHub+code+scanning
+      - uses: github/codeql-action/upload-sarif@v2
+        if: ${{ ! always() }}
+        with:
+          sarif_file: ${{ runner.temp }}/qodana/results/qodana.sarif.json
 # 
 # https://www.jetbrains.com/help/qodana/github.html
 # https://www.jetbrains.com/help/qodana/qodana-yaml.html
