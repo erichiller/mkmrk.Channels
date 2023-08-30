@@ -113,6 +113,7 @@ jobs:
         if: env.BUILD_FAILED
         run: |
           echo ${{ env.BUILD_FAILED }}
+          echo $BUILD_FAILED
           echo "::error title=BUILD_FAILED=${{ env.BUILD_FAILED }}::Build failed, will not continue with coverage or unit test reports."
           exit 1
       #
