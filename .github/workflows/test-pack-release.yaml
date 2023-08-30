@@ -110,7 +110,7 @@ jobs:
           echo "BUILD_FAILED=${{ true }}" >> "$GITHUB_ENV"
       # KILL ↓
       - name: Test if BUILD_FAILED is set
-        if: ${{ env.BUILD_FAILED }}
+        if: env.BUILD_FAILED
         run: |
           echo ${{ env.BUILD_FAILED }}
           echo "::error title=BUILD_FAILED=${{ env.BUILD_FAILED }}::Build failed, will not continue with coverage or unit test reports."
