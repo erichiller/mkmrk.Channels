@@ -62,7 +62,7 @@ env:
   README_INPUT_PATH: ./
   README_OUTPUT_PATH: docs/rendered/
   TZ: America/Chicago
-  BUILD_FAILED: false
+  BUILD_FAILED: ${{ false }}
 
 jobs:
   test:
@@ -107,7 +107,7 @@ jobs:
       - name: Mark Build Failed
         if: ${{ failure() }}
         run: |
-          echo "BUILD_FAILED=true" >> "$GITHUB_ENV"
+          echo "BUILD_FAILED=${{ true }}" >> "$GITHUB_ENV"
       # KILL ↓
       - name: Test if BUILD_FAILED is set
         if: ${{ env.BUILD_FAILED }}
