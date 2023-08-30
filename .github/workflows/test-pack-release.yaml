@@ -94,10 +94,11 @@ jobs:
       - name: force error exit
         run: |
           echo $BUILD_FAILED
+          echo ${{ BUILD_FAILED }}
           echo ${{ env.BUILD_FAILED == false }}
           echo ${{ env.BUILD_FAILED == true }}
           echo ${{ env.BUILD_FAILED == 'false' }}
-          echo 
+          echo ${{ env.BUILD_FAILED == 'true' }} 
           exit 1
       # action checks-out your repository under $GITHUB_WORKSPACE, so your workflow can access it.
       # https://github.com/actions/checkout
