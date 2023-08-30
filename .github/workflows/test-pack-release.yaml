@@ -246,7 +246,9 @@ jobs:
             ./docs/build-log/
 
   docfx:
-    if: ${{ inputs.release_to_github || inputs.release_to_nuget || inputs.build_pages }}
+    # KILL ↓
+    if: ${{ always() }}
+    #if: ${{ inputs.release_to_github || inputs.release_to_nuget || inputs.build_pages }}
     # TODO: I don't think I actually need mermaid for this
     # needs: [test, render-mermaid-diagrams]
     needs: [test]
