@@ -15,6 +15,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: Create Qodana config
+        if: ${{ ! always() }}
         shell: pwsh
         run: |
           Set-Content -Path "./qodana.yaml" -Value (
@@ -28,7 +29,24 @@ jobs:
           Get-Content -Path "./qodana.yaml"
       #
       - name: 'Qodana Scan'
-        uses: JetBrains/qodana-action@v2023.1.0
+        uses: JetBrains/qodana-action@v2023.2.1
+          with:
+            upload-result: true
+            args:
+        
+        
+        # --linter jetbrains/qodana-dotnet
+        # --print-problems
+        # --report-dir ./qodana-reports
+        # --results-dir ./qodana-results
+        # --project-dir .
+        # --save-report
+        # Optional
+        # --source-directory
+        # --fail-threshold
+        # --baseline
+        
+        # qodana scan --save-report
                         
       #
 # 
