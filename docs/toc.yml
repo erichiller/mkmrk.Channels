@@ -11,3 +11,13 @@
 #  homepage: coverage/index.html
 - name: Statistics
   href: stats/README.md
+#  expanded: true
+  items:
+  - name: Test Results
+    href: stats/Test_Results.md
+  - name: Build Warnings
+    href: stats/BuildLogHistory.md
+  - name: To-Do
+    href: stats/TO-DO.md
+  - name: Line Counts
+    href: stats/Line_Counts.md
