@@ -145,15 +145,9 @@ jobs:
       - name: Mark Build Failed
         if: ${{ failure() }}
         run: |
-          echo "BUILD_FAILED=${{ true }}" >> "$GITHUB_ENV"
-      - name: 'BUILD_FAILED is set... ERROR'
-        if: ${{ env.BUILD_FAILED == true }}
-        run: |
-          echo ${{ env.BUILD_FAILED }}
-          echo $BUILD_FAILED
-          echo "::error title=BUILD_FAILED=${{ env.BUILD_FAILED }}::Build failed, will not continue with coverage or unit test reports."
+          echo "BUILD_FAILED: mkmrk.Channels" > ./test/mkmrk.Channels.Tests/BUILD_FAILED.log
+          echo "::error title=BUILD_FAILED::Build failed, will not continue with coverage or unit test reports."
           exit 1
-      #
       - name: Test
         run: |
           dotnet test --no-restore \
@@ -197,9 +191,7 @@ jobs:
           label: Tests
           status: '${{ fromJSON( steps.report-test-results.outputs.json ).formatted.stats.tests_succ }} of ${{ fromJSON( steps.report-test-results.outputs.json ).formatted.stats.tests }} passing: ${{ fromJSON( steps.report-test-results.outputs.json ).conclusion }}'
           color: ${{ env.BADGE_COLOR }}
-          # TODO: Add this to the README
           path: ./docs/tests/test-result-badge.svg
-      #
       #
       # https://github.com/danielpalme/ReportGenerator-GitHub-Action
       - name: Coverage Report Generator
@@ -228,22 +220,22 @@ jobs:
           }
       #
       - name: Show Changes
+        if: ${{ always() }}
         run: |
           git status --short
-        if: ${{ always() }}
 
       - name: Upload test results
         uses: actions/upload-artifact@v3
+        if: ${{ failure() }}
         with:
           name: dotnet-test-results
           path: |
             ./test/mkmrk.Channels.Tests/TestResults/
             ./test/mkmrk.Channels.Tests/diagnostics.*
-        if: ${{ failure() }}
+            ./test/mkmrk.Channels.Tests/BUILD_FAILED.log
         #
       # URGENT: NEEDS TESTING!
       - name: Retrieve coverage and metadata history archive
-      #  shell: pwsh
         continue-on-error: true
         run: |
           wget http://www.hiller.pro/mkmrk.Channels/coverage/history/coverage-history.zip
@@ -282,9 +274,7 @@ jobs:
             ./docs/build-log/
 
   docfx:
-    # KILL ↓
-    if: ${{ always() }}
-    #if: ${{ inputs.release_to_github || inputs.release_to_nuget || inputs.build_pages }}
+    if: ${{ inputs.release_to_github || inputs.release_to_nuget || inputs.build_pages }}
     # TODO: I don't think I actually need mermaid for this
     # needs: [test, render-mermaid-diagrams]
     needs: [test]
@@ -296,7 +286,6 @@ jobs:
   
   render-mermaid-diagrams:
     runs-on: ubuntu-latest
-    #needs: [test]
     # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#running-a-workflow-based-on-the-conclusion-of-another-workflow
     if: ${{ inputs.readme_render_mermaid || inputs.release_to_github || inputs.release_to_nuget || inputs.build_pages }}
     
@@ -317,19 +306,13 @@ jobs:
       - name: Generate SVGs and modified markdown with mermaid-cli
         run: mmdc --input ${{ env.README_INPUT_PATH }}${{ env.README_FILENAME }} --output ${{ env.README_OUTPUT_PATH }}${{ env.README_FILENAME }} -b transparent
 
-      # URGENT: MUST BE UPDATED!
+      # URGENT: MUST BE UPDATED! (to the Hiller.pro URL)
       - name: Make image links absolute URLs
         shell: pwsh
         run: |
           $readmeTxt = Get-Content -Raw -Path "${{ env.README_FILENAME }}" ; `
           [System.Text.RegularExpressions.Regex]::Replace($readmeTxt,'^(!\[[^\]]*\]\()(\.\/)','$1https://raw.githubusercontent.com/${{ github.repository }}/${{ github.ref_name }}/${{ env.README_OUTPUT_PATH }}',[System.Text.RegularExpressions.RegexOptions]::Multiline) | Set-Content -Path "${{ env.README_FILENAME }}";
         working-directory: ${{ env.README_OUTPUT_PATH }}
-
-      #- name: Download test coverage report
-      #  uses: actions/download-artifact@v3
-      #  with:
-      #    name: coverage-report
-      #    path: ./docs/
 
       - name: Show Changes
         run: |
@@ -343,36 +326,7 @@ jobs:
           name: Mermaid Render Results
           path: ${{ env.README_OUTPUT_PATH }}
         if: ${{ always() }}
-
-      # temporary KILL
-      #- name: remove old files
-      #  shell: pwsh
-      #  run: |
-      #    Remove-Item -Force -Recurse -Path ./docs/coverage -ErrorAction 'Continue'
-      #    Remove-Item -Force -Recurse -Path ./docs/tests -ErrorAction 'Continue'
-      #    Remove-Item -Force -Recurse -Path ./docs/rendered -ErrorAction 'Continue'
-      # https://github.com/stefanzweifel/git-auto-commit-action
-      #- uses: stefanzweifel/git-auto-commit-action@v4
-      #  with:
-      #    commit_message: Render mermaid diagrams
-
-      #- name: "Run if changes have been detected"
-      #  if: steps.auto-commit-action.outputs.changes_detected == 'true'
-      #  run: echo "Changes!"
-
-      #- name: "Run if no changes have been detected"
-      #  if: steps.auto-commit-action.outputs.changes_detected == 'false'
-      #  run: echo "No Changes!"
-          
-      # reports?
-      #   here or under the Test job?
-      # Coverage
-      # https://github.com/danielpalme/ReportGenerator-GitHub-Action
-      #
-      # Test results
-      # https://github.com/marketplace/actions/publish-test-results#github-actions-job-summary
-  
-  
+  #
   pack:
     runs-on: ubuntu-latest
     if: ${{ inputs.release_to_github || inputs.release_to_nuget }}
