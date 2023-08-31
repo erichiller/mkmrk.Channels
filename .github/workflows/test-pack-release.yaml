@@ -62,7 +62,6 @@ env:
   README_INPUT_PATH: ./
   README_OUTPUT_PATH: docs/rendered/
   TZ: America/Chicago
-  BUILD_FAILED: ${{ false }}
 
 jobs:
   test:
