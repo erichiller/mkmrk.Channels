@@ -90,7 +90,6 @@ jobs:
       #
       # Build
       - name: Build
-        id: build
         working-directory: ./src/mkmrk.Channels/
         run: |
           dotnet build \
@@ -102,6 +101,7 @@ jobs:
             -fl1 "/flp1:logFile=mkmrk-channels-build.log;warningsonly" \
             -p:"WarnLevel=5"
       - name: Move build logs
+        working-directory: ./src/mkmrk.Channels/
         if: ${{ always() }}
         run: mv *-build.log ../../docs/build-logs
       #
