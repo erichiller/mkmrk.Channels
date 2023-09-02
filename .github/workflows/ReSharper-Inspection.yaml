@@ -31,16 +31,21 @@ jobs:
           dotnet tool install JetBrains.ReSharper.GlobalTools
           # In the build script
           dotnet tool restore
+      - name: run tool
+        run: |
+          dotnet tool run jb inspectcode ./mkmrk.Channels.sln \
+             --Format=Text \
+             --Output=./results.txt
         #with:
         #  dotnet-version: ${{ inputs.dotnet-version }}
-      - name: Install ReSharper command line tools
-        shell: bash
-        run: dotnet tool install JetBrains.ReSharper.GlobalTools --global --version ${{ env.TOOL_VERSION }}
-      - name: Run inspection
-        run: |
-          jb inspectcode ./mkmrk.Channels.sln \
-            --Format=Text \
-            --Output=./results.txt
+      # - name: Install ReSharper command line tools
+      #   shell: bash
+      #   run: dotnet tool install JetBrains.ReSharper.GlobalTools --global --version ${{ env.TOOL_VERSION }}
+      # - name: Run inspection
+      #   run: |
+      #     jb inspectcode ./mkmrk.Channels.sln \
+      #       --Format=Text \
+      #       --Output=./results.txt
             
       #
       # https://www.jetbrains.com/help/resharper/InspectCode.html
