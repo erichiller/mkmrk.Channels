@@ -38,7 +38,7 @@ jobs:
              --Format=Text \
              --Format=Html \
              --Format=Xml \
-             --Output=./results.txt
+             --Output=./results
         #with:
         #  dotnet-version: ${{ inputs.dotnet-version }}
       # - name: Install ReSharper command line tools
@@ -80,7 +80,7 @@ jobs:
         with:
           name: inspection-results
           path: |
-            ./results.txt
+            ./results*
           # ./logs/
 
     #permissions:
