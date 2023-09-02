@@ -29,8 +29,8 @@ jobs:
         run: dotnet tool install JetBrains.ReSharper.GlobalTools --global --version ${{ env.TOOL_VERSION }}
       - name: Run inspection
         run: |
-          jb inspectcode ./mkmrk.Channels.sln `
-            --Format=Text `
+          jb inspectcode ./mkmrk.Channels.sln \
+            --Format=Text \
             --Output=./results.txt
             
       #
