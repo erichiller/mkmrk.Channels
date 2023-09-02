@@ -16,15 +16,36 @@ jobs:
       - uses: actions/checkout@v3
         with:
           submodules: recursive
-
+      # https://www.jetbrains.com/help/resharper/InspectCode.html
+      # https://github.com/JetBrains/ReSharper-InspectCode/blob/main/action.yml
       - name: Annotate
         # You may pin to the exact commit or the version.
         uses: JetBrains/ReSharper-InspectCode@v0.3
         with:
           solution: ./mkmrk.Channels.sln
-          verbosity: VERBOSE
-          debug: true
+          # verbosity: VERBOSE
+          # debug: true
+          # [INFO, HINT, SUGGESTION, WARNING, ERROR] # Suggestion is default
+          # severity: 
           tool-version: 2023.2
+          # LogFolder
+          format: Text;Html;Xml
+          output: ./inspection-results
+          # swea: True  # (DEFAULT = use from settings file)
+          # caches-home:
+          # TODO: TRY --caches-home
 
     #permissions:
     #  security-events: write
+
+# https://www.jetbrains.com/help/resharper/InspectCode.html#command-line-parameters
+# https://www.jetbrains.com/help/resharper/InspectCode.html#editorconfig
+# --dumpIssuesTypes -it — use this option to dump all existing code inspections to the output. This option should be used separately from actual analysis, that is without the solution argument.
+
+# -severity (-e) — by default, InspectCode only reports issues with the severity level Suggestion and higher. This parameter lets you change the minimal reported severity level to [INFO, HINT, SUGGESTION, WARNING, ERROR]. For example, -e=WARNING.
+
+
+# TODO: (FUTURE) dotCover
+#       https://www.jetbrains.com/help/dotcover/Running_Coverage_Analysis_from_the_Command_LIne.html
+# 
+
