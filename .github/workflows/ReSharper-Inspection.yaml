@@ -30,10 +30,18 @@ jobs:
           tool-version: 2023.2
           # LogFolder
           format: Text;Html;Xml
-          output: ./inspection-results
+          output: ./results
           # swea: True  # (DEFAULT = use from settings file)
           # caches-home:
           # TODO: TRY --caches-home
+      #
+      - name: Upload results
+        uses: actions/upload-artifact@v3
+        with:
+          name: inspection-results
+          path: |
+            ./results/
+            # ./logs/
 
     #permissions:
     #  security-events: write
