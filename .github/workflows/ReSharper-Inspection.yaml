@@ -36,6 +36,8 @@ jobs:
         run: |
           dotnet tool run jb inspectcode ./mkmrk.Channels.sln \
              --Format=Text \
+             --Format=Html \
+             --Format=Xml \
              --Output=./results.txt
         #with:
         #  dotnet-version: ${{ inputs.dotnet-version }}
