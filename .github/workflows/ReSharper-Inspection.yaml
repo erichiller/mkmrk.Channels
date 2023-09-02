@@ -1,12 +1,13 @@
 name: 'ReSharper Inspection'
 
 on:
-  push:
-    branches:
-      - main
-      - 'releases/*'
-  #pull_request:
-  #  types: [opened, reopened]
+  # TODO: RESTORE on.push
+  # push:
+  #   branches:
+  #     - main
+  #     - 'releases/*'
+  # pull_request:
+  #   types: [opened, reopened]
   workflow_dispatch:
   
 jobs:
