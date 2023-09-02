@@ -27,6 +27,7 @@ jobs:
           dotnet-quality: 'preview'
       # One-time locally
       - name: Setup Jetbrains tool
+        run: |
           dotnet new tool-manifest
           dotnet tool install JetBrains.ReSharper.GlobalTools
           # In the build script
