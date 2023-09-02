@@ -22,6 +22,15 @@ jobs:
           submodules: recursive
       - name: Setup .NET
         uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '7.0.x'
+          dotnet-quality: 'preview'
+      # One-time locally
+      - name: Setup Jetbrains tool
+          dotnet new tool-manifest
+          dotnet tool install JetBrains.ReSharper.GlobalTools
+          # In the build script
+          dotnet tool restore
         #with:
         #  dotnet-version: ${{ inputs.dotnet-version }}
       - name: Install ReSharper command line tools
