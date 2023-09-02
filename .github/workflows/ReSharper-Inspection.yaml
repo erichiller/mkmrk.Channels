@@ -30,8 +30,8 @@ jobs:
           # severity: 
           tool-version: 2023.2
           # LogFolder
-          # format: 'Text;Html;Xml'
-          format: Text
+          format: 'Text;Html;Xml'
+          #format: Text
           output: './results.txt'
           # swea: True  # (DEFAULT = use from settings file)
           # caches-home:
