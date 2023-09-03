@@ -32,7 +32,8 @@ jobs:
           dotnet tool install JetBrains.ReSharper.GlobalTools
           # In the build script
           dotnet tool restore
-      - name: run tool
+      #
+      - name: Run Inspect Code tool
         run: |
           dotnet tool run jb inspectcode ./mkmrk.Channels.sln \
              --Format=Text \
