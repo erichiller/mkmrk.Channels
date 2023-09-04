@@ -42,7 +42,7 @@
                     "rendered/**.{svg,png}",
                     "coverage/**.{html,svg,zip}",
                     "tests/**.svg",
-                    ".{svg,png}" // logos
+                    "*.{svg,png}" // logos
                 ]
                 //"src": "../"
             }
