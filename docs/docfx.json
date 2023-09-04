@@ -1,79 +1,83 @@
 {
-  "metadata": [
-    {
-      "src": [
+    "metadata": [
         {
-          "files": [
-            "src/mkmrk.Channels/bin/Release/**.dll"
-          ],
-          "src": "../"
+            "src": [
+                {
+                    "files": [
+                        "src/mkmrk.Channels/bin/Release/**.dll"
+                    ],
+                    "src": "../"
+                }
+            ],
+            "dest": "api",
+            "includePrivateMembers": false,
+            "disableGitFeatures": false,
+            "disableDefaultFilter": false,
+            "noRestore": false,
+            "namespaceLayout": "flattened",
+            "memberLayout": "samePage",
+            "allowCompilationErrors": false,
+            /* shouldSkipMarkup prevents XML Doc comments from being read as markdown. TODO: should I keep this? */
+            "shouldSkipMarkup": true
         }
-      ],
-      "dest": "api",
-      "includePrivateMembers": false,
-      "disableGitFeatures": false,
-      "disableDefaultFilter": false,
-      "noRestore": false,
-      "namespaceLayout": "flattened",
-      "memberLayout": "samePage",
-      "allowCompilationErrors": false,
-      /* shouldSkipMarkup prevents XML Doc comments from being read as markdown. TODO: should I keep this? */
-      "shouldSkipMarkup": true
-    }
-  ],
-  "build": {
-    "content": [
-      {
-        "files": [
-          "**.yml",
-          "**.md"
+    ],
+    "build": {
+        "content": [
+            {
+                "files": [
+                    "**.yml",
+                    "**.md"
+                ],
+                "exclude": [
+                    "_site/**",
+                    "_api/**"
+                ]
+            }
         ],
-        "exclude": [
-          "_site/**",
-          "_api/**"
-        ]
-      }
-    ],
-    "resource": [
-      {
-        "files": [
-          "images/**",
-          "stats/**.{png,json,zip,csv,txt,log}",
-          "rendered/**.{svg,png}",
-          "coverage/**.{html,svg,zip}",
-          "tests/**.svg"
-        ]
-        //"src": "../"
-      }
-    ],
-    "output": "_site",
-    "globalMetadataFiles": [],
-    "fileMetadataFiles": [],
-    "template": [
-      "default",
-      "modern",
-      "template_edits"
-    ],
-    "globalMetadata": {
-      // A string append to every page title.
-      "_appTitle": "mkmrk.Channels",
-      // The name of the site displayed after logo.
-      "_appName": "mkmrk.Channels",
-      "_appFooter": "mkmrk.Channels - Eric D. Hiller © 2023",
-      /*
-      // TODO:
-      _appLogoPath	string	Path to the app logo.
-      _appLogoUrl	string	URL for the app logo.
-      _appFaviconPath	string	Favicon URL path.
-      */
-      "_disableContribution": true,
-      "_disableNextArticle": true
-    },
-    "postProcessors": [],
-    "keepFileLink": false,
-    "disableGitFeatures": false,
-    "sitemap": {
-      "baseUrl": "https://www.hiller.pro/mkmrk.Channels/"
+        "resource": [
+            {
+                "files": [
+                    "images/**",
+                    "stats/**.{png,json,zip,csv,txt,log}",
+                    "rendered/**.{svg,png}",
+                    "coverage/**.{html,svg,zip}",
+                    "tests/**.svg",
+                    ".{svg,png}" // logos
+                ]
+                //"src": "../"
+            }
+        ],
+        "output": "_site",
+        "globalMetadataFiles": [],
+        "fileMetadataFiles": [],
+        "template": [
+            "default",
+            "modern",
+            "template_edits"
+        ],
+        "globalMetadata": {
+            // A string append to every page title.
+            "_appTitle": "mkmrk.Channels",
+            // The name of the site displayed after logo.
+            "_appName": "mkmrk.Channels",
+            "_appFooter": "mkmrk.Channels - Eric D. Hiller © 2023",
+            /*
+            // TODO:
+            _appLogoPath	string	Path to the app logo.
+            _appLogoUrl	string	URL for the app logo.
+            _
+            _appFaviconPath	string	Favicon URL path.
+            */
+            "_appLogoPath": "./mkmrk-channels-logo.svg",
+            "_appFaviconPath": "./mkmrk-channels-logo.png",
+            "_disableContribution": true,
+            "_disableNextArticle": true
+        },
+        "postProcessors": [],
+        "keepFileLink": false,
+        "disableGitFeatures": false,
+        "sitemap": {
+            "baseUrl": "https://www.hiller.pro/mkmrk.Channels/"
+        }
     }
-  }
 }
