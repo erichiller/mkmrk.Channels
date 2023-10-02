@@ -1,7 +1,6 @@
 name: 'DocFX'
 
 on:
-#  workflow_dispatch:
   workflow_call:
     inputs:
       README_OUTPUT_PATH:

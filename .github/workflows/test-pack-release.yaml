@@ -245,7 +245,18 @@ jobs:
       pages: write
       id-token: write
     with:
-      README_OUTPUT_PATH: ${{ env.README_OUTPUT_PATH }}
+      # should be the same as env.README_OUTPUT_PATH ; But I'm unable to set it to that
+      README_OUTPUT_PATH: docs/rendered/
+  
+  test-output:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: run-README_OUTPUT_PATH-test
+        working-directory: ${{env.readme_output_path}}
+        run: echo ${{ env.README_OUTPUT_PATH }}
+      
   
   render-mermaid-diagrams:
     runs-on: ubuntu-latest
