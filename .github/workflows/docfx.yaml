@@ -3,10 +3,10 @@ name: 'DocFX'
 on:
 #  workflow_dispatch:
   workflow_call:
-#    inputs:
-#      TEST_PROJECT:
-#        required: true
-#        type: string
+    inputs:
+      README_OUTPUT_PATH:
+        required: true
+        type: string
 
 env:
   TZ: America/Chicago
@@ -29,7 +29,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: Mermaid Render Results
-          path: ${{ env.README_OUTPUT_PATH }}
+          path: ${{ inputs.README_OUTPUT_PATH }}
         
       - name: Retrieve Generated Content
         uses: actions/download-artifact@v3
@@ -58,6 +58,14 @@ jobs:
       - run: dotnet tool update -g docfx
       - run: docfx ./docfx.json
         working-directory: ./docs/
+      #
+      # https://github.com/actions/upload-artifact
+      - name: Upload DocFX output
+        uses: actions/upload-artifact@v3
+        with:
+          name: 'DocFX Output'
+          path: ./docs
+          retention-days: 30
       #
       # https://github.com/actions/upload-pages-artifact
       - name: Upload GH Pages Artifact

@@ -15,10 +15,10 @@ namespace mkmrk.Channels.Tests;
 public class TestBase<T> {
     protected delegate void TestOutputHelperWriteLine( string msg );
 
-    protected TestOutputHelperWriteLine _writeLine;
-    protected   ITestOutputHelper?        _output;
+    private protected readonly TestOutputHelperWriteLine _writeLine;
+    private protected readonly ITestOutputHelper?        _output;
 
-    protected readonly Microsoft.Extensions.Logging.ILogger _logger;
+    private protected readonly Microsoft.Extensions.Logging.ILogger _logger;
 
     private static ILogger<TLogger> createLogger<TLogger>( ) {
         using Serilog.Extensions.Logging.SerilogLoggerFactory loggerFactory = new Serilog.Extensions.Logging.SerilogLoggerFactory();
@@ -29,9 +29,9 @@ public class TestBase<T> {
         Log.Logger = new Serilog.LoggerConfiguration()
                      .MinimumLevel.Is( logLevel )
                      .WriteTo.TestOutput( output,
-                                          Serilog.Events.LogEventLevel.Verbose,
-                                          // outputTemplate: @"{Timestamp:HH:mm:ss.fff zzz} [{Level:u3}] {ThreadId,-2} {SourceContext,-45} {Scope}{NewLine}     >> {Message:lj}{NewLine}{Exception}"
-                                          outputTemplate: @"{Timestamp:HH:mm:ss.fff zzz} [{Level:u3}] {ThreadId,-2} >> {Message:lj}{NewLine}{Exception}"
+                                          restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Verbose,
+                                          outputTemplate: @"{Timestamp:HH:mm:ss.fff zzz} [{Level:u3}] {ThreadId,-2} >> {Message:lj}{NewLine}{Exception}",
+                                          formatProvider: null
                      )
                      .Enrich.WithThreadId()
                      .CreateLogger()
@@ -39,9 +39,11 @@ public class TestBase<T> {
         return createLogger<TLogger>();
     }
 
-    protected TestBase( ITestOutputHelper? output, 
-                        Microsoft.Extensions.Logging.ILogger? logger = null, 
-                        LogEventLevel logLevel = LogEventLevel.Verbose ) {
+    protected TestBase(
+        ITestOutputHelper?                    output,
+        Microsoft.Extensions.Logging.ILogger? logger   = null,
+        LogEventLevel                         logLevel = LogEventLevel.Verbose
+    ) {
         _output    = output;
         _logger    = logger ?? ( output is not null ? configureLogging<T>( output, logLevel ) : throw new ArgumentNullException( nameof(output) ) );
         _writeLine = output is not null ? output.WriteLine : System.Console.Out.WriteLine;

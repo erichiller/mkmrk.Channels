@@ -29,12 +29,16 @@ internal static class TestUtils {
     // }
 
     internal static TReturn GetPrivateField<TReturn>( object instance, string fieldName ) {
-        FieldInfo field = instance.GetType().GetField( fieldName, BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Default ) ?? throw new Exception( $"Could not get field '{fieldName}'" );
+        FieldInfo field = instance.GetType().GetField( fieldName, BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Default ) ?? throw new ReflectionTypeLoadException( classes: new Type[] {
+                                                                                                                                                                                        typeof(TReturn)
+                                                                                                                                                                                    }, exceptions: null, message: $"Could not get field '{fieldName}'" );
         return ( TReturn )field.GetValue( instance )!;
     }
 
     internal static TReturn GetPrivateField<TFieldOwner, TReturn>( object instance, string fieldName ) {
-        FieldInfo field = typeof(TFieldOwner).GetField( fieldName, BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Default ) ?? throw new Exception( $"Could not get field '{fieldName}'" );
+        FieldInfo field = typeof(TFieldOwner).GetField( fieldName, BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Default ) ?? throw new ReflectionTypeLoadException( classes: new Type[] {
+                                                                                                                                                                                         typeof(TReturn)
+                                                                                                                                                                                     }, exceptions: null, message: $"Could not get field '{fieldName}'" );
         return ( TReturn )field.GetValue( instance )!;
     }
 

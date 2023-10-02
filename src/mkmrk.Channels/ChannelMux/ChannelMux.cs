@@ -5,8 +5,8 @@
 
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Channels;
@@ -18,7 +18,7 @@ namespace mkmrk.Channels;
 
 /// <summary>
 /// <see cref="ChannelMux"/> is meant to aggregate multiple <see cref="BroadcastChannel{T}"/> into a single, awaitable object.
-/// It is a generic type and each type parameter has a dedicated `TryRead(out T data)` method.
+/// It is a generic type and each type parameter has a dedicated <c>TryRead(out T data)</c> method.
 /// <see cref="ChannelMuxInput{T}"/> acts presents as a writer to <see cref="BroadcastChannelWriter{T}"/> and each has a
 /// <see cref="SingleProducerSingleConsumerQueue{T}"/>.
 /// </summary>

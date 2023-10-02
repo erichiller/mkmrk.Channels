@@ -115,7 +115,7 @@ csharp_style_namespace_declarations = file_scoped
 ## Private
 # Symbols
 dotnet_naming_symbols.private_methods.applicable_kinds = method
-dotnet_naming_symbols.private_methods.applicable_accessibilities = private, protected
+dotnet_naming_symbols.private_methods.applicable_accessibilities = private, protected, private_protected
 # dotnet_naming_symbols.private_methods.required_modifiers            = 
 
 # Rules
@@ -133,7 +133,7 @@ dotnet_naming_style.private_methods_camel_case.capitalization = camel_case
 ## Private & Protected Members
 # Symbols
 dotnet_naming_symbols.private_members.applicable_kinds = property,field,event
-dotnet_naming_symbols.private_members.applicable_accessibilities = private,protected
+dotnet_naming_symbols.private_members.applicable_accessibilities = private,protected,private_protected
 # dotnet_naming_symbols.private_members.required_modifiers            = 
 
 # Rules

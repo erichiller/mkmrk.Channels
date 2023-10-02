@@ -197,7 +197,6 @@ jobs:
             ./test/mkmrk.Channels.Tests/diagnostics.*
             ./test/mkmrk.Channels.Tests/BUILD_FAILED.log
         #
-      # URGENT: NEEDS TESTING!
       - name: Retrieve coverage and metadata history archive
         continue-on-error: true
         run: |
@@ -219,7 +218,6 @@ jobs:
       #
       # URGENT: NEEDS TESTING!
       - name: Archive coverage history
-      #  shell: pwsh
         run: |
           zip -j ./docs/stats/metadata/metadata-archive.zip -r ./docs/stats/metadata
           zip -j ./docs/coverage/history/coverage-history.zip -r ./docs/coverage/history
@@ -246,6 +244,8 @@ jobs:
       contents: read
       pages: write
       id-token: write
+    with:
+      README_OUTPUT_PATH: ${{ env.README_OUTPUT_PATH }}
   
   render-mermaid-diagrams:
     runs-on: ubuntu-latest
