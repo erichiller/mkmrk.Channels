@@ -29,8 +29,9 @@ jobs:
       # Create (or update) CODE_METRICS.md file.
       - name: .NET code metrics
         id: dotnet-code-metrics
-        uses: dotnet/samples/github-actions/DotNet.GitHubAction@main
+        #uses: dotnet/samples/github-actions/DotNet.GitHubAction@main
         # BROKEN: SEE HERE: https://github.com/dotnet/samples/issues/5640
+        uses: erichiller/dotnet-samples-fork/github-actions/DotNet.GitHubAction@github-actions-summary-output-fix
         with:
           owner: ${{ github.repository_owner }}
           name: ${{ github.repository }}
