@@ -64,7 +64,7 @@ jobs:
           branch: ${{ github.ref }}
           dir: ${{ './src/mkmrk.Channels' }}
       - name: 'Move CODE_METRICS to docs'
-        run: mv ./CODE_METRICS.md ./docs/stats/CODE_METRICS.md
+        run: mv ./src/mkmrk.Channels/CODE_METRICS.md ./docs/stats/CODE_METRICS.md
 
       # http://www.hiller.pro/mkmrk.Channels/
       # https://dotnet.github.io/docfx/index.html
