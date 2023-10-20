@@ -21,5 +21,7 @@
     href: stats/TO-DO.md
   - name: Line Counts
     href: stats/Line_Counts.md
+  - name: Code Metrics
+    href: stats/CODE_METRICS.md
 - name: GitHub
   href: https://github.com/erichiller/mkmrk.Channels
