@@ -32,7 +32,7 @@ jobs:
         #uses: dotnet/samples/github-actions/DotNet.GitHubAction@main
         # BROKEN: SEE HERE: https://github.com/dotnet/samples/issues/5640
         # uses: erichiller/dotnet-samples-fork/github-actions/DotNet.GitHubAction@github-actions-summary-output-fix
-        uses: erichiller/gh-action-cs-metrics/github-actions@master
+        uses: erichiller/gh-action-cs-metrics@master
         with:
           owner: ${{ github.repository_owner }}
           name: ${{ github.repository }}
