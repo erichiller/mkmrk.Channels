@@ -9,7 +9,7 @@ namespace mkmrk.Channels;
 public interface IBroadcastChannelAddReaderProvider<TData> {
     /// <inheritdoc cref="BroadcastChannelWriter{TData,TResponse}.AddReader" />
     /*
-     * TODO: Ideally this would be a more solid type that ChannelWriter, because a ChannelWriter would not actually work (or at least it wouldn't be disposed of properly)
+     * TODO: Ideally this would be a more solid type than ChannelWriter, because a ChannelWriter would not actually work (or at least it wouldn't be disposed of properly)
      * But as it is an internal method, there is no urgency.
      */
     internal RemoveWriterByHashCode AddReader( ChannelWriter<TData> reader );
@@ -17,11 +17,14 @@ public interface IBroadcastChannelAddReaderProvider<TData> {
 
 /// <summary>
 /// A portable allocator of <see cref="IBroadcastChannelReader{TData}"/> instances for <see cref="BroadcastChannel{TData,TResponse}"/>.
+/// A new <see cref="IBroadcastChannelReader{TData}"/> is not created until <see cref="CreateReader"/> is called.
+/// This allows for delaying or avoiding creating a new <see cref="IBroadcastChannelReader{TData}"/> that would be written to even
+/// if not being actively read from, which would consume memory.
 /// </summary>
-/// <typeparam name="TData"></typeparam>
+/// <typeparam name="TData">Type of data received by <see cref="IBroadcastChannelReader{TData}"/> and sent by <see cref="IBroadcastChannelWriter{TData}"/>.</typeparam>
 public interface IBroadcastChannelReaderSource<TData> : IBroadcastChannelAddReaderProvider<TData> { 
     /// <summary>
-    /// Create a new <see cref="IBroadcastChannelReader{TData}"/>
+    /// Create a new <see cref="IBroadcastChannelReader{TData}"/>.
     /// </summary>
     public IBroadcastChannelReader<TData> CreateReader( );
 }

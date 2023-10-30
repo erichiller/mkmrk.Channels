@@ -45,6 +45,8 @@ file readonly record struct MessageWithSendTicksB( long Ticks );
 
 file record ProducerParams( ILogger Logger, BroadcastChannel<MessageWithSendTicksA> Channel, Stopwatch Stopwatch );
 
+file record ProducerTaskInput<T>( IBroadcastChannelWriter<T, IBroadcastChannelResponse> ChannelWriter, Stopwatch Stopwatch );
+
 public class DummyException : Exception {
     public DummyException( string message, Exception innerException ) : base( message, innerException ) { }
     public DummyException( ) { }
@@ -687,9 +689,10 @@ public class ChannelMuxTests : TestBase<ChannelMuxTests> {
         mux.Completion.IsCompleted.Should().BeFalse(); // not completed because not all messages are read
     }
 
+
     [ Fact ]
     public async Task CancellationToken_PreWaitToReadAsync_NewAfterException_Test( ) {
-        // URGENT: sporadic test failures ?? ;; June 15, 2023
+        // URGENT: sporadic test failures ?? ;; June 15, 2023 ;; Reworked October 30, 2023 ; continuing to test
         const int                              msgCountChannel1                 = 50_000, msgCountChannel2 = 1_000;
         const int                              cancelEveryCount                 = 25;
         const int                              throwExceptionCount              = 4;
@@ -699,18 +702,52 @@ public class ChannelMuxTests : TestBase<ChannelMuxTests> {
         using BroadcastChannel<DataTypeB>      channel2                         = new ();
         using ChannelMux<DataTypeA, DataTypeB> mux                              = new (channel1.Writer, channel2.Writer);
         Stopwatch                              stopwatch                        = Stopwatch.StartNew();
-        Task                                   producer1                        = Task.Run( ( ) => producerTaskSimple( channel1.Writer, msgCountChannel1, i => new DataTypeA( Sequence: i, WrittenTicks: stopwatch.ElapsedTicks ) ), CancellationToken.None );
-        Task                                   producer2                        = Task.Run( ( ) => producerTaskSimple( channel2.Writer, msgCountChannel2, i => new DataTypeB( Sequence: i, WrittenTicks: stopwatch.ElapsedTicks ) ), CancellationToken.None );
+        Task producer1 = Task.Factory.StartNew( static args => {
+            if ( args is not ProducerTaskInput<DataTypeA> { ChannelWriter: var channelWriter, Stopwatch: var stopwatch } ) {
+                throw new ArgumentException();
+            }
+            producerTaskSimple( channelWriter, msgCountChannel1, i => new DataTypeA( Sequence: i, WrittenTicks: stopwatch.ElapsedTicks ) );
+        }, new ProducerTaskInput<DataTypeA>( channel1.Writer, stopwatch ), scheduler: TaskScheduler.Default, cancellationToken: CancellationToken.None, creationOptions: default );
+        
+        Task producer2 = Task.Factory.StartNew( static args => {
+            if ( args is not ProducerTaskInput<DataTypeB> { ChannelWriter: var channelWriter, Stopwatch: var stopwatch } ) {
+                throw new ArgumentException();
+            }
+            producerTaskSimple( channelWriter, msgCountChannel2, i => new DataTypeB( Sequence: i, WrittenTicks: stopwatch.ElapsedTicks ) );
+        }, new ProducerTaskInput<DataTypeB>( channel2.Writer, stopwatch ), scheduler: TaskScheduler.Default, cancellationToken: CancellationToken.None, creationOptions: default );
 
-        Func<Task> readerTask = async ( ) => {
+        Task readerLoopTask = readerLoop( mux, _logger );
+        await readerLoopTask.Awaiting( x => x ).Should().ThrowAsync<OperationCanceledException>();
+        await producer1;
+        await producer2;
+        if ( receivedCountA == 0 || receivedCountA == msgCountChannel1) {
+            this._logger.LogError( "ERROR! receivedCountA is {ReceivedCountA}. State: {@State}",
+                                   receivedCountA,
+                                   new {
+                                       receivedCountA,
+                                       receivedCountB,
+                                       operationCancelledExceptionsSeen,
+                                       stopwatch.ElapsedTicks,
+                                       Producer1Status     = producer1.Status,
+                                       Producer2Status     = producer2.Status,
+                                       MuxCompletionStatus = mux.Completion.Status
+                                   } );
+        }
+        receivedCountA.Should().NotBe( 0 );
+        receivedCountA.Should().BeLessThan( msgCountChannel1 );
+        receivedCountB.Should().Be( cancelEveryCount * throwExceptionCount );
+        operationCancelledExceptionsSeen.Should().Be( throwExceptionCount );
+        mux.Completion.IsCompleted.Should().BeFalse(); // not completed because not all messages are read
+
+        async Task readerLoop( ChannelMux<DataTypeA, DataTypeB> muxLocal, ILogger logger ) {
             for ( int exceptionLoop = 0 ; exceptionLoop < throwExceptionCount ; exceptionLoop++ ) {
                 try {
-                    CancellationTokenSource cts = new CancellationTokenSource();
-                    while ( await mux.WaitToReadAsync( cts.Token ) ) {
-                        if ( mux.TryRead( out DataTypeA _ ) ) {
+                    using CancellationTokenSource cts = new CancellationTokenSource();
+                    while ( await muxLocal.WaitToReadAsync( cts.Token ) ) {
+                        if ( muxLocal.TryRead( out DataTypeA _ ) ) {
                             receivedCountA++;
                         }
-                        if ( mux.TryRead( out DataTypeB _ ) ) {
+                        if ( muxLocal.TryRead( out DataTypeB _ ) ) {
                             receivedCountB++;
                             if ( receivedCountB % cancelEveryCount == 0 ) {
                                 cts.Cancel();
@@ -718,22 +755,14 @@ public class ChannelMuxTests : TestBase<ChannelMuxTests> {
                         }
                     }
                 } catch ( OperationCanceledException ) {
-                    _logger.LogDebug( "OperationCanceledException @exceptionLoop={ExceptionLoop} ; receivedCountB={ReceivedCountB}", exceptionLoop, receivedCountB );
+                    logger.LogDebug( "OperationCanceledException @exceptionLoop={ExceptionLoop} ; receivedCountB={ReceivedCountB}", exceptionLoop, receivedCountB );
                     operationCancelledExceptionsSeen++;
                     if ( exceptionLoop == throwExceptionCount - 1 ) {
                         throw;
                     }
                 }
             }
-        };
-        await readerTask.Should().ThrowAsync<OperationCanceledException>();
-        await producer1;
-        await producer2;
-        receivedCountA.Should().NotBe( 0 );
-        receivedCountA.Should().BeLessThan( msgCountChannel1 );
-        receivedCountB.Should().Be( cancelEveryCount * throwExceptionCount );
-        operationCancelledExceptionsSeen.Should().Be( throwExceptionCount );
-        mux.Completion.IsCompleted.Should().BeFalse(); // not completed because not all messages are read
+        }
     }
 
     [ Fact ]
@@ -743,29 +772,33 @@ public class ChannelMuxTests : TestBase<ChannelMuxTests> {
         using ChannelMux<DataTypeA, DataTypeB> mux                              = new (channel1.Writer, channel2.Writer);
         const int                              throwExceptionCount              = 4;
         int                                    operationCancelledExceptionsSeen = 0;
-        using CancellationTokenSource          cts                              = new CancellationTokenSource();
-        CancellationToken                      ct                               = cts.Token;
         int                                    loops                            = 0;
-        Func<Task> readerTask = async ( ) => {
+        Task                                   readerLoopTask                   = readerLoop( mux, _logger );
+        Func<Task>                             readerLoopTaskAwait              = async ( ) => await readerLoopTask;
+        await readerLoopTaskAwait.Should().ThrowAsync<OperationCanceledException>();
+        loops.Should().Be( 0 );
+        operationCancelledExceptionsSeen.Should().Be( throwExceptionCount );
+        mux.Completion.IsCompleted.Should().BeFalse(); // not completed because not all messages are read
+
+        async Task readerLoop( ChannelMux<DataTypeA, DataTypeB> muxLocal, ILogger logger ) {
             for ( int exceptionLoop = 0 ; exceptionLoop < throwExceptionCount ; exceptionLoop++ ) {
                 try {
+                    using CancellationTokenSource cts = new CancellationTokenSource();
                     cts.CancelAfter( 5 );
-                    while ( await mux.WaitToReadAsync( ct ) ) {
+                    while ( await muxLocal.WaitToReadAsync( cts.Token ) ) {
                         loops++;
                     }
                 } catch ( OperationCanceledException ) {
-                    _logger.LogDebug( "OperationCanceledException @exceptionLoop={ExceptionLoop}", exceptionLoop );
+                    logger.LogDebug( "OperationCanceledException @exceptionLoop={ExceptionLoop}", exceptionLoop );
                     operationCancelledExceptionsSeen++;
                     if ( exceptionLoop == throwExceptionCount - 1 ) {
                         throw;
                     }
                 }
             }
-        };
-        await readerTask.Should().ThrowAsync<OperationCanceledException>();
-        loops.Should().Be( 0 );
-        operationCancelledExceptionsSeen.Should().Be( throwExceptionCount );
-        mux.Completion.IsCompleted.Should().BeFalse(); // not completed because not all messages are read
+        }
+
+        ;
     }
 
     #endregion
