@@ -102,7 +102,6 @@ public abstract class ChannelMux {
     /// <inheritdoc cref="System.Threading.Channels.ChannelReader{T}.WaitToReadAsync"/>
     public ValueTask<bool> WaitToReadAsync( CancellationToken cancellationToken ) {
         _isReaderWaiting = false;
-        // Outside of the lock, check if there are any items waiting to be read.  If there are, we're done.
         if ( cancellationToken.IsCancellationRequested ) {
             return new ValueTask<bool>( Task.FromCanceled<bool>( cancellationToken ) );
         }
@@ -112,6 +111,7 @@ public abstract class ChannelMux {
             return new ValueTask<bool>( Task.FromException<bool>( _completeException ) );
         }
 
+        // Outside of the lock, check if there are any items waiting to be read.  If there are, we're done.
         if ( _readableItems > 0 ) {
             return new ValueTask<bool>( true );
         }

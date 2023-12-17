@@ -59,6 +59,10 @@
         <!--        <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>-->
     </PropertyGroup>
 
+    <ItemGroup>
+        <InternalsVisibleTo Include="mkmrk.Channels.Tests"/>
+    </ItemGroup>
+
     <PropertyGroup>
         <ReadmeFilePath>../../README.md</ReadmeFilePath>
         <ReadmeFilePath Condition="Exists('../../docs/rendered/README.md')">../../docs/rendered/README.md</ReadmeFilePath>

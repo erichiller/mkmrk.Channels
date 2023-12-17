@@ -83,7 +83,9 @@ public class BroadcastChannelTests : TestBase<BroadcastChannelTests> {
                 }
 
                 if ( delayMs is var (min, max) ) {
+#pragma warning disable CA5394
                     await Task.Delay( random.Next( min, max ), ct );
+#pragma warning restore CA5394
                 }
 
                 // i++;
@@ -138,8 +140,8 @@ public class BroadcastChannelTests : TestBase<BroadcastChannelTests> {
                     // Read a single message
                     break;
                 }
-                if ( !threadIds.Contains( Thread.CurrentThread.ManagedThreadId ) ) {
-                    threadIds.Add( Thread.CurrentThread.ManagedThreadId );
+                if ( !threadIds.Contains( Environment.CurrentManagedThreadId ) ) {
+                    threadIds.Add( Environment.CurrentManagedThreadId );
                 }
 
                 logger?.LogTrace( "[{MethodName}][{ReaderCount}] New reader read: {Message}", nameof(addReaderTask), readerCount, message );
