@@ -630,41 +630,51 @@ public class ChannelMuxTests : TestBase<ChannelMuxTests> {
     /// </summary>
     [ Fact ]
     public async Task CancellationToken_PreWaitToReadAsync_Test( ) {
-        const int                              msgCountChannel1 = 50, msgCountChannel2 = 100;
-        int                                    receivedCountA   = 0,  receivedCountB   = 0;
-        using BroadcastChannel<DataTypeA>      channel1         = new ();
-        using BroadcastChannel<DataTypeB>      channel2         = new ();
-        using ChannelMux<DataTypeA, DataTypeB> mux              = new (channel1.Writer, channel2.Writer);
-        using CancellationTokenSource          cts              = new CancellationTokenSource();
-        CancellationToken                      ct               = cts.Token;
-        int                                    cancelAfterCount = 25;
-        int                                    loopsSinceReadB  = 0;
-        Stopwatch                              stopwatch        = Stopwatch.StartNew();
-        Task                                   producer1        = Task.Run( ( ) => producerTaskSimple( channel1.Writer, msgCountChannel1, i => new DataTypeA( Sequence: i, WrittenTicks: stopwatch.ElapsedTicks ) ), ct );
-        Task                                   producer2        = Task.Run( ( ) => producerTaskSimple( channel2.Writer, msgCountChannel2, i => new DataTypeB( Sequence: i, WrittenTicks: stopwatch.ElapsedTicks ) ), ct );
-        Func<Task> readerTask = async ( ) => {
-            while ( await mux.WaitToReadAsync( ct ) ) {
-                loopsSinceReadB++;
-                if ( mux.TryRead( out DataTypeA _ ) ) {
-                    receivedCountA++;
-                }
-                if ( mux.TryRead( out DataTypeB _ ) ) {
-                    if ( receivedCountB == cancelAfterCount ) {
-                        cts.Cancel();
-                    } else {
-                        receivedCountB++;
+        for ( int i = 0 ; i < 10_000 ; i++ ) {
+            const int                         msgCountChannel1 = 50, msgCountChannel2 = 100;
+            int                               receivedCountB   = 0;
+            int                               cancelAfterCount = 25;
+            int                               loopsSinceReadB  = 0;
+            Stopwatch                         stopwatch        = Stopwatch.StartNew();
+            using BroadcastChannel<DataTypeA> channel1         = new ();
+            using BroadcastChannel<DataTypeB> channel2         = new ();
+            var                               channel1Writer   = channel1.Writer;
+            var                               channel2Writer   = channel2.Writer;
+
+            Task producer1 = new Task( ( ) => producerTaskSimple( channel1Writer, msgCountChannel1, i => new DataTypeA( Sequence: i, WrittenTicks: stopwatch.ElapsedTicks ) ) );
+            Task producer2 = new Task( ( ) => producerTaskSimple( channel2Writer, msgCountChannel2, i => new DataTypeB( Sequence: i, WrittenTicks: stopwatch.ElapsedTicks ) ) );
+
+            Func<Task> readerTask = async ( ) => {
+                ChannelMux<DataTypeA, DataTypeB> mux = new (channel1Writer, channel2Writer);
+                using CancellationTokenSource    cts = new CancellationTokenSource();
+                producer1.Start();
+                producer2.Start();
+                cts.CancelAfter( 10_000 ); // safety
+
+                while ( await mux.WaitToReadAsync( cts.Token ) ) {
+                    loopsSinceReadB++;
+                    if ( mux.TryRead( out DataTypeA _ ) ) {
+                        // I'm not doing anything with A in this test.
                     }
-                    loopsSinceReadB = 0;
+                    if ( mux.TryRead( out DataTypeB _ ) ) {
+                        if ( receivedCountB == cancelAfterCount ) {
+                            await cts.CancelAsync();
+                        } else {
+                            receivedCountB++;
+                        }
+                        loopsSinceReadB = 0;
+                    }
                 }
-            }
-        };
-        await readerTask.Should().ThrowAsync<OperationCanceledException>();
-        await producer1;
-        await producer2;
-        receivedCountA.Should().NotBe( 0 );
-        loopsSinceReadB.Should().Be( 0 );
-        receivedCountB.Should().Be( cancelAfterCount );
-        mux.Completion.IsCompleted.Should().BeFalse(); // not completed because not all messages are read
+                mux.Completion.IsCompleted.Should().BeFalse(); // not completed because not all messages are read
+            };
+
+            await readerTask.Should().ThrowAsync<OperationCanceledException>();
+
+            await Task.WhenAll( producer1, producer2 );
+
+            loopsSinceReadB.Should().Be( 0 );
+            receivedCountB.Should().Be( cancelAfterCount );
+        }
     }
 
     /// <summary>

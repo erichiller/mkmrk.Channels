@@ -24,13 +24,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         
-# TODO: I don't actually use this anywhere in the docs do I? (DocFX can render mermaid content)
-#      - name: Retrieve Rendered Content
-#        uses: actions/download-artifact@v4
-#        with:
-#          name: Mermaid Render Results
-#          path: ${{ inputs.README_OUTPUT_PATH }}
-        
       - name: Retrieve Generated Content
         uses: actions/download-artifact@v4
         with:
@@ -84,16 +77,14 @@ jobs:
       #
       # https://github.com/actions/upload-pages-artifact
       - name: Upload GH Pages Artifact
-        uses: actions/upload-pages-artifact@v1.0.9
+        uses: actions/upload-pages-artifact@v3
         with:
           path: docs/_site
       #
       # https://github.com/actions/deploy-pages
       - name: Deploy to GitHub Pages
-        #if: ${{ false }}
         id: deployment
-        uses: actions/deploy-pages@v2 # or the latest "vX.X.X" version tag for this action
+        uses: actions/deploy-pages@v4 # or the latest "vX.X.X" version tag for this action
 
       - name: Write URL
-        #if: ${{ false }}
         run: echo ${{ steps.deployment.outputs.page_url }}

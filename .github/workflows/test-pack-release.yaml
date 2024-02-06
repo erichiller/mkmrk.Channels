@@ -17,11 +17,11 @@ on:
         description: 'Render mermaid diagrams for nuget.org README'
         required: true
         type: boolean
-      #      build_pages:
-      #        description: 'Build DoxFX and refresh GitHub Pages'
-      #        required: true
-      #        type: boolean
-      #        default: false
+      build_pages:
+        description: 'Build DoxFX and refresh GitHub Pages'
+        required: true
+        type: boolean
+        default: false
       # URGENT: 🚨: need to change CSPROJ to use package_version if present
       # https://learn.microsoft.com/en-us/visualstudio/msbuild/how-to-use-environment-variables-in-a-build
 #      release_version:
@@ -235,9 +235,7 @@ jobs:
             ./docs/build-log/
 
   docfx:
-    #    if: ${{ inputs.release_to_github || inputs.release_to_nuget || inputs.build_pages }}
-    # TODO: I don't think I actually need mermaid for this
-    # needs: [test, render-mermaid-diagrams]
+    if: ${{ inputs.release_to_github || inputs.release_to_nuget || inputs.build_pages }}
     needs: [test]
     uses: erichiller/mkmrk.Channels/.github/workflows/docfx.yaml@master
     permissions:
