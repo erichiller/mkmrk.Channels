@@ -22,22 +22,23 @@ jobs:
     runs-on: ubuntu-latest
     steps: 
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         
-      - name: Retrieve Rendered Content
-        uses: actions/download-artifact@v3
-        with:
-          name: Mermaid Render Results
-          path: ${{ inputs.README_OUTPUT_PATH }}
+# TODO: I don't actually use this anywhere in the docs do I? (DocFX can render mermaid content)
+#      - name: Retrieve Rendered Content
+#        uses: actions/download-artifact@v4
+#        with:
+#          name: Mermaid Render Results
+#          path: ${{ inputs.README_OUTPUT_PATH }}
         
       - name: Retrieve Generated Content
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: test-generated-content
           path: ./docs/
     
       - name: Setup .NET Core SDK
-        uses: actions/setup-dotnet@v3
+        uses: actions/setup-dotnet@v4
         with:
           global-json-file: ./global.json
       - name: Install dependencies
@@ -75,7 +76,7 @@ jobs:
       #
       # https://github.com/actions/upload-artifact
       - name: Upload DocFX output
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: 'DocFX Output'
           path: ./docs

@@ -154,10 +154,10 @@ public class ChannelMuxTests : TestBase<ChannelMuxTests> {
             return Task.CompletedTask;
         }, new ProducerParams( _logger, channel1, stopwatch ), cancellationToken: ct, scheduler: TaskScheduler.Current, creationOptions: TaskCreationOptions.None );
 
-        int                         receivedCountA   = 0;
-        long[]                      messageLatencies = new long[ msgCountChannel1 ];
-        int                         loops            = 0;
-        List<MessageWithSendTicksA> errorIds         = new ();
+        int                         receivedCountA           = 0;
+        long[]                      messageLatencies         = new long[ msgCountChannel1 ];
+        int                         loops                    = 0;
+        List<MessageWithSendTicksA> overlyLatentDataReceived = new ();
 
         while ( await mux.WaitToReadAsync( ct ) ) {
             var loopStartTicks = stopwatch.ElapsedTicks;
@@ -170,7 +170,7 @@ public class ChannelMuxTests : TestBase<ChannelMuxTests> {
                                   loops, a.Id, a.Group, ticksNow, a.Ticks, deltaTicks, ( ( double )ticksNow - ( double )a.Ticks ) / _1ms, ticksNow - loopStartTicks, ( ticksNow - loopStartTicks ) / _1ms );
                 if ( deltaTicks > maxAllowedLatency && receivedCountA > 5 ) {
                     _logger.LogError( "[Loop: {Loop}, {Id}:{Group}] LATENCY GREATER THAN {MaxLatency:N3}ms: {DeltaTicks:N6}ms !!!!!!!!!!!!!!!!!!!!!!!!!!!!!", loops, a.Id, a.Group, maxAllowedLatency / ( double )_1ms, deltaTicks / ( double )_1ms );
-                    errorIds.Add( a );
+                    overlyLatentDataReceived.Add( a );
                 }
                 messageLatencies[ receivedCountA ] = deltaTicks;
                 receivedCountA++;
@@ -187,7 +187,7 @@ public class ChannelMuxTests : TestBase<ChannelMuxTests> {
         }
         _logger.LogInformation( "Latency Avg: {Avg:N3}ms Min: {Min:N3}ms Max: {Max:N3}ms Top 5: {Top5}", messageLatencies.Average() / ( double )_1ms, messageLatencies.Min() / ( double )_1ms, messageLatencies.Max() / ( double )_1ms, String.Join( ", ", messageLatencies.OrderDescending().Take( 5 ).Select( n => ( ( double )n / ( double )_1ms ).ToString( "N3", CultureInfo.InvariantCulture ) + "ms" ) ) );
         // _logger.LogInformation( "Latencies: {Latencies}", String.Join( ", ", messageLatencies ) );
-        errorIds.Should().BeEmpty();
+        overlyLatentDataReceived.Should().BeEmpty();
     }
 
     [ InlineData( true ) ]

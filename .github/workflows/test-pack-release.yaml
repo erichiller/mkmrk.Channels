@@ -17,11 +17,11 @@ on:
         description: 'Render mermaid diagrams for nuget.org README'
         required: true
         type: boolean
-      build_pages:
-        description: 'Build DoxFX and refresh GitHub Pages'
-        required: true
-        type: boolean
-        default: false
+      #      build_pages:
+      #        description: 'Build DoxFX and refresh GitHub Pages'
+      #        required: true
+      #        type: boolean
+      #        default: false
       # URGENT: 🚨: need to change CSPROJ to use package_version if present
       # https://learn.microsoft.com/en-us/visualstudio/msbuild/how-to-use-environment-variables-in-a-build
 #      release_version:
@@ -73,7 +73,7 @@ jobs:
     steps:
       # action checks-out your repository under $GITHUB_WORKSPACE, so your workflow can access it.
       # https://github.com/actions/checkout
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       # 
       - name: Create directory structure
         shell: pwsh
@@ -82,7 +82,7 @@ jobs:
           New-Item -ItemType Directory -Path ./docs/build-logs -ErrorAction Continue
       #
       - name: Setup .NET Core SDK
-        uses: actions/setup-dotnet@v3
+        uses: actions/setup-dotnet@v4
         with:
           global-json-file: ./global.json
       - name: Install dependencies
@@ -188,7 +188,7 @@ jobs:
           git status --short
 
       - name: Upload test results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
           name: dotnet-test-results
@@ -224,7 +224,7 @@ jobs:
           zip -j ./docs/tests/test-results.zip -r ./test/mkmrk.Channels.Tests/ --include \*.trx
       #
       - name: Upload coverage report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: test-generated-content
           path: |
@@ -235,7 +235,7 @@ jobs:
             ./docs/build-log/
 
   docfx:
-    if: ${{ inputs.release_to_github || inputs.release_to_nuget || inputs.build_pages }}
+    #    if: ${{ inputs.release_to_github || inputs.release_to_nuget || inputs.build_pages }}
     # TODO: I don't think I actually need mermaid for this
     # needs: [test, render-mermaid-diagrams]
     needs: [test]
@@ -261,15 +261,16 @@ jobs:
   render-mermaid-diagrams:
     runs-on: ubuntu-latest
     # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#running-a-workflow-based-on-the-conclusion-of-another-workflow
-    if: ${{ inputs.readme_render_mermaid || inputs.release_to_github || inputs.release_to_nuget || inputs.build_pages }}
+    if: ${{ inputs.readme_render_mermaid || inputs.release_to_github || inputs.release_to_nuget }}
+    #    if: ${{ inputs.readme_render_mermaid || inputs.release_to_github || inputs.release_to_nuget || inputs.build_pages }}
     
     permissions:
       contents: read
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
 
       - name: Install mermaid-cli
         run: npm install -g @mermaid-js/mermaid-cli
@@ -295,7 +296,7 @@ jobs:
 
       # https://github.com/actions/upload-artifact
       - name: Upload mermaid diagram render outputs
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: Mermaid Render Results
           path: ${{ env.README_OUTPUT_PATH }}
@@ -315,10 +316,10 @@ jobs:
     steps:
       # action checks-out your repository under $GITHUB_WORKSPACE, so your workflow can access it.
       # https://github.com/actions/checkout
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       # 
       - name: Setup .NET Core SDK
-        uses: actions/setup-dotnet@v3
+        uses: actions/setup-dotnet@v4
         with:
           global-json-file: ./global.json
 
@@ -346,7 +347,7 @@ jobs:
 
       # https://github.com/actions/upload-artifact
       - name: Upload package
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: Package
           path: ./src/mkmrk.Channels/bin/Release
