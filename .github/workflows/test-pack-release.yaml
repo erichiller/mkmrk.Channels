@@ -42,6 +42,11 @@ on:
         required: true
         type: boolean
         default: false
+      pack_to_artifact:
+        description: 'Pack upload to artifact'
+        required: true
+        type: boolean
+        default: true
       release_to_nuget:
         description: 'Pack and release to nuget.org'
         required: true
@@ -304,12 +309,11 @@ jobs:
   #
   pack:
     runs-on: ubuntu-latest
-    if: ${{ inputs.release_to_github || inputs.release_to_nuget }}
+    if: ${{ inputs.release_to_github || inputs.release_to_nuget || inputs.pack_to_artifact }}
     needs: [test, render-mermaid-diagrams]
     permissions:
       packages: write
     env:
-      RELEASE_TO_NUGET: ${{ inputs.release_to_nuget }}
       RELEASE_TYPE: ${{ inputs.release_type }}
     steps:
       # action checks-out your repository under $GITHUB_WORKSPACE, so your workflow can access it.
@@ -324,9 +328,9 @@ jobs:
       - name: Install dependencies
         run: dotnet restore
       
-      # modify the PackageVersion if set
+      # TODO: modify the PackageVersion, Release Type if set
       - name: Package
-        run: dotnet pack --configuration Release
+        run: dotnet pack --configuration Release /p:ContinuousIntegrationBuild=true /p:EmbedUntrackedSources=true
 
       - name: Publish to GitHub Packages
         if: ${{ inputs.release_to_github }}

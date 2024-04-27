@@ -15,12 +15,15 @@
             `ChannelMux` is used to aggregate multiple `BroadcastChannel` of multiple outputs into a single, awaitable object.
         </Description>
         <PackageReadmeFile>README.md</PackageReadmeFile>
+        <PackageIcon>mkmrk-channels-logo.png</PackageIcon>
         <!-- TODO: Check that the TOP level Directory.Build.props carry over here. -->
     </PropertyGroup>
 
     <PropertyGroup>
         <EnablePackageValidation>true</EnablePackageValidation>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <!-- Include symbol files (*.pdb) in the built .nupkg -->
+        <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
         <!--TODO: disable auto-build package for now.-->
         <!--<GeneratePackageOnBuild>true</GeneratePackageOnBuild> &lt;!&ndash; Generates a package at build &ndash;&gt;-->
         <!--Unsure if this should be set or not, see: https://learn.microsoft.com/en-us/dotnet/core/project-sdk/msbuild-props#copydocumentationfilesfrompackages -->
@@ -28,15 +31,20 @@
         <!--<ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>-->
     </PropertyGroup>
 
-    <Target Name="SetSourceRevisionId" BeforeTargets="InitializeSourceControlInformation">
-        <Exec Command="git log -n1 --format=format:'%h'" ConsoleToMSBuild="True" IgnoreExitCode="False">
-            <Output PropertyName="SourceRevisionId" TaskParameter="ConsoleOutput" />
-            <Output PropertyName="TwentyTwo" TaskParameter="ConsoleOutput" />
-        </Exec>
+    <PropertyGroup>
+        <IconPath>../../docs/mkmrk-channels-logo.png</IconPath>
+        <ReadmeFilePath>../../README.md</ReadmeFilePath>
+        <ReadmeFilePath Condition="Exists('../../docs/rendered/README.md')">../../docs/rendered/README.md</ReadmeFilePath>
+    </PropertyGroup>
+    <ItemGroup>
+        <None Include="$(IconPath)" Pack="true" PackagePath="\"/>
+        <None Include="$(ReadmeFilePath)" Pack="true" PackagePath="\"/>
+    </ItemGroup>
+
+    <Target Name="SetPackageVersion" AfterTargets="InitializeSourceControlInformation">
         <PropertyGroup>
             <RELEASE_TYPE Condition=" '$(BaseVersion)' == '' ">beta</RELEASE_TYPE> <!-- DEFAULT is beta -->
             <Version>$([System.DateTime]::Now.ToString("yyyy.MM.dd.HHmm"))</Version>
-            <InformationalVersion>$([System.DateTime]::Now.ToString("yyyy.MM.dd.HHmmss"))+$(SourceRevisionId)</InformationalVersion>
             <!-- BETA -->
             <PackageVersion Condition=" '$(RELEASE_TYPE)' == 'beta' ">1.0.0-beta.$([System.DateTime]::Now.ToString("yyyy-MM-dd.Hmm"))+$(SourceRevisionId)</PackageVersion>
             <!-- PRE-RELEASE -->
@@ -44,12 +52,26 @@
             <!-- STABLE RELEASE -->
             <PackageVersion Condition=" '$(RELEASE_TYPE)' == 'stable' ">1.0.0+$([System.DateTime]::Now.ToString("yyyy-MM-dd.Hmm")).$(SourceRevisionId)</PackageVersion>
         </PropertyGroup>
-        <Message Importance="high" Text="Project File Name    = $(MSBuildProjectFile)" />
-        <Message Importance="high" Text="Project Extension    = $(MSBuildProjectExtension)" />
-        <Message Importance="high" Text="SourceRevisionId     = $(SourceRevisionId)" />
-        <Message Importance="high" Text="InformationalVersion = $(InformationalVersion)" />
-        <Message Importance="high" Text="PackageVersion       = $(PackageVersion)" />
-        <Message Importance="high" Text="RepositoryUrl        = $(RepositoryUrl)" />
+        <!-- Display build information -->
+        <Message Importance="high" Text="Project File Name                              = $(MSBuildProjectFile)"/>
+        <Message Importance="high" Text="Project Extension                              = $(MSBuildProjectExtension)"/>
+        <Message Importance="high" Text="Version                                        = $(Version)"/>
+        <Message Importance="high" Text="RELEASE_TYPE                                   = $(RELEASE_TYPE)"/>
+        <Message Importance="high" Text="SourceRevisionId                               = $(SourceRevisionId)"/>
+        <Message Importance="high" Text="InformationalVersion                           = $(InformationalVersion)"/>
+        <Message Importance="high" Text="PackageVersion                                 = $(PackageVersion)"/>
+        <Message Importance="high" Text="RepositoryUrl                                  = $(RepositoryUrl)"/>
+        <Message Importance="high" Text="ContinuousIntegrationBuild                     = $(ContinuousIntegrationBuild)"/>
+        <Message Importance="high" Text="Deterministic                                  = $(Deterministic)"/>
+        <Message Importance="high" Text="DeterministicSourcePaths                       = $(DeterministicSourcePaths)"/>
+        <Message Importance="high" Text="EmbedUntrackedSources                          = $(EmbedUntrackedSources)"/>
+        <Message Importance="high" Text="EnableSourceLink                               = $(EnableSourceLink)"/>
+        <Message Importance="high" Text="IncludeSourceRevisionInInformationalVersion    = $(IncludeSourceRevisionInInformationalVersion)"/>
+        <Message Importance="high" Text="IconPath                                       = $(IconPath)"/>
+        <Message Condition="Exists($(IconPath))"
+                 Importance="high" Text="IconPath exists?                               = true"/>
+        <Message Condition="Exists('../../docs/rendered/README.md')"
+                 Importance="high" Text="Rendered README.md exists?                     = true"/>
     </Target>
 
     <PropertyGroup>
@@ -63,22 +85,22 @@
         <InternalsVisibleTo Include="mkmrk.Channels.Tests"/>
     </ItemGroup>
 
-    <PropertyGroup>
-        <ReadmeFilePath>../../README.md</ReadmeFilePath>
-        <ReadmeFilePath Condition="Exists('../../docs/rendered/README.md')">../../docs/rendered/README.md</ReadmeFilePath>
-    </PropertyGroup>
-    <ItemGroup >
-        <None Include="$(ReadmeFilePath)" Pack="true" PackagePath="\" />
-    </ItemGroup>
+    <!--    <PropertyGroup>-->
+    <!--        <IconPath>../../docs/mkmrk-channels-logo.png</IconPath>-->
+    <!--        <ReadmeFilePath>../../README.md</ReadmeFilePath>-->
+    <!--        <ReadmeFilePath Condition="Exists('../../docs/rendered/README.md')">../../docs/rendered/README.md</ReadmeFilePath>-->
+    <!--    </PropertyGroup>-->
+    <!--    <ItemGroup >-->
+    <!--        <None Include="$(IconPath)" Pack="true" PackagePath="\" />-->
+    <!--        <None Include="$(ReadmeFilePath)" Pack="true" PackagePath="\" />-->
+    <!--    </ItemGroup>-->
 
     <ItemGroup>
         <!--        TODO: Enable PublicApiAnalyzers -->
         <!--        <PackageReference Include="Microsoft.CodeAnalysis.PublicApiAnalyzers" PrivateAssets="All" />-->
-        <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="All" />
-        <PackageReference Include="JetBrains.Annotations" PrivateAssets="All" />
-
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
-        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+        <PackageReference Include="JetBrains.Annotations" PrivateAssets="All"/>
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions"/>
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions"/>
     </ItemGroup>
 
 </Project>
